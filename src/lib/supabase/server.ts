@@ -7,7 +7,7 @@ export async function createClient() {
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
         getAll() {
@@ -34,8 +34,10 @@ export async function createClient() {
  *  service role must bypass RLS intentionally. */
 export function createServiceClient() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require('@supabase/supabase-js')
-  return createClient<Database>(
+  const { createClient: createSupabaseClient } = require('@supabase/supabase-js') as {
+    createClient: typeof import('@supabase/supabase-js').createClient
+  }
+  return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )

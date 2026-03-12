@@ -41,6 +41,7 @@ export interface Database {
           signup_context?: string | null
           updated_at?: string
         }
+        Relationships: []
       }
       courses: {
         Row: {
@@ -82,6 +83,7 @@ export interface Database {
           passing_score?: number
           updated_at?: string
         }
+        Relationships: []
       }
       lessons: {
         Row: {
@@ -120,6 +122,7 @@ export interface Database {
           duration_minutes?: number | null
           updated_at?: string
         }
+        Relationships: []
       }
       quizzes: {
         Row: {
@@ -140,6 +143,7 @@ export interface Database {
           title?: string | null
           passing_score?: number
         }
+        Relationships: []
       }
       questions: {
         Row: {
@@ -175,6 +179,7 @@ export interface Database {
           max_points?: number
           order_index?: number
         }
+        Relationships: []
       }
       course_enrollments: {
         Row: {
@@ -194,6 +199,7 @@ export interface Database {
         Update: {
           completed_at?: string | null
         }
+        Relationships: []
       }
       lesson_progress: {
         Row: {
@@ -213,6 +219,7 @@ export interface Database {
         Update: {
           completed_at?: string | null
         }
+        Relationships: []
       }
       quiz_attempts: {
         Row: {
@@ -240,6 +247,7 @@ export interface Database {
           passed?: boolean | null
           submitted_at?: string | null
         }
+        Relationships: []
       }
       question_responses: {
         Row: {
@@ -270,6 +278,7 @@ export interface Database {
           llm_feedback?: string | null
           graded_at?: string | null
         }
+        Relationships: []
       }
       docs_pages: {
         Row: {
@@ -309,6 +318,7 @@ export interface Database {
           visibility?: Visibility
           updated_at?: string
         }
+        Relationships: []
       }
       certification_tracks: {
         Row: {
@@ -354,6 +364,7 @@ export interface Database {
           questions_per_exam?: number
           status?: ContentStatus
         }
+        Relationships: []
       }
       cert_questions: {
         Row: {
@@ -392,6 +403,7 @@ export interface Database {
           difficulty?: Difficulty
           tags?: string[] | null
         }
+        Relationships: []
       }
       cert_attempts: {
         Row: {
@@ -424,6 +436,7 @@ export interface Database {
           submitted_at?: string | null
           expires_at?: string | null
         }
+        Relationships: []
       }
       certificates: {
         Row: {
@@ -455,6 +468,7 @@ export interface Database {
           revoked?: boolean
           revoked_at?: string | null
         }
+        Relationships: []
       }
       user_groups: {
         Row: {
@@ -472,7 +486,11 @@ export interface Database {
         Update: {
           added_by?: string | null
         }
+        Relationships: []
       }
     }
+    Views: {}
+    Functions: {}
+    Enums: {}
   }
 }

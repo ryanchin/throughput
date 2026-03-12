@@ -174,3 +174,47 @@
     @apply font-sans;
   }
 }
+
+/* Tiptap editor styles */
+.tiptap {
+  outline: none;
+}
+
+.tiptap h1 { font-size: var(--text-3xl); font-weight: 700; margin: 1.5em 0 0.5em; color: var(--foreground); }
+.tiptap h2 { font-size: var(--text-2xl); font-weight: 600; margin: 1.25em 0 0.5em; color: var(--foreground); }
+.tiptap h3 { font-size: var(--text-xl); font-weight: 600; margin: 1em 0 0.5em; color: var(--foreground); }
+.tiptap p { margin: 0.5em 0; color: var(--foreground); }
+.tiptap ul, .tiptap ol { padding-left: 1.5em; margin: 0.5em 0; }
+.tiptap li { margin: 0.25em 0; }
+.tiptap ul[data-type="taskList"] { list-style: none; padding-left: 0; }
+.tiptap ul[data-type="taskList"] li { display: flex; align-items: flex-start; gap: 0.5rem; }
+.tiptap ul[data-type="taskList"] li label { margin-top: 0.15em; }
+.tiptap blockquote { border-left: 3px solid var(--accent); padding-left: 1em; margin: 1em 0; color: var(--foreground-muted); font-style: italic; }
+.tiptap pre { background: var(--background); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1em; margin: 1em 0; overflow-x: auto; }
+.tiptap pre code { font-family: var(--font-mono); font-size: 0.875rem; color: var(--foreground); }
+.tiptap code { background: var(--background-muted); padding: 0.15em 0.3em; border-radius: 0.25rem; font-size: 0.875em; color: var(--accent); }
+.tiptap hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+.tiptap img { max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1em 0; }
+.tiptap table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+.tiptap table td, .tiptap table th { border: 1px solid var(--border); padding: 0.5em 0.75em; text-align: left; }
+.tiptap table th { background: var(--background-muted); font-weight: 600; }
+.tiptap mark { background: var(--accent-muted); color: var(--foreground); padding: 0.1em 0.2em; border-radius: 0.15rem; }
+.tiptap a { color: var(--accent); text-decoration: underline; }
+.tiptap a:hover { color: var(--accent-hover); }
+
+/* Placeholder styling */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--foreground-subtle);
+  pointer-events: none;
+  height: 0;
+}
+
+/* Embed wrapper */
+.embed-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin: 1em 0;
+}

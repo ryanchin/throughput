@@ -5,13 +5,18 @@ import { isPublicRoute, getRequiredRoles } from '@/lib/auth/route-helpers'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Always update the session (refresh tokens)
-  const { user, supabaseResponse, supabase } = await updateSession(request)
-
-  // Allow public routes
+  // Allow public routes without touching Supabase
   if (isPublicRoute(pathname)) {
-    return supabaseResponse
+    return NextResponse.next()
   }
+
+  // Skip auth if Supabase is not configured (local dev without env vars)
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY) {
+    return NextResponse.next()
+  }
+
+  // Update the session (refresh tokens)
+  const { user, supabaseResponse, supabase } = await updateSession(request)
 
   // API routes handled separately (auth checked in route handlers)
   if (pathname.startsWith('/api/')) {
