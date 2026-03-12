@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+
 export default function AdminPage() {
-  return <div>Admin - Coming Soon</div>;
+  redirect('/admin/courses')
 }
