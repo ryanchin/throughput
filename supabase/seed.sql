@@ -1,0 +1,2 @@
+-- TODO: Add seed data for development
+-- See CLAUDE.md for full schema definitions

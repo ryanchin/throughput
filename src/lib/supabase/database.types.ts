@@ -1,0 +1,478 @@
+export type UserRole = 'employee' | 'sales' | 'admin' | 'public'
+export type ContentStatus = 'draft' | 'published'
+export type QuestionType = 'multiple_choice' | 'true_false' | 'open_ended'
+export type CertQuestionType = 'multiple_choice' | 'open_ended'
+export type Difficulty = 'easy' | 'medium' | 'hard'
+export type Zone = 'training' | 'sales'
+export type Visibility = 'public' | 'internal'
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      profiles: {
+        Row: {
+          id: string
+          email: string
+          full_name: string | null
+          avatar_url: string | null
+          role: UserRole
+          signup_context: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          email: string
+          full_name?: string | null
+          avatar_url?: string | null
+          role?: UserRole
+          signup_context?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          full_name?: string | null
+          avatar_url?: string | null
+          role?: UserRole
+          signup_context?: string | null
+          updated_at?: string
+        }
+      }
+      courses: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          slug: string
+          zone: Zone
+          status: ContentStatus
+          cover_image_url: string | null
+          learning_objectives: string[] | null
+          passing_score: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          slug: string
+          zone?: Zone
+          status?: ContentStatus
+          cover_image_url?: string | null
+          learning_objectives?: string[] | null
+          passing_score?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          description?: string | null
+          slug?: string
+          zone?: Zone
+          status?: ContentStatus
+          cover_image_url?: string | null
+          learning_objectives?: string[] | null
+          passing_score?: number
+          updated_at?: string
+        }
+      }
+      lessons: {
+        Row: {
+          id: string
+          course_id: string
+          title: string
+          slug: string
+          content: Json | null
+          order_index: number
+          status: ContentStatus
+          video_ids: string[]
+          duration_minutes: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          title: string
+          slug: string
+          content?: Json | null
+          order_index?: number
+          status?: ContentStatus
+          video_ids?: string[]
+          duration_minutes?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          content?: Json | null
+          order_index?: number
+          status?: ContentStatus
+          video_ids?: string[]
+          duration_minutes?: number | null
+          updated_at?: string
+        }
+      }
+      quizzes: {
+        Row: {
+          id: string
+          lesson_id: string
+          title: string | null
+          passing_score: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lesson_id: string
+          title?: string | null
+          passing_score?: number
+          created_at?: string
+        }
+        Update: {
+          title?: string | null
+          passing_score?: number
+        }
+      }
+      questions: {
+        Row: {
+          id: string
+          quiz_id: string
+          question_text: string
+          question_type: QuestionType
+          options: Json | null
+          correct_answer: string | null
+          rubric: string | null
+          max_points: number
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          quiz_id: string
+          question_text: string
+          question_type: QuestionType
+          options?: Json | null
+          correct_answer?: string | null
+          rubric?: string | null
+          max_points?: number
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          question_text?: string
+          question_type?: QuestionType
+          options?: Json | null
+          correct_answer?: string | null
+          rubric?: string | null
+          max_points?: number
+          order_index?: number
+        }
+      }
+      course_enrollments: {
+        Row: {
+          id: string
+          user_id: string
+          course_id: string
+          enrolled_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          course_id: string
+          enrolled_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+        }
+      }
+      lesson_progress: {
+        Row: {
+          id: string
+          user_id: string
+          lesson_id: string
+          started_at: string
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          lesson_id: string
+          started_at?: string
+          completed_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+        }
+      }
+      quiz_attempts: {
+        Row: {
+          id: string
+          user_id: string
+          quiz_id: string
+          attempt_number: number
+          score: number | null
+          passed: boolean | null
+          started_at: string
+          submitted_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          quiz_id: string
+          attempt_number?: number
+          score?: number | null
+          passed?: boolean | null
+          started_at?: string
+          submitted_at?: string | null
+        }
+        Update: {
+          score?: number | null
+          passed?: boolean | null
+          submitted_at?: string | null
+        }
+      }
+      question_responses: {
+        Row: {
+          id: string
+          attempt_id: string
+          question_id: string
+          user_answer: string | null
+          is_correct: boolean | null
+          points_earned: number
+          llm_feedback: string | null
+          graded_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          attempt_id: string
+          question_id: string
+          user_answer?: string | null
+          is_correct?: boolean | null
+          points_earned?: number
+          llm_feedback?: string | null
+          graded_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          is_correct?: boolean | null
+          points_earned?: number
+          llm_feedback?: string | null
+          graded_at?: string | null
+        }
+      }
+      docs_pages: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          content: Json | null
+          parent_id: string | null
+          order_index: number
+          status: ContentStatus
+          visibility: Visibility
+          search_vector: unknown
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          content?: Json | null
+          parent_id?: string | null
+          order_index?: number
+          status?: ContentStatus
+          visibility?: Visibility
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          content?: Json | null
+          parent_id?: string | null
+          order_index?: number
+          status?: ContentStatus
+          visibility?: Visibility
+          updated_at?: string
+        }
+      }
+      certification_tracks: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          tier: number
+          domain: string | null
+          description: string | null
+          prerequisite_track_id: string | null
+          passing_score: number
+          exam_duration_minutes: number
+          question_pool_size: number
+          questions_per_exam: number
+          status: ContentStatus
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          tier: number
+          domain?: string | null
+          description?: string | null
+          prerequisite_track_id?: string | null
+          passing_score?: number
+          exam_duration_minutes?: number
+          question_pool_size?: number
+          questions_per_exam?: number
+          status?: ContentStatus
+          created_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          tier?: number
+          domain?: string | null
+          description?: string | null
+          prerequisite_track_id?: string | null
+          passing_score?: number
+          exam_duration_minutes?: number
+          question_pool_size?: number
+          questions_per_exam?: number
+          status?: ContentStatus
+        }
+      }
+      cert_questions: {
+        Row: {
+          id: string
+          track_id: string
+          question_text: string
+          question_type: CertQuestionType
+          options: Json | null
+          correct_answer: string | null
+          rubric: string | null
+          max_points: number
+          difficulty: Difficulty
+          tags: string[] | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          track_id: string
+          question_text: string
+          question_type: CertQuestionType
+          options?: Json | null
+          correct_answer?: string | null
+          rubric?: string | null
+          max_points?: number
+          difficulty?: Difficulty
+          tags?: string[] | null
+          created_at?: string
+        }
+        Update: {
+          question_text?: string
+          question_type?: CertQuestionType
+          options?: Json | null
+          correct_answer?: string | null
+          rubric?: string | null
+          max_points?: number
+          difficulty?: Difficulty
+          tags?: string[] | null
+        }
+      }
+      cert_attempts: {
+        Row: {
+          id: string
+          user_id: string
+          track_id: string
+          attempt_number: number
+          question_ids: string[] | null
+          score: number | null
+          passed: boolean | null
+          started_at: string
+          submitted_at: string | null
+          expires_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          track_id: string
+          attempt_number?: number
+          question_ids?: string[] | null
+          score?: number | null
+          passed?: boolean | null
+          started_at?: string
+          submitted_at?: string | null
+          expires_at?: string | null
+        }
+        Update: {
+          score?: number | null
+          passed?: boolean | null
+          submitted_at?: string | null
+          expires_at?: string | null
+        }
+      }
+      certificates: {
+        Row: {
+          id: string
+          user_id: string
+          track_id: string
+          attempt_id: string | null
+          cert_number: string
+          verification_hash: string
+          issued_at: string
+          expires_at: string | null
+          revoked: boolean
+          revoked_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          track_id: string
+          attempt_id?: string | null
+          cert_number: string
+          verification_hash: string
+          issued_at?: string
+          expires_at?: string | null
+          revoked?: boolean
+          revoked_at?: string | null
+        }
+        Update: {
+          expires_at?: string | null
+          revoked?: boolean
+          revoked_at?: string | null
+        }
+      }
+      user_groups: {
+        Row: {
+          user_id: string
+          group_name: string
+          added_by: string | null
+          added_at: string
+        }
+        Insert: {
+          user_id: string
+          group_name: string
+          added_by?: string | null
+          added_at?: string
+        }
+        Update: {
+          added_by?: string | null
+        }
+      }
+    }
+  }
+}
