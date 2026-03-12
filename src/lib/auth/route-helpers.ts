@@ -5,6 +5,8 @@ export const PUBLIC_ROUTES = [
   '/docs',
   '/verify',
   '/api/badges',
+  '/test-editor',
+  '/test-admin-status',
 ]
 
 /** Route zone -> required roles */
