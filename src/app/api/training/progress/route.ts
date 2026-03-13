@@ -196,10 +196,80 @@ export async function PATCH(request: NextRequest) {
   const courseCompleted = allLessonIds.every((id) => completedIds.has(id))
 
   if (courseCompleted) {
-    // Mark course enrollment as completed (idempotent — only if not already set)
+    // Calculate final score from quiz attempts before marking complete
+    let finalScore: number | null = null
+    let enrollmentStatus: 'passed' | 'failed' = 'passed'
+
+    // Fetch course passing_score
+    const { data: courseData } = await supabase
+      .from('courses')
+      .select('passing_score')
+      .eq('id', lesson.course_id)
+      .single()
+
+    const passingScore = courseData?.passing_score ?? 70
+
+    // Fetch all quizzes for this course's lessons
+    const { data: courseQuizzes } = await supabase
+      .from('quizzes')
+      .select('id, lesson_id')
+      .in('lesson_id', allLessonIds)
+
+    if (courseQuizzes && courseQuizzes.length > 0) {
+      const quizIds = courseQuizzes.map((q) => q.id)
+
+      // Fetch all question max_points per quiz
+      const { data: questions } = await supabase
+        .from('questions')
+        .select('quiz_id, max_points')
+        .in('quiz_id', quizIds)
+
+      const totalPointsByQuiz = new Map<string, number>()
+      for (const q of questions ?? []) {
+        totalPointsByQuiz.set(q.quiz_id, (totalPointsByQuiz.get(q.quiz_id) ?? 0) + q.max_points)
+      }
+
+      // Fetch best attempt per quiz (highest score)
+      const { data: allAttempts } = await supabase
+        .from('quiz_attempts')
+        .select('quiz_id, score')
+        .eq('user_id', user.id)
+        .in('quiz_id', quizIds)
+        .not('submitted_at', 'is', null)
+
+      // Keep best score per quiz
+      const bestScoreByQuiz = new Map<string, number>()
+      for (const a of allAttempts ?? []) {
+        const existing = bestScoreByQuiz.get(a.quiz_id) ?? -1
+        if ((a.score ?? 0) > existing) {
+          bestScoreByQuiz.set(a.quiz_id, a.score ?? 0)
+        }
+      }
+
+      // Calculate weighted final score
+      let totalEarned = 0
+      let totalPossible = 0
+      for (const quiz of courseQuizzes) {
+        const quizTotal = totalPointsByQuiz.get(quiz.id) ?? 0
+        const bestPercent = bestScoreByQuiz.get(quiz.id) ?? 0
+        totalEarned += quizTotal > 0 ? Math.round((bestPercent / 100) * quizTotal) : 0
+        totalPossible += quizTotal
+      }
+
+      finalScore = totalPossible > 0
+        ? Math.min(Math.round((totalEarned / totalPossible) * 100), 100)
+        : 0
+      enrollmentStatus = finalScore >= passingScore ? 'passed' : 'failed'
+    }
+
+    // Mark course enrollment as completed with score (idempotent — only if not already set)
     await supabase
       .from('course_enrollments')
-      .update({ completed_at: new Date().toISOString() })
+      .update({
+        completed_at: new Date().toISOString(),
+        final_score: finalScore,
+        status: enrollmentStatus,
+      })
       .eq('user_id', user.id)
       .eq('course_id', lesson.course_id)
       .is('completed_at', null)
