@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { markdownToTiptap } from '@/lib/generate/markdown-to-tiptap'
+import { rateLimiters, checkRateLimit } from '@/lib/security/rate-limiter'
 
 const SYSTEM_PROMPT =
   'You are an expert instructional designer. Generate detailed lesson content in Markdown format. Include headers, bullet points, and clear explanations. Return ONLY the markdown content, no JSON wrapper.'
@@ -22,10 +23,14 @@ const generateLessonSchema = z.object({
  * the admin reviews and saves via the lesson editor.
  */
 export async function POST(request: NextRequest) {
-  const { error: authError } = await requireAdmin()
+  const { error: authError, profile } = await requireAdmin()
   if (authError) {
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
+
+  // --- Rate limiting: 50 generations per admin per day ---
+  const rateLimitResponse = await checkRateLimit(rateLimiters.generateLesson, profile!.id)
+  if (rateLimitResponse) return rateLimitResponse
 
   let body: unknown
   try {

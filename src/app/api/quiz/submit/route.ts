@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { gradeOpenEndedResponse, type GradeResult } from '@/lib/openrouter/grader'
 import { calculateQuizScore } from '@/lib/scoring/calculator'
 import { calculateTotalPoints } from '@/lib/quiz/calculator'
+import { rateLimiters, checkRateLimit } from '@/lib/security/rate-limiter'
 
 const answerSchema = z.object({
   questionId: z.string().uuid(),
@@ -42,6 +43,10 @@ export async function POST(request: NextRequest) {
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  // --- Rate limiting: 10 submissions per user per hour ---
+  const rateLimitResponse = await checkRateLimit(rateLimiters.quizSubmit, user.id)
+  if (rateLimitResponse) return rateLimitResponse
 
   // --- Input validation ---
   let body: unknown

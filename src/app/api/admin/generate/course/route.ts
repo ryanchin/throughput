@@ -6,6 +6,7 @@ import { parseCourseResponse } from '@/lib/generate/parser'
 import { markdownToTiptap } from '@/lib/generate/markdown-to-tiptap'
 import { generateSlug } from '@/lib/utils/slug'
 import type { Json, QuestionType } from '@/lib/supabase/database.types'
+import { rateLimiters, checkRateLimit } from '@/lib/security/rate-limiter'
 
 const SYSTEM_PROMPT = `You are an expert instructional designer and product management trainer working for AAVA Product Studio.
 Generate a complete course outline in JSON. Return ONLY valid JSON, no markdown fences, no preamble.
@@ -55,6 +56,10 @@ export async function POST(request: NextRequest) {
   if (authError) {
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
+
+  // --- Rate limiting: 20 generations per admin per day ---
+  const rateLimitResponse = await checkRateLimit(rateLimiters.generateCourse, profile!.id)
+  if (rateLimitResponse) return rateLimitResponse
 
   let body: unknown
   try {
