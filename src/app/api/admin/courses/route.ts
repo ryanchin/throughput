@@ -64,6 +64,7 @@ const createCourseSchema = z.object({
   description: z.string().max(2000).nullable().optional(),
   zone: z.enum(['training', 'sales']).optional().default('training'),
   passing_score: z.number().int().min(0).max(100).optional().default(70),
+  navigation_mode: z.enum(['sequential', 'free']).optional().default('sequential'),
   cover_image_url: z.string().url().nullable().optional(),
 })
 
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { title, slug, description, zone, passing_score, cover_image_url } = parsed.data
+  const { title, slug, description, zone, passing_score, navigation_mode, cover_image_url } = parsed.data
 
   // Check slug uniqueness
   const { data: existing } = await supabase
@@ -114,6 +115,7 @@ export async function POST(request: NextRequest) {
       description: description ?? null,
       zone,
       passing_score,
+      navigation_mode,
       cover_image_url: cover_image_url ?? null,
       created_by: profile!.id,
     })

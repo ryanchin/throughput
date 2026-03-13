@@ -10,6 +10,10 @@ export const PUBLIC_ROUTES = [
   '/test-course-cms',
   '/test-quiz-builder',
   '/test-ai-generator',
+  '/test-video',
+  '/test-training-catalog',
+  '/test-lesson-nav',
+  '/test-quiz-player',
 ]
 
 /** Route zone -> required roles */

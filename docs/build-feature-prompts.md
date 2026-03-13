@@ -272,18 +272,18 @@ Tests required:
 
 ## PHASE 4 — Video
 
-### 4.1 — Cloudflare Stream Video
+### 4.1 — Bunny.net Stream Video
 
 ```
 /project:build-feature video-lessons
 
-Integrate Cloudflare Stream for video upload and playback in lessons.
+Integrate Bunny.net Stream for video upload and playback in lessons.
 
 1. API routes:
-   POST /api/admin/video/upload-url    → Get a Direct Creator Upload URL from Stream API
-   GET  /api/admin/video/status/[uid]  → Poll transcoding status from Stream API
-   DELETE /api/admin/video/[uid]       → Delete from Stream (admin only)
-   GET  /api/video/signed/[uid]        → Generate a signed playback URL (authenticated users; TTL 4 hours)
+   POST /api/admin/video/upload-url    → Get a Bunny.net presigned upload URL
+   GET  /api/admin/video/status/[uid]  → Poll transcoding status from Bunny.net API
+   DELETE /api/admin/video/[uid]       → Delete from Bunny.net library (admin only)
+   GET  /api/video/token/[uid]         → Generate a signed playback token via HMAC-SHA256 (authenticated users; TTL 4 hours)
 
    All admin routes: admin-only auth guard
    Signed URL route: any authenticated user (employee, sales, admin)
@@ -291,28 +291,27 @@ Integrate Cloudflare Stream for video upload and playback in lessons.
 
 2. VideoBlock custom Tiptap Node:
    - Triggered by /video slash command in the block editor
-   - Edit mode: drag-and-drop upload zone OR paste a Cloudflare Stream video UID
+   - Edit mode: drag-and-drop upload zone OR paste a Bunny.net video GUID
    - Upload flow:
      a. Call POST /api/admin/video/upload-url to get the upload URL
-     b. Upload directly from browser to Cloudflare using TUS protocol (use tus-js-client)
+     b. Upload directly from browser to Bunny.net via the presigned PUT URL using fetch with progress tracking (no extra library needed — Bunny.net uses standard HTTP PUT)
      c. Show upload progress bar (0–100%)
      d. On complete: store videoId in block attrs, start polling /api/admin/video/status/[uid]
-     e. Show "Processing video…" state while transcoding (status !== 'ready')
+     e. Show "Processing video…" state while transcoding (status !== 3 i.e. not finished)
      f. Once ready: show video thumbnail preview in editor
-   - View mode (learner): render Cloudflare Stream iframe player using signed URL from /api/video/signed/[uid]
+   - View mode (learner): render Bunny.net iframe player using token from /api/video/token/[uid]
+     URL format: https://iframe.mediadelivery.net/embed/[BUNNY_STREAM_LIBRARY_ID]/[videoId]?token=[token]&expires=[expires]
    - Block stores: { type: 'video', attrs: { videoId: string, title: string, duration: number } }
 
 3. Video title input: appears below the upload zone, required before the lesson can be published
 
 4. A lesson with a video in status 'inprogress' (still transcoding) cannot be published — enforce this in the publish validation logic.
 
-5. Install tus-js-client for TUS uploads: npm install tus-js-client
-
 Tests required:
-- Unit: signed URL token generation (verify it returns a string, verify it uses the correct key)
-- Unit: upload URL requester (mock fetch, verify correct Cloudflare API call shape)
-- Integration: GET /api/video/signed/[uid] — verify 401 for unauthenticated, 200 + token for authenticated; verify admin can delete, non-admin cannot
-- E2E: mock the Cloudflare API responses; upload a video file, verify progress bar, verify "Processing" state, mock status = 'ready', verify player iframe appears with correct src; verify unauthenticated user cannot get signed URL
+- Unit: HMAC-SHA256 token generation (verify it returns a string, verify it uses the correct secret, verify expiry is set correctly)
+- Unit: upload URL requester (mock fetch, verify correct Bunny.net API call shape and headers)
+- Integration: GET /api/video/token/[uid] — verify 401 for unauthenticated, 200 + token for authenticated; verify admin can delete, non-admin cannot
+- E2E: mock the Bunny.net API responses; upload a video file, verify progress indicator, verify "Processing" state, mock status = 3 (finished), verify player iframe appears with correct Bunny.net embed src + token params; verify unauthenticated user cannot get a playback token
 ```
 
 ---
@@ -618,7 +617,7 @@ Add rate limiting and security hardening to all sensitive routes.
 
 4. Add Content-Security-Policy headers for embed iframes — allow only the listed embed domains (YouTube, Vimeo, Loom, Figma, Google)
 
-5. Confirm OPENROUTER_API_KEY and CLOUDFLARE_STREAM_* variables are never exposed client-side (grep for NEXT_PUBLIC_ prefix and confirm none of the sensitive keys use it)
+5. Confirm OPENROUTER_API_KEY and BUNNY_* variables are never exposed client-side (grep for NEXT_PUBLIC_ prefix and confirm none of the sensitive keys use it)
 
 Tests required:
 - Integration: hit the quiz submit endpoint 11 times with the same user, verify the 11th returns 429

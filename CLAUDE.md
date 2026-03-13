@@ -30,13 +30,13 @@ Editor:         Tiptap (Notion-like block editor + markdown paste)
 UI:             shadcn/ui + Tailwind CSS (custom design tokens below)
 LLM (grading):  OpenRouter → openai/gpt-oss-120b
 LLM (content):  OpenRouter → openai/gpt-oss-120b (AI course/lesson generator)
-Video:          Cloudflare Stream ($5/month base — NO free tier exists)
+Video:          Bunny.net Stream (~$1–3/month — storage + delivery based)
 Credentials:    Self-hosted Open Badges 3.0 (LinkedIn-compatible, no Credly needed)
 Testing:        Vitest (unit), Playwright (e2e), Testing Library (components)
 ```
 
-### Cloudflare Stream Pricing Reality
-Stream has **no free tier**. Minimum cost is **$5/month** for 1,000 minutes of stored video + $1 per 1,000 minutes delivered. Budget accordingly. Encoding and ingress are free. For a small internal platform with ~10 hours of training video watched by 20–30 people, expect **$6–10/month total** for Stream.
+### Bunny.net Stream Pricing
+Bunny.net has **no free tier** but is significantly cheaper than alternatives. Pricing is usage-based: **$0.005/GB stored/month** + **$0.01/GB delivered**. Encoding is free. For a small internal platform with ~10 hours of training video watched by 20–30 people, expect **$1–3/month total**. No minimum spend.
 
 ---
 
@@ -332,48 +332,47 @@ Video is supported in both internal courses and certification tracks. Lessons ca
 ### Upload Flow (Admin)
 
 1. Admin drags a video file into the block editor (or uses a dedicated "Add Video" block)
-2. Frontend requests a **Direct Creator Upload URL** from Cloudflare Stream via a server-side API route (`POST /api/admin/video/upload-url`)
-3. The file uploads directly from the browser to Cloudflare Stream — never through our server
-4. Stream returns a `videoId` (uid) on completion
-5. The `videoId` is stored in the lesson content JSON as a video block: `{ type: "video", videoId: "abc123", title: "..." }`
-6. Stream transcodes asynchronously — show a "Processing…" state in the editor until `status === "ready"` (poll `GET /api/admin/video/status/[videoId]`)
+2. Frontend requests a **Bunny.net direct upload URL** via a server-side API route (`POST /api/admin/video/upload-url`)
+3. The file uploads directly from the browser to Bunny.net via a presigned PUT URL — never through our server
+4. On upload complete: store the Bunny.net `videoId` (GUID) in the lesson content JSON as a video block: `{ type: "video", videoId: "abc123", title: "..." }`
+5. Bunny.net transcodes asynchronously — show a "Processing…" state in the editor until `status === 4` (ready) by polling `GET /api/admin/video/status/[videoId]`
 
 ### Playback (Learner)
 
-- Render the Cloudflare Stream Player iframe: `https://iframe.cloudflarestream.com/[videoId]`
-- Enable **signed URLs** for all internal/sales zone videos (prevent hotlinking). Public cert track videos can be unsigned.
-- Signed URL generation happens server-side in the lesson page Server Component; token TTL = 4 hours
+- Render the Bunny.net Stream Player iframe: `https://iframe.mediadelivery.net/embed/[libraryId]/[videoId]`
+- Enable **token authentication** for all internal/sales zone videos (prevent hotlinking). Public cert track videos can be unauthenticated.
+- Signed token generation happens server-side in the lesson page Server Component using HMAC-SHA256; token TTL = 4 hours
 
 ### Schema additions
 
 ```sql
 -- Add to lessons table
 alter table lessons add column video_ids text[] default '{}';
--- Cloudflare Stream video UIDs referenced in this lesson (for signed URL generation)
--- Full video metadata (title, duration, thumbnail) lives in Cloudflare Stream, not our DB
+-- Bunny.net video GUIDs referenced in this lesson (for token auth generation)
+-- Full video metadata (title, duration, thumbnail) lives in Bunny.net Stream, not our DB
 ```
 
 ### Environment Variables (add)
 ```env
-CLOUDFLARE_ACCOUNT_ID=
-CLOUDFLARE_STREAM_API_TOKEN=       # Scoped to Stream read+write only
-CLOUDFLARE_STREAM_SIGNING_KEY=     # For signed URL generation (private key)
-CLOUDFLARE_STREAM_KEY_ID=          # Paired key ID for signed URLs
+BUNNY_STREAM_API_KEY=              # Bunny.net API key (server-side only)
+BUNNY_STREAM_LIBRARY_ID=           # Stream library ID
+BUNNY_STREAM_CDN_HOSTNAME=         # e.g. vz-abc123.b-cdn.net
+BUNNY_STREAM_TOKEN_SECRET=         # HMAC-SHA256 secret for token auth
 ```
 
 ### API Routes
 ```
-POST /api/admin/video/upload-url    → Get Direct Creator Upload URL from Stream
-GET  /api/admin/video/status/[uid]  → Poll transcoding status
-DELETE /api/admin/video/[uid]       → Delete from Stream (admin only)
-GET  /api/video/signed/[uid]        → Generate signed playback URL (authenticated users only)
+POST /api/admin/video/upload-url    → Get a Bunny.net presigned upload URL
+GET  /api/admin/video/status/[uid]  → Poll transcoding status from Bunny.net API
+DELETE /api/admin/video/[uid]       → Delete from Bunny.net library (admin only)
+GET  /api/video/token/[uid]         → Generate signed playback token (authenticated users only)
 ```
 
 ### Lesson Video Block (Tiptap)
 
 Define a custom Tiptap Node extension `VideoBlock` that:
 - In edit mode: shows upload dropzone or videoId input + processing state
-- In view mode (learner): renders the Stream iframe player with signed URL
+- In view mode (learner): renders the Bunny.net iframe player with signed token appended
 - Stores: `{ type: 'video', attrs: { videoId: string, title: string, duration: number } }`
 
 ---
@@ -863,13 +862,13 @@ docs/
 │   ├── zones.md                     # Access zones + role matrix
 │   ├── database.md                  # Full schema with ERD
 │   ├── llm-grading.md               # OpenRouter grading integration
-│   └── video.md                     # Cloudflare Stream integration details
+│   └── video.md                     # Bunny.net Stream integration details
 ├── features/
 │   ├── block-editor.md              # Tiptap editor + markdown import
 │   ├── quiz-builder.md
 │   ├── llm-grading.md
 │   ├── llm-content-generator.md     # AI course/lesson generation
-│   ├── video-lessons.md             # Cloudflare Stream upload + playback
+│   ├── video-lessons.md             # Bunny.net Stream upload + playback
 │   ├── draft-published-workflow.md  # Status system
 │   ├── markdown-import.md
 │   ├── course-completion-tracking.md
@@ -1014,10 +1013,10 @@ OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small
 
 NEXT_PUBLIC_SITE_URL=                  # e.g. https://throughput.aava.ai
 
-CLOUDFLARE_ACCOUNT_ID=                 # For Stream API calls
-CLOUDFLARE_STREAM_API_TOKEN=           # Scoped to Stream read+write
-CLOUDFLARE_STREAM_SIGNING_KEY=         # Private key for signed playback URLs
-CLOUDFLARE_STREAM_KEY_ID=              # Paired key ID
+BUNNY_STREAM_API_KEY=                  # Server-side only
+BUNNY_STREAM_LIBRARY_ID=               # Stream library ID
+BUNNY_STREAM_CDN_HOSTNAME=             # e.g. vz-abc123.b-cdn.net
+BUNNY_STREAM_TOKEN_SECRET=             # HMAC-SHA256 secret for token auth
 
 # .env.test (separate Supabase project for tests)
 SUPABASE_TEST_URL=
@@ -1054,11 +1053,11 @@ Branch naming: `feat/[feature-name]`, `fix/[issue]`, `test/[area]`
 - **LLM grading latency** — open-ended questions take 3–6 seconds to grade. Show a loading state in the quiz results view. Grade async: submit all MC/TF responses immediately, stream open-ended grades as they complete.
 - **AI generator output** — always creates content in `draft` status. Never auto-publish. Always redirect admin to the editor to review before publishing.
 - **Draft content in API responses** — enforce `status = 'published'` filter in BOTH RLS policies AND API route query logic. Belt-and-suspenders. A misconfigured RLS policy should not be the only guard.
-- **Cloudflare Stream signed URLs** — generate server-side only. TTL = 4 hours. Never cache signed URLs in the client. Regenerate on each lesson page load. Unsigned URLs for public cert track content only.
+- **Bunny.net token auth** — generate server-side only using HMAC-SHA256 of (libraryId + tokenSecret + expirationTime + videoId). TTL = 4 hours. Never cache tokens client-side. Regenerate on each lesson page load. Unauthenticated URLs for public cert track content only. Bunny.net docs: https://docs.bunny.net/docs/stream-embedding-videos
 - **Video upload via Direct Creator Upload** — the upload goes browser → Cloudflare directly. Our API route only generates the upload URL (server-side Cloudflare API call). Never proxy the video upload through our Next.js server.
-- **Cloudflare Stream transcoding** — after upload, `status` will be `"inprogress"` for 30–120 seconds. Poll the Stream API until `status === "ready"` before allowing the lesson to be published (the video block must be in a ready state).
+- **Bunny.net transcoding** — after upload, `status` will be `3` (processing) for 30–120 seconds. Poll until `status === 4` (ready) before allowing the lesson to be published. Status codes: 0=queued, 1=processing, 2=encoding, 3=finished, 4=error — handle status 4 (error) explicitly with a retry option in the admin UI.
 - **Open Badges JSON-LD endpoint** — must be permanently available. Never delete certificate records. The `certHash` is the public key. Handle the route in Next.js as a static-ish API route with proper caching headers (`Cache-Control: public, max-age=3600`).
 - **LinkedIn deeplink organizationId** — this is AAVA's LinkedIn Company Page numeric ID. Find it in the LinkedIn Company Page admin URL. Without it, the LinkedIn form won't show the AAVA logo/name pre-filled as the issuer, but it will still work.
 - **Certificate verification hash** — use `crypto.createHash('sha256').update(cert.id + cert.user_id + cert.issued_at).digest('hex')`. Store it on the `certificates` row. The public `/verify/[hash]` page looks up by this hash, not by UUID (prevents enumeration).
 - **RLS + service role** — quiz submission and cert grading writes use the service role key in the API route after manually validating the session. Document this clearly in the API route file with a comment explaining why.
-- **Supabase free tier Storage** — 1GB limit. Use for cover images, lesson images, and badge PNG files only. Video lives in Cloudflare Stream.
+- **Supabase free tier Storage** — 1GB limit. Use for cover images, lesson images, and badge PNG files only. Video lives in Bunny.net Stream.

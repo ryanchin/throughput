@@ -23,6 +23,7 @@ const MOCK_COURSE: Course = {
   zone: 'training',
   status: 'draft',
   passing_score: 70,
+  navigation_mode: 'sequential',
   cover_image_url: null,
   learning_objectives: null,
   created_by: null,

@@ -21,6 +21,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import type { JSONContent } from '@tiptap/react'
 
 import { EmbedNode } from './extensions/EmbedNode'
+import { VideoNode } from './extensions/VideoNode'
 import { SlashMenu } from './SlashMenu'
 import { BubbleToolbar } from './BubbleToolbar'
 import { MarkdownImportModal } from './MarkdownImportModal'
@@ -77,6 +78,7 @@ export default function BlockEditor({
       Color,
       Markdown,
       EmbedNode,
+      VideoNode,
     ],
     content: initialContent || '',
     editable,
@@ -124,6 +126,30 @@ export default function BlockEditor({
     window.addEventListener('open-embed-input', handler)
     return () => window.removeEventListener('open-embed-input', handler)
   }, [])
+
+  // Listen for video upload trigger from slash menu
+  useEffect(() => {
+    const handler = () => {
+      if (editor) {
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: 'video',
+            attrs: {
+              videoId: '',
+              title: '',
+              duration: 0,
+              status: 'uploading',
+              uploadProgress: 0,
+            },
+          })
+          .run()
+      }
+    }
+    window.addEventListener('open-video-upload', handler)
+    return () => window.removeEventListener('open-video-upload', handler)
+  }, [editor])
 
   // Cleanup save timer
   useEffect(() => {

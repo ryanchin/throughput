@@ -139,6 +139,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 const updateQuizSchema = z.object({
   title: z.string().max(255).nullable().optional(),
   passing_score: z.number().int().min(0).max(100).optional(),
+  max_attempts: z.number().int().min(1).nullable().optional(),
 })
 
 /**

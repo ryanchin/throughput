@@ -33,6 +33,7 @@ export function CourseForm({ course }: CourseFormProps) {
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(isEdit)
   const [description, setDescription] = useState(course?.description ?? '')
   const [zone, setZone] = useState<'training' | 'sales'>(course?.zone ?? 'training')
+  const [navigationMode, setNavigationMode] = useState<'sequential' | 'free'>(course?.navigation_mode ?? 'sequential')
   const [passingScore, setPassingScore] = useState(course?.passing_score ?? 70)
   const [coverImageUrl, setCoverImageUrl] = useState(course?.cover_image_url ?? '')
 
@@ -170,6 +171,7 @@ export function CourseForm({ course }: CourseFormProps) {
       description: description.trim() || null,
       zone,
       passing_score: passingScore,
+      navigation_mode: navigationMode,
       cover_image_url: coverImageUrl.trim() || null,
     }
 
@@ -406,6 +408,22 @@ export function CourseForm({ course }: CourseFormProps) {
         {errors.zone && (
           <p className="text-xs text-destructive">{errors.zone}</p>
         )}
+      </div>
+
+      {/* Navigation Mode */}
+      <div className="space-y-1.5">
+        <label htmlFor="navigation-mode" className="text-sm font-medium text-foreground">
+          Navigation Mode
+        </label>
+        <select
+          id="navigation-mode"
+          value={navigationMode}
+          onChange={(e) => setNavigationMode(e.target.value as 'sequential' | 'free')}
+          className="w-full bg-background border border-border text-foreground rounded-lg px-3 py-2 focus:border-accent focus:ring-1 focus:ring-accent outline-none"
+        >
+          <option value="sequential">Sequential — lessons unlock in order</option>
+          <option value="free">Free Navigation — all lessons available</option>
+        </select>
       </div>
 
       {/* Passing Score */}

@@ -4,6 +4,7 @@ export type QuestionType = 'multiple_choice' | 'true_false' | 'open_ended'
 export type CertQuestionType = 'multiple_choice' | 'open_ended'
 export type Difficulty = 'easy' | 'medium' | 'hard'
 export type Zone = 'training' | 'sales'
+export type NavigationMode = 'sequential' | 'free'
 export type Visibility = 'public' | 'internal'
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
@@ -54,6 +55,7 @@ export interface Database {
           cover_image_url: string | null
           learning_objectives: string[] | null
           passing_score: number
+          navigation_mode: NavigationMode
           created_by: string | null
           created_at: string
           updated_at: string
@@ -68,6 +70,7 @@ export interface Database {
           cover_image_url?: string | null
           learning_objectives?: string[] | null
           passing_score?: number
+          navigation_mode?: NavigationMode
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -81,6 +84,7 @@ export interface Database {
           cover_image_url?: string | null
           learning_objectives?: string[] | null
           passing_score?: number
+          navigation_mode?: NavigationMode
           updated_at?: string
         }
         Relationships: []
@@ -130,6 +134,7 @@ export interface Database {
           lesson_id: string
           title: string | null
           passing_score: number
+          max_attempts: number | null
           created_at: string
         }
         Insert: {
@@ -137,11 +142,13 @@ export interface Database {
           lesson_id: string
           title?: string | null
           passing_score?: number
+          max_attempts?: number | null
           created_at?: string
         }
         Update: {
           title?: string | null
           passing_score?: number
+          max_attempts?: number | null
         }
         Relationships: []
       }

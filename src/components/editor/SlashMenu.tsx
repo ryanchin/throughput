@@ -88,6 +88,15 @@ const SLASH_ITEMS: SlashMenuItem[] = [
       editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
   },
   {
+    title: 'Video',
+    description: 'Upload or embed a video',
+    icon: '\uD83C\uDFAC',
+    command: () => {
+      const event = new CustomEvent('open-video-upload')
+      window.dispatchEvent(event)
+    },
+  },
+  {
     title: 'Embed',
     description: 'YouTube, Vimeo, Loom, Figma...',
     icon: 'EMB',

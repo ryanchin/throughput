@@ -42,6 +42,7 @@ const updateCourseSchema = z.object({
   zone: z.enum(['training', 'sales']).optional(),
   status: z.enum(['draft', 'published']).optional(),
   passing_score: z.number().int().min(0).max(100).optional(),
+  navigation_mode: z.enum(['sequential', 'free']).optional(),
   cover_image_url: z.string().url().nullable().optional(),
 })
 

@@ -34,6 +34,7 @@ function makeCourse(overrides: Partial<Course> = {}): Course {
     cover_image_url: null,
     learning_objectives: null,
     passing_score: 70,
+    navigation_mode: 'sequential',
     created_by: 'user-1',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
@@ -65,6 +66,39 @@ describe('CourseForm', () => {
     it('shows the Create Course submit button', () => {
       render(<CourseForm />)
       expect(screen.getByRole('button', { name: 'Create Course' })).toBeInTheDocument()
+    })
+
+    it('renders navigation mode dropdown defaulting to sequential', () => {
+      render(<CourseForm />)
+      const select = screen.getByLabelText('Navigation Mode')
+      expect(select).toBeInTheDocument()
+      expect(select).toHaveValue('sequential')
+    })
+
+    it('includes navigation_mode in the submit body', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ course: { id: 'new-id' } }),
+      })
+
+      const user = userEvent.setup()
+      render(<CourseForm />)
+
+      await user.clear(screen.getByLabelText('Title'))
+      await user.type(screen.getByLabelText('Title'), 'Nav Test')
+
+      // Change navigation mode to free
+      await user.selectOptions(screen.getByLabelText('Navigation Mode'), 'free')
+
+      await user.click(screen.getByRole('button', { name: 'Create Course' }))
+
+      await waitFor(() => {
+        const callArgs = mockFetch.mock.calls.find(
+          (call) => call[0] === '/api/admin/courses'
+        )
+        const body = JSON.parse(callArgs![1].body)
+        expect(body.navigation_mode).toBe('free')
+      })
     })
 
     it('auto-generates slug from title', async () => {
@@ -293,6 +327,12 @@ describe('CourseForm', () => {
     it('shows the Save Changes submit button', () => {
       render(<CourseForm course={makeCourse()} />)
       expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument()
+    })
+
+    it('pre-fills navigation mode from course prop', () => {
+      const course = makeCourse({ navigation_mode: 'free' })
+      render(<CourseForm course={course} />)
+      expect(screen.getByLabelText('Navigation Mode')).toHaveValue('free')
     })
 
     it('does not auto-generate slug from title changes in edit mode', async () => {

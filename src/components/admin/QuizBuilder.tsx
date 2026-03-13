@@ -518,9 +518,9 @@ export function QuizBuilder({
     }
   }
 
-  /** Debounced PATCH for quiz metadata (title, passing_score) */
+  /** Debounced PATCH for quiz metadata (title, passing_score, max_attempts) */
   const saveQuizMeta = useCallback(
-    (updates: { title?: string; passing_score?: number }) => {
+    (updates: { title?: string; passing_score?: number; max_attempts?: number | null }) => {
       if (!quiz) return
       setQuizSaveStatus('saving')
       if (quizSaveTimerRef.current) clearTimeout(quizSaveTimerRef.current)
@@ -815,6 +815,32 @@ export function QuizBuilder({
               {totalPoints}
             </div>
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="quiz-max-attempts"
+            className="mb-1 block text-xs font-medium text-foreground-muted"
+          >
+            Max Attempts (leave empty for unlimited)
+          </label>
+          <input
+            id="quiz-max-attempts"
+            type="number"
+            min={1}
+            value={quiz.max_attempts ?? ''}
+            onChange={(e) => {
+              const raw = e.target.value
+              const value = raw === '' ? null : Math.max(1, parseInt(raw, 10) || 1)
+              setQuiz((prev) =>
+                prev ? { ...prev, max_attempts: value } : prev
+              )
+              saveQuizMeta({ max_attempts: value })
+            }}
+            placeholder="Unlimited"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            data-testid="quiz-max-attempts-input"
+          />
         </div>
       </div>
 
