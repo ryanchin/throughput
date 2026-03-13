@@ -5,7 +5,8 @@ export type CertQuestionType = 'multiple_choice' | 'open_ended'
 export type Difficulty = 'easy' | 'medium' | 'hard'
 export type Zone = 'training' | 'sales'
 export type NavigationMode = 'sequential' | 'free'
-export type Visibility = 'public' | 'internal'
+export type EnrollmentStatus = 'enrolled' | 'passed' | 'failed'
+export type Visibility = 'public' | 'internal' | `group:${string}`
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -193,6 +194,8 @@ export interface Database {
           id: string
           user_id: string
           course_id: string
+          status: EnrollmentStatus
+          final_score: number | null
           enrolled_at: string
           completed_at: string | null
         }
@@ -200,10 +203,14 @@ export interface Database {
           id?: string
           user_id: string
           course_id: string
+          status?: EnrollmentStatus
+          final_score?: number | null
           enrolled_at?: string
           completed_at?: string | null
         }
         Update: {
+          status?: EnrollmentStatus
+          final_score?: number | null
           completed_at?: string | null
         }
         Relationships: []

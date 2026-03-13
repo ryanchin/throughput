@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { SearchBar } from '@/components/knowledge/SearchBar'
 import type { Database } from '@/lib/supabase/database.types'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
@@ -39,6 +40,8 @@ export function TopNav({ profile }: TopNavProps) {
   if (profile.role === 'admin') {
     navLinks.push({ href: '/admin', label: 'Admin' })
   }
+  // External docs site link
+  navLinks.push({ href: 'https://docs.aava.ai', label: 'Docs' })
 
   // Determine current zone for indicator
   const currentZone = Object.keys(ZONE_LABELS).find(
@@ -69,23 +72,39 @@ export function TopNav({ profile }: TopNavProps) {
 
         {/* Nav Links */}
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                pathname.startsWith(link.href)
-                  ? 'bg-raised text-foreground'
-                  : 'text-foreground-muted hover:text-foreground'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isExternal = link.href.startsWith('http')
+            const isActive = !isExternal && pathname.startsWith(link.href)
+            const className = `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              isActive
+                ? 'bg-raised text-foreground'
+                : 'text-foreground-muted hover:text-foreground'
+            }`
+            return isExternal ? (
+              <a
+                key={link.href}
+                href={link.href}
+                className={className}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={className}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
         </nav>
 
         {/* User area */}
         <div className="flex items-center gap-3">
+          <SearchBar />
           <div className="text-right">
             <p className="text-sm font-medium text-foreground">
               {profile.full_name || profile.email}
