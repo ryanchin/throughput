@@ -3,7 +3,8 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Sparkles } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { StatusBadge } from './StatusBadge'
 import { QuizBuilder } from './QuizBuilder'
 import type { Database } from '@/lib/supabase/database.types'
@@ -32,10 +33,12 @@ interface LessonEditorProps {
 }
 
 export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, initialQuestions }: LessonEditorProps) {
+  const router = useRouter()
   const [lesson, setLesson] = useState<Lesson>(initialLesson)
   const [title, setTitle] = useState(initialLesson.title)
   const [slug, setSlug] = useState(initialLesson.slug)
   const [metaSaveStatus, setMetaSaveStatus] = useState<SaveStatus>('idle')
+  const [regenerating, setRegenerating] = useState(false)
   const [contentSaveStatus, setContentSaveStatus] = useState<SaveStatus>('idle')
   const metaSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -127,6 +130,58 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
     [courseId, lesson.id]
   )
 
+  /** Regenerate lesson content with AI */
+  async function handleRegenerateLesson() {
+    if (lesson.content) {
+      const confirmed = window.confirm(
+        'Replace existing content? This will overwrite the current lesson content with AI-generated content.'
+      )
+      if (!confirmed) return
+    }
+
+    setRegenerating(true)
+    try {
+      const generateRes = await fetch('/api/admin/generate/lesson', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseTitle: title,
+          lessonTitle: title,
+          additionalNotes: '',
+        }),
+      })
+
+      if (!generateRes.ok) {
+        const err = await generateRes.json()
+        alert(err.error || 'Failed to generate lesson content')
+        return
+      }
+
+      const { content } = await generateRes.json()
+
+      // Save the generated content to the lesson
+      const patchRes = await fetch(
+        `/api/admin/courses/${courseId}/lessons/${lesson.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content }),
+        }
+      )
+
+      if (!patchRes.ok) {
+        alert('Generated content but failed to save it. Please try again.')
+        return
+      }
+
+      router.refresh()
+    } catch {
+      alert('An error occurred while generating lesson content.')
+    } finally {
+      setRegenerating(false)
+    }
+  }
+
   /** Resolve a combined save status for the header indicator */
   function getCombinedStatus(): SaveStatus {
     if (metaSaveStatus === 'saving' || contentSaveStatus === 'saving') return 'saving'
@@ -209,6 +264,27 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
                   data-testid="lesson-slug-input"
                 />
               </div>
+            </div>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={handleRegenerateLesson}
+                disabled={regenerating}
+                className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground-muted transition-colors hover:bg-raised hover:text-foreground disabled:opacity-50"
+                data-testid="regenerate-lesson-button"
+              >
+                {regenerating ? (
+                  <>
+                    <span className="animate-spin">⟳</span>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Regenerate with AI
+                  </>
+                )}
+              </button>
             </div>
           </div>
 

@@ -9,6 +9,7 @@ export const PUBLIC_ROUTES = [
   '/test-admin-status',
   '/test-course-cms',
   '/test-quiz-builder',
+  '/test-ai-generator',
 ]
 
 /** Route zone -> required roles */

@@ -6,6 +6,18 @@ import type { Database } from '@/lib/supabase/database.types'
 
 type Lesson = Database['public']['Tables']['lessons']['Row']
 
+// Mock next/navigation
+const mockRefresh = vi.fn()
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: mockRefresh,
+    back: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}))
+
 // Mock next/link
 vi.mock('next/link', () => ({
   default: ({ href, children, ...props }: { href: string; children: React.ReactNode; [key: string]: unknown }) => (

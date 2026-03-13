@@ -19,9 +19,7 @@ const MOCK_QUIZ: Quiz = {
   lesson_id: '00000000-0000-0000-0000-000000000101',
   title: 'Test Quiz',
   passing_score: 70,
-  instructions: null,
   created_at: '2026-03-01T00:00:00Z',
-  updated_at: '2026-03-12T00:00:00Z',
 }
 
 const MOCK_MC_QUESTION: Question = {
@@ -39,7 +37,6 @@ const MOCK_MC_QUESTION: Question = {
   max_points: 10,
   order_index: 0,
   created_at: '2026-03-01T00:00:00Z',
-  updated_at: '2026-03-12T00:00:00Z',
 }
 
 const MOCK_TF_QUESTION: Question = {
@@ -53,7 +50,6 @@ const MOCK_TF_QUESTION: Question = {
   max_points: 5,
   order_index: 1,
   created_at: '2026-03-02T00:00:00Z',
-  updated_at: '2026-03-12T00:00:00Z',
 }
 
 const MOCK_OE_QUESTION: Question = {
@@ -67,7 +63,6 @@ const MOCK_OE_QUESTION: Question = {
   max_points: 20,
   order_index: 2,
   created_at: '2026-03-03T00:00:00Z',
-  updated_at: '2026-03-12T00:00:00Z',
 }
 
 type View = 'empty' | 'with-quiz' | 'preview'

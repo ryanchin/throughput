@@ -18,6 +18,7 @@ type FormErrors = {
   zone?: string
   passing_score?: string
   cover_image_url?: string
+  lessonCount?: string
   general?: string
 }
 
@@ -34,6 +35,11 @@ export function CourseForm({ course }: CourseFormProps) {
   const [zone, setZone] = useState<'training' | 'sales'>(course?.zone ?? 'training')
   const [passingScore, setPassingScore] = useState(course?.passing_score ?? 70)
   const [coverImageUrl, setCoverImageUrl] = useState(course?.cover_image_url ?? '')
+
+  const [aiMode, setAiMode] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [lessonCount, setLessonCount] = useState(5)
+  const [includeQuizzes, setIncludeQuizzes] = useState(true)
 
   const [errors, setErrors] = useState<FormErrors>({})
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle')
@@ -85,8 +91,13 @@ export function CourseForm({ course }: CourseFormProps) {
     } else if (slugStatus === 'taken') {
       errs.slug = 'This slug is already taken'
     }
-    if (description && description.length > 2000) {
+    if (aiMode && !description.trim()) {
+      errs.description = 'Description is required when generating with AI'
+    } else if (description && description.length > 2000) {
       errs.description = 'Description must be 2000 characters or less'
+    }
+    if (aiMode && (lessonCount < 1 || lessonCount > 20)) {
+      errs.lessonCount = 'Lesson count must be between 1 and 20'
     }
     if (passingScore < 0 || passingScore > 100) {
       errs.passing_score = 'Passing score must be between 0 and 100'
@@ -107,6 +118,50 @@ export function CourseForm({ course }: CourseFormProps) {
     }
 
     setErrors({})
+
+    if (aiMode && !isEdit) {
+      setGenerating(true)
+
+      const aiBody = {
+        title: title.trim(),
+        zone,
+        description: description.trim(),
+        lessonCount,
+        includeQuizzes,
+      }
+
+      try {
+        const res = await fetch('/api/admin/generate/course', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(aiBody),
+        })
+
+        if (!res.ok) {
+          const data = await res.json()
+          if (data.details) {
+            const fieldErrors: FormErrors = {}
+            for (const issue of data.details) {
+              const field = issue.path?.[0] as keyof FormErrors
+              if (field) fieldErrors[field] = issue.message
+            }
+            setErrors(fieldErrors)
+          } else {
+            setErrors({ general: data.error || 'Failed to generate course' })
+          }
+          return
+        }
+
+        const data = await res.json()
+        router.push(`/admin/courses/${data.courseId}`)
+      } catch {
+        setErrors({ general: 'Network error. Please try again.' })
+      } finally {
+        setGenerating(false)
+      }
+      return
+    }
+
     setSubmitting(true)
 
     const body = {
@@ -164,10 +219,43 @@ export function CourseForm({ course }: CourseFormProps) {
   }
 
   return (
+    <>
+    {generating && (
+      <div data-testid="generating-overlay" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mb-4" />
+        <h2 className="text-lg font-semibold text-foreground">Generating your course draft...</h2>
+        <p className="mt-2 text-sm text-foreground-muted">This typically takes 15-30 seconds</p>
+      </div>
+    )}
     <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-xl p-6 space-y-6">
       <h2 className="text-2xl font-semibold text-foreground">
         {isEdit ? 'Edit Course' : 'Create Course'}
       </h2>
+
+      {!isEdit && (
+        <div className="flex items-center justify-between rounded-lg border border-border bg-background p-4">
+          <div>
+            <span className="text-sm font-medium text-foreground">Generate with AI</span>
+            <p className="text-xs text-foreground-muted">Use AI to generate a full course draft with lessons and quizzes</p>
+          </div>
+          <button
+            type="button"
+            data-testid="ai-mode-toggle"
+            onClick={() => setAiMode((prev) => !prev)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background ${
+              aiMode ? 'bg-accent' : 'bg-muted'
+            }`}
+            role="switch"
+            aria-checked={aiMode}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-foreground shadow ring-0 transition-transform duration-200 ease-in-out ${
+                aiMode ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </div>
+      )}
 
       {errors.general && (
         <div className="rounded-lg border border-destructive/50 bg-destructive-muted px-4 py-3 text-sm text-destructive">
@@ -253,6 +341,54 @@ export function CourseForm({ course }: CourseFormProps) {
         )}
       </div>
 
+      {/* AI Mode Fields */}
+      {aiMode && !isEdit && (
+        <div className="space-y-4 rounded-lg border border-accent-muted bg-raised p-4">
+          <div className="space-y-1.5">
+            <label htmlFor="lesson-count" className="text-sm font-medium text-foreground">
+              Number of Lessons
+            </label>
+            <input
+              id="lesson-count"
+              data-testid="lesson-count-input"
+              type="number"
+              value={lessonCount}
+              onChange={(e) => setLessonCount(Number(e.target.value))}
+              min={1}
+              max={20}
+              className="w-32 bg-background border border-border text-foreground rounded-lg px-3 py-2 focus:border-accent focus:ring-1 focus:ring-accent outline-none"
+            />
+            <p className="text-xs text-foreground-muted">Between 1 and 20 lessons</p>
+            {errors.lessonCount && (
+              <p className="text-xs text-destructive">{errors.lessonCount}</p>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-medium text-foreground">Include Quizzes</span>
+              <p className="text-xs text-foreground-muted">Generate quiz questions for each lesson</p>
+            </div>
+            <button
+              type="button"
+              data-testid="include-quizzes-toggle"
+              onClick={() => setIncludeQuizzes((prev) => !prev)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background ${
+                includeQuizzes ? 'bg-accent' : 'bg-muted'
+              }`}
+              role="switch"
+              aria-checked={includeQuizzes}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-foreground shadow ring-0 transition-transform duration-200 ease-in-out ${
+                  includeQuizzes ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Zone */}
       <div className="space-y-1.5">
         <label htmlFor="zone" className="text-sm font-medium text-foreground">
@@ -316,12 +452,14 @@ export function CourseForm({ course }: CourseFormProps) {
       <div className="flex items-center gap-3 pt-2">
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || generating}
           className="bg-accent text-background hover:bg-accent-hover rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {submitting
-            ? (isEdit ? 'Saving...' : 'Creating...')
-            : (isEdit ? 'Save Changes' : 'Create Course')}
+          {aiMode && !isEdit
+            ? (generating ? 'Generating...' : 'Generate Course')
+            : submitting
+              ? (isEdit ? 'Saving...' : 'Creating...')
+              : (isEdit ? 'Save Changes' : 'Create Course')}
         </button>
         <button
           type="button"
@@ -332,5 +470,6 @@ export function CourseForm({ course }: CourseFormProps) {
         </button>
       </div>
     </form>
+    </>
   )
 }
