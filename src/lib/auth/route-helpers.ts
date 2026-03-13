@@ -14,6 +14,21 @@ export const PUBLIC_ROUTES = [
   '/test-training-catalog',
   '/test-lesson-nav',
   '/test-quiz-player',
+  '/test-course-scorecard',
+  '/test-admin-users',
+  '/test-certifications',
+  '/test-cert-signup',
+  '/test-cert-exam',
+  '/test-cert-exam-maxed',
+  '/test-certificate',
+  '/test-verify-valid',
+  '/test-verify-revoked',
+  '/test-admin-dashboard',
+  '/test-knowledge',
+  '/test-knowledge-page',
+  '/test-admin-knowledge',
+  '/test-knowledge-search',
+  '/test-landing',
 ]
 
 /** Route zone -> required roles */
