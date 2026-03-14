@@ -33,7 +33,7 @@ export default async function TrainingResultsPage({
   )
 }
 
-async function getResultsData(courseSlug: string, zone: string) {
+async function getResultsData(courseSlug: string, zone: 'training' | 'sales') {
   const profile = await getProfile()
   if (!profile) return null
 

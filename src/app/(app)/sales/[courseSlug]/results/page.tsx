@@ -32,7 +32,7 @@ export default async function SalesResultsPage({
   )
 }
 
-async function getResultsData(courseSlug: string, zone: string) {
+async function getResultsData(courseSlug: string, zone: 'training' | 'sales') {
   const profile = await getProfile()
   if (!profile) return null
   if (!['sales', 'admin'].includes(profile.role)) return null

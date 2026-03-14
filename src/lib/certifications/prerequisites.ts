@@ -62,9 +62,9 @@ export function getTierBadgeColor(tier: number): {
   switch (tier) {
     case 1:
       return {
-        textColor: 'text-[#C0C0C0]',
-        borderColor: 'border-[#C0C0C0]',
-        bgColor: 'bg-[#1a1a20]',
+        textColor: 'text-[#5a6270]',
+        borderColor: 'border-[#b4b4b4]',
+        bgColor: 'bg-[#f0f1f3]',
         label: 'Silver',
       }
     case 2:

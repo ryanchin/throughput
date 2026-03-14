@@ -77,7 +77,7 @@ export default function CourseScorecard({
       color: string; size: number; rotation: number; rotationSpeed: number
     }> = []
 
-    const colors = ['#00D4FF', '#7C3AED', '#10B981', '#F5C842', '#F0F2F8']
+    const colors = ['#009673', '#f50f7d', '#6464d7', '#ffc30f', '#f5821e']
 
     for (let i = 0; i < 80; i++) {
       particles.push({

@@ -90,7 +90,7 @@ function SidebarNode({ node, currentSlug, depth, onNavigate }: SidebarNodeProps)
         {hasChildren ? (
           <button
             onClick={() => setExpanded((prev) => !prev)}
-            className="mr-1 flex size-5 shrink-0 items-center justify-center rounded text-foreground-muted hover:text-foreground"
+            className="mr-1 flex size-5 shrink-0 items-center justify-center rounded text-foreground hover:text-foreground-muted"
             aria-label={expanded ? 'Collapse section' : 'Expand section'}
           >
             <svg
@@ -112,8 +112,8 @@ function SidebarNode({ node, currentSlug, depth, onNavigate }: SidebarNodeProps)
           onClick={onNavigate}
           className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium transition-colors ${
             isActive
-              ? 'bg-raised text-accent'
-              : 'text-foreground-muted hover:text-foreground'
+              ? 'bg-accent-muted text-accent font-semibold'
+              : 'text-foreground hover:text-foreground-muted'
           }`}
         >
           {node.title}

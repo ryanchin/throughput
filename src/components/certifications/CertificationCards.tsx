@@ -90,7 +90,7 @@ function PrerequisiteIndicator({
   if (track.prerequisiteMet) {
     return (
       <div
-        className="flex items-center gap-2 text-sm text-[#10B981]"
+        className="flex items-center gap-2 text-sm text-success"
         data-testid="prerequisite-status"
       >
         <CheckIcon className="h-4 w-4 shrink-0" />
@@ -149,7 +149,7 @@ function TrackCard({
 
         {track.earned && (
           <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-[#10B981] border border-[#10B981] bg-[#052E20]"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-success border border-success bg-success-muted"
             data-testid="earned-badge"
           >
             <CheckIcon className="h-3.5 w-3.5" />

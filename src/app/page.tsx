@@ -140,7 +140,7 @@ export default async function HomePage() {
         className="sticky top-0 z-50 border-b border-border-subtle bg-background/90 backdrop-blur-sm"
       >
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="bg-gradient-brand bg-clip-text text-2xl font-bold tracking-tight text-transparent">
+          <Link href="/" className="bg-gradient-brand bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
             AAVA
           </Link>
           <div className="flex items-center gap-4">
@@ -169,7 +169,7 @@ export default async function HomePage() {
       >
         <HeroBackground />
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <h1 className="bg-gradient-brand bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl lg:text-7xl">
+          <h1 className="bg-gradient-brand bg-clip-text text-5xl font-extrabold tracking-tight text-transparent sm:text-6xl lg:text-7xl">
             PM mastery, verified.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-foreground-muted">

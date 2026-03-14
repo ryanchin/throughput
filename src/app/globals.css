@@ -6,7 +6,8 @@
 
 @theme inline {
   /* Font */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: var(--font-century), 'Century Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: var(--font-display), 'Century Gothic', sans-serif;
   --font-mono: var(--font-geist-mono);
 
   /* shadcn color mappings */
@@ -55,7 +56,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* AAVA Custom Colors */
+  /* Ascendion Custom Colors */
   --color-surface: var(--background-subtle);
   --color-raised: var(--background-raised);
   --color-foreground-muted: var(--foreground-muted);
@@ -64,6 +65,8 @@
   --color-accent-muted: var(--accent-muted);
   --color-accent-glow: var(--accent-glow);
   --color-secondary-muted: var(--secondary-muted);
+  --color-violet: var(--violet);
+  --color-violet-muted: var(--violet-muted);
   --color-success: var(--success);
   --color-success-muted: var(--success-muted);
   --color-warning: var(--warning);
@@ -72,85 +75,91 @@
   --color-gold: var(--gold);
   --color-gold-muted: var(--gold-muted);
 
-  /* Custom background images */
-  --background-image-gradient-brand: linear-gradient(135deg, #00D4FF 0%, #7C3AED 100%);
-  --background-image-gradient-card: linear-gradient(145deg, #0F1117 0%, #161923 100%);
+  /* Ascendion Gradients */
+  --background-image-gradient-brand: linear-gradient(135deg, #009673 0%, #006450 100%);
+  --background-image-gradient-crimson: linear-gradient(135deg, #f50f7d 0%, #8c005a 100%);
+  --background-image-gradient-lavender: linear-gradient(135deg, #6464d7 0%, #f50f7d 100%);
+  --background-image-gradient-card: linear-gradient(145deg, #f5fafa 0%, #ffffff 100%);
 
   /* Custom box shadows */
-  --shadow-accent-glow: 0 0 24px rgba(0, 212, 255, 0.15);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border);
+  --shadow-accent-glow: 0 0 24px rgba(0, 150, 115, 0.12);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--border);
 }
 
-/* AAVA Dark Theme - always dark, no light mode */
+/* Ascendion Light Theme */
 :root {
   /* Backgrounds */
-  --background: #08090E;
-  --background-subtle: #0F1117;
-  --background-raised: #161923;
-  --background-muted: #1E2330;
+  --background: #ffffff;
+  --background-subtle: #f5fafa;
+  --background-raised: #ffffff;
+  --background-muted: #f0f1f3;
 
   /* Borders */
-  --border: #252D3D;
-  --border-subtle: #1A2030;
+  --border: #e2e4e8;
+  --border-subtle: #eef0f2;
 
   /* Text */
-  --foreground: #F0F2F8;
-  --foreground-muted: #8892A4;
-  --foreground-subtle: #4A5568;
+  --foreground: #000000;
+  --foreground-muted: #5a6270;
+  --foreground-subtle: #828282;
 
-  /* Brand Accent - Electric Cyan */
-  --accent: #00D4FF;
-  --accent-hover: #00BBEE;
-  --accent-muted: #003D4F;
-  --accent-glow: rgba(0, 212, 255, 0.15);
-  --accent-foreground: #08090E;
+  /* Brand Accent — Aquatic Green */
+  --accent: #009673;
+  --accent-hover: #006450;
+  --accent-muted: #e6f5f0;
+  --accent-glow: rgba(0, 150, 115, 0.12);
+  --accent-foreground: #ffffff;
 
-  /* Secondary Accent - Electric Violet */
-  --secondary: #7C3AED;
-  --secondary-foreground: #F0F2F8;
-  --secondary-muted: #2D1F4E;
+  /* Secondary Accent — Vivid Pink */
+  --secondary: #f50f7d;
+  --secondary-foreground: #ffffff;
+  --secondary-muted: #fde8f2;
+
+  /* Tertiary — Regal Violet */
+  --violet: #6464d7;
+  --violet-muted: #ededfa;
 
   /* Semantic */
-  --success: #10B981;
-  --success-muted: #052E20;
-  --warning: #F59E0B;
-  --warning-muted: #2D1F05;
+  --success: #009673;
+  --success-muted: #e6f5f0;
+  --warning: #ffc30f;
+  --warning-muted: #fff8e0;
   --destructive: #EF4444;
-  --destructive-muted: #2D0A0A;
+  --destructive-muted: #fef2f2;
 
-  /* Certification Gold */
-  --gold: #F5C842;
-  --gold-muted: #2D2205;
+  /* Certification Gold — Sunlit Yellow */
+  --gold: #ffc30f;
+  --gold-muted: #fff8e0;
 
-  /* shadcn overrides for dark-by-default */
-  --card: #0F1117;
-  --card-foreground: #F0F2F8;
-  --popover: #161923;
-  --popover-foreground: #F0F2F8;
-  --primary: #00D4FF;
-  --primary-foreground: #08090E;
-  --muted: #1E2330;
-  --muted-foreground: #8892A4;
-  --input: #252D3D;
-  --ring: #00D4FF;
+  /* shadcn overrides */
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #009673;
+  --primary-foreground: #ffffff;
+  --muted: #f0f1f3;
+  --muted-foreground: #5a6270;
+  --input: #e2e4e8;
+  --ring: #009673;
   --radius: 0.625rem;
 
-  /* Charts */
-  --chart-1: #00D4FF;
-  --chart-2: #7C3AED;
-  --chart-3: #10B981;
-  --chart-4: #F59E0B;
-  --chart-5: #F5C842;
+  /* Charts — Ascendion primary palette */
+  --chart-1: #009673;
+  --chart-2: #f50f7d;
+  --chart-3: #6464d7;
+  --chart-4: #ffc30f;
+  --chart-5: #f5821e;
 
   /* Sidebar */
-  --sidebar: #0F1117;
-  --sidebar-foreground: #F0F2F8;
-  --sidebar-primary: #00D4FF;
-  --sidebar-primary-foreground: #08090E;
-  --sidebar-accent: #161923;
-  --sidebar-accent-foreground: #F0F2F8;
-  --sidebar-border: #252D3D;
-  --sidebar-ring: #00D4FF;
+  --sidebar: #000000;
+  --sidebar-foreground: #f5fafa;
+  --sidebar-primary: #009673;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #f5fafa;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #009673;
 
   /* Typography Scale */
   --text-xs: 0.75rem;
@@ -173,6 +182,9 @@
   html {
     @apply font-sans;
   }
+  h1, h2, h3 {
+    font-family: var(--font-display), 'Century Gothic', sans-serif;
+  }
 }
 
 /* Tiptap editor styles */
@@ -180,9 +192,9 @@
   outline: none;
 }
 
-.tiptap h1 { font-size: var(--text-3xl); font-weight: 700; margin: 1.5em 0 0.5em; color: var(--foreground); }
-.tiptap h2 { font-size: var(--text-2xl); font-weight: 600; margin: 1.25em 0 0.5em; color: var(--foreground); }
-.tiptap h3 { font-size: var(--text-xl); font-weight: 600; margin: 1em 0 0.5em; color: var(--foreground); }
+.tiptap h1 { font-family: var(--font-display), 'Century Gothic', sans-serif; font-size: var(--text-3xl); font-weight: 700; margin: 1.5em 0 0.5em; color: var(--foreground); }
+.tiptap h2 { font-family: var(--font-display), 'Century Gothic', sans-serif; font-size: var(--text-2xl); font-weight: 600; margin: 1.25em 0 0.5em; color: var(--foreground); }
+.tiptap h3 { font-family: var(--font-display), 'Century Gothic', sans-serif; font-size: var(--text-xl); font-weight: 600; margin: 1em 0 0.5em; color: var(--foreground); }
 .tiptap p { margin: 0.5em 0; color: var(--foreground); }
 .tiptap ul, .tiptap ol { padding-left: 1.5em; margin: 0.5em 0; }
 .tiptap li { margin: 0.25em 0; }
@@ -249,10 +261,11 @@
 }
 
 .docs-content h1 {
+  font-family: var(--font-display), 'Century Gothic', sans-serif;
   font-size: var(--text-3xl);
   font-weight: 700;
   margin: 0 0 1rem;
-  background: linear-gradient(135deg, #00D4FF 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #009673 0%, #006450 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -260,6 +273,7 @@
 }
 
 .docs-content h2 {
+  font-family: var(--font-display), 'Century Gothic', sans-serif;
   font-size: var(--text-2xl);
   font-weight: 600;
   margin: 2rem 0 0.75rem;
@@ -269,6 +283,7 @@
 }
 
 .docs-content h3 {
+  font-family: var(--font-display), 'Century Gothic', sans-serif;
   font-size: var(--text-xl);
   font-weight: 600;
   margin: 1.5rem 0 0.5rem;
@@ -276,6 +291,7 @@
 }
 
 .docs-content h4 {
+  font-family: var(--font-display), 'Century Gothic', sans-serif;
   font-size: var(--text-lg);
   font-weight: 600;
   margin: 1.25rem 0 0.5rem;
