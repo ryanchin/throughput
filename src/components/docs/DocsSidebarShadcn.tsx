@@ -24,6 +24,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
+import { SearchTrigger } from '@/components/search/SearchTrigger'
 
 interface DocsSidebarShadcnProps {
   tree: NavTreeNode[]
@@ -43,6 +44,8 @@ export function DocsSidebarShadcn({ tree, currentSlug }: DocsSidebarShadcnProps)
       </SidebarHeader>
 
       <SidebarContent>
+        <SearchTrigger scope="docs" placeholder="Search docs..." />
+
         {tree.map((node) => {
           const hasChildren = node.children.length > 0
 

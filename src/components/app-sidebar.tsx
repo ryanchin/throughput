@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
+import { SearchTrigger } from '@/components/search/SearchTrigger'
 import {
   Sidebar,
   SidebarContent,
@@ -142,6 +143,8 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
       </SidebarHeader>
 
       <SidebarContent>
+        <SearchTrigger scope="all" placeholder="Search..." />
+
         {/* Platform section */}
         <SidebarGroup>
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
