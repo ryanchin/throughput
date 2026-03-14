@@ -4,6 +4,11 @@ import { buildNavTree } from '@/lib/knowledge/nav-tree'
 import type { NavPage } from '@/lib/knowledge/nav-tree'
 import type { Visibility } from '@/lib/supabase/database.types'
 import { DocsSidebarWrapper } from './DocsSidebarWrapper'
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 
 async function getDocsNavTree() {
   const serviceClient = createServiceClient()
@@ -56,17 +61,14 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
   const tree = await getDocsNavTree()
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Docs top nav */}
-      <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur-sm">
-        <div className="flex h-14 items-center justify-between px-6">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="bg-gradient-brand bg-clip-text text-lg font-bold text-transparent">
-              AAVA Product Studio
-            </Link>
-            <span className="rounded-md bg-accent-muted px-2 py-0.5 text-xs font-medium text-accent">
-              Docs
-            </span>
+    <SidebarProvider>
+      <DocsSidebarWrapper tree={tree} />
+
+      <SidebarInset className="min-h-screen bg-background text-foreground">
+        {/* Top header bar */}
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="text-foreground-muted hover:text-foreground" />
           </div>
           <div className="flex items-center gap-4">
             <Link
@@ -82,15 +84,12 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
               Login
             </Link>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="flex">
-        <DocsSidebarWrapper tree={tree} />
         <main className="min-w-0 flex-1 px-6 py-8 lg:px-12">
           {children}
         </main>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

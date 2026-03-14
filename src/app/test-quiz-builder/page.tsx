@@ -19,6 +19,7 @@ const MOCK_QUIZ: Quiz = {
   lesson_id: '00000000-0000-0000-0000-000000000101',
   title: 'Test Quiz',
   passing_score: 70,
+  max_attempts: null,
   created_at: '2026-03-01T00:00:00Z',
 }
 

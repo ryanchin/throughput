@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { DocsSidebar } from '@/components/docs/DocsSidebar'
+import { DocsSidebarShadcn } from '@/components/docs/DocsSidebarShadcn'
 import type { NavTreeNode } from '@/lib/knowledge/nav-tree'
 
 interface DocsSidebarWrapperProps {
@@ -13,5 +13,5 @@ export function DocsSidebarWrapper({ tree }: DocsSidebarWrapperProps) {
   // Extract the slug from /docs/getting-started/what-is-aava -> getting-started/what-is-aava
   const currentSlug = pathname.replace(/^\/docs\/?/, '')
 
-  return <DocsSidebar tree={tree} currentSlug={currentSlug} />
+  return <DocsSidebarShadcn tree={tree} currentSlug={currentSlug} />
 }
