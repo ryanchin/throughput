@@ -8,6 +8,7 @@ export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient()
 
   const { data: { user }, error: authError } = await supabase.auth.getUser()
+  console.log(`[getProfile] user: ${user?.id ?? 'null'}, authError: ${authError?.message ?? 'none'}`)
   if (authError || !user) return null
 
   const { data: profile, error: profileError } = await supabase
@@ -16,6 +17,7 @@ export async function getProfile(): Promise<Profile | null> {
     .eq('id', user.id)
     .single()
 
+  console.log(`[getProfile] profile: ${profile?.id ?? 'null'}, profileError: ${profileError?.message ?? 'none'}`)
   if (profileError || !profile) return null
   return profile
 }

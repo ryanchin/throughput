@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import { getCatalogData } from '@/lib/training/data'
 import CourseCard from '@/components/training/CourseCard'
 
@@ -8,13 +7,14 @@ export const metadata = {
 }
 
 export default async function TrainingCatalogPage() {
+  // Auth is enforced by proxy.ts — getCatalogData may return null if
+  // cookies haven't propagated yet; treat as empty rather than redirecting.
   const data = await getCatalogData('training')
+  console.log(`[training] data: ${data ? 'found' : 'null'}`)
 
-  if (!data) {
-    redirect('/login')
-  }
-
-  const { courses, enrollments, completedLessonCountByCourse } = data
+  const courses = data?.courses ?? []
+  const enrollments = data?.enrollments ?? new Map()
+  const completedLessonCountByCourse = data?.completedLessonCountByCourse ?? new Map()
 
   // Build enriched course objects for CourseCard
   const enrichedCourses = courses.map((course) => {

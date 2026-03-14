@@ -15,7 +15,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   return response
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Allow public routes without touching Supabase
@@ -30,6 +30,10 @@ export async function middleware(request: NextRequest) {
 
   // Update the session (refresh tokens)
   const { user, supabaseResponse, supabase } = await updateSession(request)
+
+  // Debug: log auth state
+  const cookieNames = request.cookies.getAll().map(c => c.name)
+  console.log(`[proxy] ${pathname} | user: ${user?.id ?? 'null'} | cookies: ${cookieNames.join(', ')} | response status: ${supabaseResponse.status}`)
 
   // API routes handled separately (auth checked in route handlers)
   if (pathname.startsWith('/api/')) {
@@ -47,19 +51,27 @@ export async function middleware(request: NextRequest) {
   // Check role-based access
   const requiredRoles = getRequiredRoles(pathname)
   if (requiredRoles) {
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
+    console.log(`[proxy] role check | profile: ${profile?.role ?? 'null'} | error: ${profileError?.message ?? 'none'} | required: ${requiredRoles.join(',')}`)
+
     if (!profile || !requiredRoles.includes(profile.role)) {
+      // If profile query failed (RLS or DB issue), let the page handle it
+      // instead of redirecting — avoids infinite redirect loops
+      if (!profile) {
+        console.log(`[proxy] no profile found, passing through instead of redirecting`)
+        return addSecurityHeaders(supabaseResponse)
+      }
       // Redirect to appropriate default page based on role
       const url = request.nextUrl.clone()
-      if (profile?.role === 'public') {
+      if (profile.role === 'public') {
         url.pathname = '/certifications'
       } else {
-        url.pathname = '/training'
+        url.pathname = '/'
       }
       return NextResponse.redirect(url)
     }

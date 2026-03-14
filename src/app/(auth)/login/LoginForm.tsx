@@ -21,17 +21,24 @@ export default function LoginForm() {
     setLoading(true)
     setError(null)
 
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
-      setError(error.message)
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      // Use window.location for a full page navigation so cookies are
+      // sent with the very first request to the destination route.
+      // router.push triggers an RSC fetch that can race the cookie write.
+      window.location.href = redirect
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred')
       setLoading(false)
-      return
     }
-
-    router.push(redirect)
-    router.refresh()
   }
 
   async function handleMagicLink(e: React.FormEvent) {
