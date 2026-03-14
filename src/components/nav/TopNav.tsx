@@ -40,8 +40,8 @@ export function TopNav({ profile }: TopNavProps) {
   if (profile.role === 'admin') {
     navLinks.push({ href: '/admin', label: 'Admin' })
   }
-  // External docs site link
-  navLinks.push({ href: 'https://docs.aava.ai', label: 'Docs' })
+  // Internal docs site
+  navLinks.push({ href: '/docs', label: 'Docs' })
 
   // Determine current zone for indicator
   const currentZone = Object.keys(ZONE_LABELS).find(
