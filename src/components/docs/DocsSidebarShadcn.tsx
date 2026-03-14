@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronRightIcon } from 'lucide-react'
 import type { NavTreeNode } from '@/lib/knowledge/nav-tree'
@@ -46,7 +47,6 @@ export function DocsSidebarShadcn({ tree, currentSlug }: DocsSidebarShadcnProps)
           const hasChildren = node.children.length > 0
 
           if (!hasChildren) {
-            // Top-level node with no children: simple menu item
             return (
               <SidebarGroup key={node.id}>
                 <SidebarMenu>
@@ -63,42 +63,12 @@ export function DocsSidebarShadcn({ tree, currentSlug }: DocsSidebarShadcnProps)
             )
           }
 
-          // Top-level node with children: collapsible group
-          const isGroupActive = currentSlug === node.fullPath || currentSlug.startsWith(node.fullPath + '/')
-
           return (
-            <Collapsible
+            <CollapsibleGroup
               key={node.id}
-              defaultOpen={isGroupActive}
-            >
-              <SidebarGroup>
-                <SidebarGroupLabel>
-                  <Link
-                    href={`/docs/${node.fullPath}`}
-                    className="flex-1 truncate hover:text-sidebar-accent-foreground"
-                  >
-                    {node.title}
-                  </Link>
-                  <CollapsibleTrigger className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-md hover:bg-sidebar-accent">
-                    <ChevronRightIcon className="size-3.5 transition-transform duration-200 [[data-panel-open]_&]:rotate-90" />
-                  </CollapsibleTrigger>
-                </SidebarGroupLabel>
-
-                <CollapsibleContent>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {node.children.map((child) => (
-                        <NavTreeItem
-                          key={child.id}
-                          node={child}
-                          currentSlug={currentSlug}
-                        />
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </CollapsibleContent>
-              </SidebarGroup>
-            </Collapsible>
+              node={node}
+              currentSlug={currentSlug}
+            />
           )
         })}
       </SidebarContent>
@@ -108,10 +78,45 @@ export function DocsSidebarShadcn({ tree, currentSlug }: DocsSidebarShadcnProps)
   )
 }
 
-/**
- * Recursively renders a nav tree node as a sidebar menu item.
- * If the node has children, it renders as a collapsible sub-menu.
- */
+/** Top-level collapsible group — controlled to avoid Base UI warning. */
+function CollapsibleGroup({ node, currentSlug }: { node: NavTreeNode; currentSlug: string }) {
+  const isGroupActive = currentSlug === node.fullPath || currentSlug.startsWith(node.fullPath + '/')
+  const [open, setOpen] = useState(isGroupActive)
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <SidebarGroup>
+        <SidebarGroupLabel>
+          <Link
+            href={`/docs/${node.fullPath}`}
+            className="flex-1 truncate hover:text-sidebar-accent-foreground"
+          >
+            {node.title}
+          </Link>
+          <CollapsibleTrigger className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-md hover:bg-sidebar-accent">
+            <ChevronRightIcon className="size-3.5 transition-transform duration-200 [[data-panel-open]_&]:rotate-90" />
+          </CollapsibleTrigger>
+        </SidebarGroupLabel>
+
+        <CollapsibleContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {node.children.map((child) => (
+                <NavTreeItem
+                  key={child.id}
+                  node={child}
+                  currentSlug={currentSlug}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
+  )
+}
+
+/** Renders a nav tree node as a sidebar menu item (with optional collapsible children). */
 function NavTreeItem({ node, currentSlug }: { node: NavTreeNode; currentSlug: string }) {
   const isActive = currentSlug === node.fullPath
   const hasChildren = node.children.length > 0
@@ -130,9 +135,16 @@ function NavTreeItem({ node, currentSlug }: { node: NavTreeNode; currentSlug: st
   }
 
   const containsActive = currentSlug.startsWith(node.fullPath + '/')
+  return <CollapsibleNavItem node={node} currentSlug={currentSlug} initialOpen={isActive || containsActive} />
+}
+
+/** Controlled collapsible for mid-level nav items. */
+function CollapsibleNavItem({ node, currentSlug, initialOpen }: { node: NavTreeNode; currentSlug: string; initialOpen: boolean }) {
+  const [open, setOpen] = useState(initialOpen)
+  const isActive = currentSlug === node.fullPath
 
   return (
-    <Collapsible defaultOpen={isActive || containsActive}>
+    <Collapsible open={open} onOpenChange={setOpen}>
       <SidebarMenuItem>
         <SidebarMenuButton
           isActive={isActive}
@@ -160,9 +172,7 @@ function NavTreeItem({ node, currentSlug }: { node: NavTreeNode; currentSlug: st
   )
 }
 
-/**
- * Renders nested sub-menu items recursively.
- */
+/** Renders nested sub-menu items recursively. */
 function NavSubTreeItem({ node, currentSlug }: { node: NavTreeNode; currentSlug: string }) {
   const isActive = currentSlug === node.fullPath
   const hasChildren = node.children.length > 0
@@ -181,9 +191,16 @@ function NavSubTreeItem({ node, currentSlug }: { node: NavTreeNode; currentSlug:
   }
 
   const containsActive = currentSlug.startsWith(node.fullPath + '/')
+  return <CollapsibleSubItem node={node} currentSlug={currentSlug} initialOpen={isActive || containsActive} />
+}
+
+/** Controlled collapsible for deeply nested sub-items. */
+function CollapsibleSubItem({ node, currentSlug, initialOpen }: { node: NavTreeNode; currentSlug: string; initialOpen: boolean }) {
+  const [open, setOpen] = useState(initialOpen)
+  const isActive = currentSlug === node.fullPath
 
   return (
-    <Collapsible defaultOpen={isActive || containsActive}>
+    <Collapsible open={open} onOpenChange={setOpen}>
       <SidebarMenuSubItem>
         <SidebarMenuSubButton
           isActive={isActive}
