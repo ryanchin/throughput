@@ -27,7 +27,7 @@ describe('VideoBlockView', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        iframe: 'https://iframe.cloudflarestream.com/signed-token-abc',
+        iframe: 'https://iframe.mediadelivery.net/embed/test-lib/signed-token-abc',
       }),
     })
 
@@ -38,7 +38,7 @@ describe('VideoBlockView', () => {
     })
 
     const iframe = screen.getByTestId('video-player-iframe') as HTMLIFrameElement
-    expect(iframe.src).toBe('https://iframe.cloudflarestream.com/signed-token-abc')
+    expect(iframe.src).toBe('https://iframe.mediadelivery.net/embed/test-lib/signed-token-abc')
     expect(iframe).toHaveAttribute('allowfullscreen')
   })
 
@@ -73,7 +73,7 @@ describe('VideoBlockView', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        iframe: 'https://iframe.cloudflarestream.com/signed-xyz',
+        iframe: 'https://iframe.mediadelivery.net/embed/test-lib/signed-xyz',
       }),
     })
 
@@ -90,7 +90,7 @@ describe('VideoBlockView', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({
-        iframe: 'https://iframe.cloudflarestream.com/signed-no-title',
+        iframe: 'https://iframe.mediadelivery.net/embed/test-lib/signed-no-title',
       }),
     })
 
@@ -108,7 +108,7 @@ describe('VideoBlockView', () => {
   it('fetches signed URL from the correct endpoint', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({ iframe: 'https://iframe.cloudflarestream.com/test' }),
+      json: async () => ({ iframe: 'https://iframe.mediadelivery.net/embed/test-lib/test' }),
     })
 
     render(<VideoBlockView videoId="fetch-check-123" />)

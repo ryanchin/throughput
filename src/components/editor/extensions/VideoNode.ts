@@ -85,9 +85,10 @@ export const VideoNode = Node.create({
 
           dom.appendChild(wrapper)
         } else if (status === 'ready' && videoId) {
-          // Ready: show iframe player
+          // Ready: show iframe player via Bunny.net Stream
+          const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID || ''
           const iframe = document.createElement('iframe')
-          iframe.src = `https://iframe.cloudflarestream.com/${videoId}`
+          iframe.src = `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`
           iframe.setAttribute('data-testid', 'video-player-iframe')
           iframe.width = '100%'
           iframe.height = '360'
@@ -220,21 +221,15 @@ export const VideoNode = Node.create({
             throw new Error('Failed to get upload URL')
           }
 
-          const { uploadUrl, uid } = await urlRes.json()
+          const { uploadUrl, uid, authKey } = await urlRes.json()
 
-          // 2. Upload via TUS
-          const { Upload } = await import('tus-js-client')
+          // 2. Upload via PUT to Bunny.net Stream
+          // Use XMLHttpRequest for upload progress tracking
+          const xhr = new XMLHttpRequest()
 
-          const upload = new Upload(file, {
-            endpoint: uploadUrl,
-            chunkSize: 50 * 1024 * 1024, // 50MB chunks
-            retryDelays: [0, 3000, 5000],
-            metadata: {
-              name: file.name,
-              filetype: file.type,
-            },
-            onProgress: (bytesUploaded: number, bytesTotal: number) => {
-              const pct = Math.round((bytesUploaded / bytesTotal) * 100)
+          xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100)
               const currentPos = typeof getPos === 'function' ? getPos() : null
               if (currentPos !== null && currentPos !== undefined) {
                 editor.view.dispatch(
@@ -246,8 +241,11 @@ export const VideoNode = Node.create({
                   })
                 )
               }
-            },
-            onSuccess: () => {
+            }
+          })
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
               const currentPos = typeof getPos === 'function' ? getPos() : null
               if (currentPos !== null && currentPos !== undefined) {
                 editor.view.dispatch(
@@ -261,8 +259,7 @@ export const VideoNode = Node.create({
               }
               // Start polling for ready status
               pollStatus(uid)
-            },
-            onError: () => {
+            } else {
               const currentPos = typeof getPos === 'function' ? getPos() : null
               if (currentPos !== null && currentPos !== undefined) {
                 editor.view.dispatch(
@@ -272,10 +269,24 @@ export const VideoNode = Node.create({
                   })
                 )
               }
-            },
+            }
           })
 
-          upload.start()
+          xhr.addEventListener('error', () => {
+            const currentPos = typeof getPos === 'function' ? getPos() : null
+            if (currentPos !== null && currentPos !== undefined) {
+              editor.view.dispatch(
+                editor.view.state.tr.setNodeMarkup(currentPos, undefined, {
+                  ...node.attrs,
+                  status: 'error',
+                })
+              )
+            }
+          })
+
+          xhr.open('PUT', uploadUrl)
+          xhr.setRequestHeader('AccessKey', authKey)
+          xhr.send(file)
         } catch {
           const currentPos = typeof getPos === 'function' ? getPos() : null
           if (currentPos !== null && currentPos !== undefined) {

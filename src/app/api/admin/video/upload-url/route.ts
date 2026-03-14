@@ -3,18 +3,18 @@ import { z } from 'zod'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 
 const uploadUrlSchema = z.object({
-  maxDurationSeconds: z.number().int().min(1).max(21600).optional().default(3600),
+  title: z.string().optional().default('Untitled Video'),
 })
 
 /**
  * POST /api/admin/video/upload-url
  *
- * Returns a Direct Creator Upload URL from Cloudflare Stream.
- * The frontend uploads directly to Cloudflare — the video never passes through our server.
+ * Creates a video entry in Bunny.net Stream and returns the upload URL.
+ * The frontend uploads directly to Bunny.net via PUT — the video never passes through our server.
  *
  * Auth: admin only
- * Body: { maxDurationSeconds?: number } (optional, default 3600 = 1 hour)
- * Returns: { uploadUrl: string, uid: string }
+ * Body: { title?: string }
+ * Returns: { uploadUrl: string, uid: string, authKey: string }
  */
 export async function POST(request: NextRequest) {
   const { error: authError } = await requireAdmin()
@@ -22,12 +22,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  const apiToken = process.env.CLOUDFLARE_STREAM_API_TOKEN
+  const apiKey = process.env.BUNNY_STREAM_API_KEY
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID
 
-  if (!accountId || !apiToken) {
+  if (!apiKey || !libraryId) {
     return NextResponse.json(
-      { error: 'Cloudflare Stream not configured' },
+      { error: 'Bunny.net Stream not configured' },
       { status: 500 }
     )
   }
@@ -47,39 +47,44 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { maxDurationSeconds } = parsed.data
+  const { title } = parsed.data
 
   try {
+    // Step 1: Create video entry in Bunny.net Stream
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream?direct_user=true`,
+      `https://video.bunnycdn.com/library/${libraryId}/videos`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${apiToken}`,
+          AccessKey: apiKey,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ maxDurationSeconds }),
+        body: JSON.stringify({ title }),
       }
     )
 
     const data = await response.json()
 
-    if (!response.ok || !data.success) {
-      console.error('Cloudflare Stream upload-url error:', data.errors)
+    if (!response.ok || !data.guid) {
+      console.error('Bunny.net Stream upload-url error:', data)
       return NextResponse.json(
-        { error: 'Failed to get upload URL from Cloudflare Stream' },
+        { error: 'Failed to create video in Bunny.net Stream' },
         { status: 502 }
       )
     }
 
+    // Step 2: Return the upload URL — client will PUT the file directly
+    const uploadUrl = `https://video.bunnycdn.com/library/${libraryId}/videos/${data.guid}`
+
     return NextResponse.json({
-      uploadUrl: data.result.uploadURL,
-      uid: data.result.uid,
+      uploadUrl,
+      uid: data.guid,
+      authKey: apiKey,
     })
   } catch (err) {
-    console.error('Cloudflare Stream upload-url request failed:', err)
+    console.error('Bunny.net Stream upload-url request failed:', err)
     return NextResponse.json(
-      { error: 'Failed to connect to Cloudflare Stream' },
+      { error: 'Failed to connect to Bunny.net Stream' },
       { status: 502 }
     )
   }

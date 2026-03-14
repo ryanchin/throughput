@@ -4,10 +4,10 @@ import { requireAdmin } from '@/lib/auth/requireAdmin'
 /**
  * DELETE /api/admin/video/[uid]
  *
- * Deletes a video from Cloudflare Stream.
+ * Deletes a video from Bunny.net Stream.
  *
  * Auth: admin only
- * Params: uid — Cloudflare Stream video UID
+ * Params: uid — Bunny.net Stream video GUID
  * Returns: { success: true }
  */
 export async function DELETE(
@@ -20,42 +20,42 @@ export async function DELETE(
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  const apiToken = process.env.CLOUDFLARE_STREAM_API_TOKEN
+  const apiKey = process.env.BUNNY_STREAM_API_KEY
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID
 
-  if (!accountId || !apiToken) {
+  if (!apiKey || !libraryId) {
     return NextResponse.json(
-      { error: 'Cloudflare Stream not configured' },
+      { error: 'Bunny.net Stream not configured' },
       { status: 500 }
     )
   }
 
   try {
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/${uid}`,
+      `https://video.bunnycdn.com/library/${libraryId}/videos/${uid}`,
       {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${apiToken}`,
+          AccessKey: apiKey,
         },
       }
     )
 
-    // Cloudflare returns 200 with empty body on successful delete
+    // Bunny.net returns 200 on successful delete
     if (!response.ok) {
-      const data = await response.json().catch(() => ({ errors: ['Unknown error'] }))
-      console.error('Cloudflare Stream delete error:', data.errors)
+      const data = await response.json().catch(() => ({ message: 'Unknown error' }))
+      console.error('Bunny.net Stream delete error:', data)
       return NextResponse.json(
-        { error: 'Failed to delete video from Cloudflare Stream' },
+        { error: 'Failed to delete video from Bunny.net Stream' },
         { status: 502 }
       )
     }
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Cloudflare Stream delete request failed:', err)
+    console.error('Bunny.net Stream delete request failed:', err)
     return NextResponse.json(
-      { error: 'Failed to connect to Cloudflare Stream' },
+      { error: 'Failed to connect to Bunny.net Stream' },
       { status: 502 }
     )
   }

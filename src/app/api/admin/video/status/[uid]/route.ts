@@ -4,12 +4,16 @@ import { requireAdmin } from '@/lib/auth/requireAdmin'
 /**
  * GET /api/admin/video/status/[uid]
  *
- * Polls the transcoding status of a Cloudflare Stream video.
+ * Polls the transcoding status of a Bunny.net Stream video.
  * Used by the admin editor to show processing state after upload.
  *
+ * Bunny.net status codes:
+ *   0 = created, 1 = uploaded, 2 = processing, 3 = transcoding,
+ *   4 = finished (ready), 5 = error
+ *
  * Auth: admin only
- * Params: uid — Cloudflare Stream video UID
- * Returns: { status: string, duration: number, thumbnail: string, readyToStream: boolean }
+ * Params: uid — Bunny.net Stream video GUID
+ * Returns: { status: number, duration: number, thumbnail: string | null, readyToStream: boolean }
  */
 export async function GET(
   _request: NextRequest,
@@ -21,49 +25,52 @@ export async function GET(
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
 
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  const apiToken = process.env.CLOUDFLARE_STREAM_API_TOKEN
+  const apiKey = process.env.BUNNY_STREAM_API_KEY
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID
+  const cdnHostname = process.env.BUNNY_STREAM_CDN_HOSTNAME
 
-  if (!accountId || !apiToken) {
+  if (!apiKey || !libraryId) {
     return NextResponse.json(
-      { error: 'Cloudflare Stream not configured' },
+      { error: 'Bunny.net Stream not configured' },
       { status: 500 }
     )
   }
 
   try {
     const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream/${uid}`,
+      `https://video.bunnycdn.com/library/${libraryId}/videos/${uid}`,
       {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${apiToken}`,
+          AccessKey: apiKey,
         },
       }
     )
 
     const data = await response.json()
 
-    if (!response.ok || !data.success) {
-      console.error('Cloudflare Stream status error:', data.errors)
+    if (!response.ok) {
+      console.error('Bunny.net Stream status error:', data)
       return NextResponse.json(
-        { error: 'Failed to get video status from Cloudflare Stream' },
+        { error: 'Failed to get video status from Bunny.net Stream' },
         { status: 502 }
       )
     }
 
-    const result = data.result
+    const thumbnail = data.thumbnailFileName && cdnHostname
+      ? `https://${cdnHostname}/${uid}/${data.thumbnailFileName}`
+      : null
 
     return NextResponse.json({
-      status: result.status?.state ?? 'unknown',
-      duration: result.duration ?? 0,
-      thumbnail: result.thumbnail ?? null,
-      readyToStream: result.readyToStream ?? false,
+      status: data.status ?? 0,
+      duration: data.length ?? 0,
+      thumbnail,
+      readyToStream: data.status === 4,
     })
   } catch (err) {
-    console.error('Cloudflare Stream status request failed:', err)
+    console.error('Bunny.net Stream status request failed:', err)
     return NextResponse.json(
-      { error: 'Failed to connect to Cloudflare Stream' },
+      { error: 'Failed to connect to Bunny.net Stream' },
       { status: 502 }
     )
   }

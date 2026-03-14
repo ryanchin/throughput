@@ -9,7 +9,7 @@ interface VideoBlockViewProps {
 
 /**
  * Learner-facing video player component.
- * Fetches a signed playback URL and renders the Cloudflare Stream iframe.
+ * Fetches a signed playback URL and renders the Bunny.net Stream iframe.
  */
 export default function VideoBlockView({ videoId, title }: VideoBlockViewProps) {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)

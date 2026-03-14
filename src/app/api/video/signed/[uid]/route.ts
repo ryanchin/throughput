@@ -9,7 +9,7 @@ import { generateSignedUrl, getIframeUrl } from '@/lib/video/signed-url'
  * Falls back to an unsigned iframe URL when signing keys are not configured (dev mode).
  *
  * Auth: any authenticated user (not admin-only)
- * Params: uid — Cloudflare Stream video UID
+ * Params: uid — Bunny.net Stream video GUID
  * Returns: { url: string, iframe: string }
  */
 export async function GET(
@@ -28,9 +28,9 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const signingKey = process.env.CLOUDFLARE_STREAM_SIGNING_KEY
-  const keyId = process.env.CLOUDFLARE_STREAM_KEY_ID
-  const hasSigningKeys = Boolean(signingKey && keyId)
+  const tokenSecret = process.env.BUNNY_STREAM_TOKEN_SECRET
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID
+  const hasSigningKeys = Boolean(tokenSecret && libraryId)
 
   let url: string
   try {
@@ -43,7 +43,6 @@ export async function GET(
     )
   }
 
-  const iframe = getIframeUrl(uid)
-
-  return NextResponse.json({ url, iframe })
+  // For Bunny.net, both url and iframe are the same embed URL (signed or unsigned)
+  return NextResponse.json({ url, iframe: url })
 }

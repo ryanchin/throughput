@@ -1,78 +1,49 @@
 import crypto from 'crypto'
 
 /**
- * Generate a signed playback URL for a Cloudflare Stream video.
- * Uses RSA-SHA256 JWT signing with the Stream signing key.
+ * Generate a signed playback URL for a Bunny.net Stream video.
+ * Uses SHA-256 hashing with the Stream token secret.
  *
- * @param videoId - The Cloudflare Stream video UID
+ * @param videoId - The Bunny.net Stream video GUID
  * @param ttlSeconds - Token TTL in seconds (default 14400 = 4 hours)
- * @returns The signed playback URL (HLS manifest)
+ * @returns The signed iframe embed URL with token and expiry query params
  */
 export function generateSignedUrl(videoId: string, ttlSeconds = 14400): string {
-  const signingKey = process.env.CLOUDFLARE_STREAM_SIGNING_KEY
-  const keyId = process.env.CLOUDFLARE_STREAM_KEY_ID
+  const tokenSecret = process.env.BUNNY_STREAM_TOKEN_SECRET
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID
 
-  if (!signingKey || !keyId) {
-    throw new Error('Cloudflare Stream signing keys not configured')
+  if (!tokenSecret || !libraryId) {
+    throw new Error('Bunny.net Stream signing keys not configured')
   }
 
-  const expiry = Math.floor(Date.now() / 1000) + ttlSeconds
-  const token = generateToken(videoId, expiry, signingKey, keyId)
+  const expiryTimestamp = Math.floor(Date.now() / 1000) + ttlSeconds
 
-  return `https://cloudflarestream.com/${token}/manifest/video.m3u8`
+  const token = crypto
+    .createHash('sha256')
+    .update(tokenSecret + videoId + expiryTimestamp)
+    .digest('hex')
+
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?token=${token}&expires=${expiryTimestamp}`
 }
 
 /**
- * Generate a Cloudflare Stream signed token.
- * Produces a JWT signed with RSA-SHA256 containing the video ID,
- * expiry, and access rules as the payload.
- */
-function generateToken(
-  videoId: string,
-  expiry: number,
-  signingKey: string,
-  keyId: string
-): string {
-  const header = base64url(JSON.stringify({ alg: 'RS256', kid: keyId }))
-  const payload = base64url(
-    JSON.stringify({
-      sub: videoId,
-      kid: keyId,
-      exp: expiry,
-      accessRules: [{ type: 'any', action: 'allow' }],
-    })
-  )
-
-  const signature = crypto
-    .createSign('RSA-SHA256')
-    .update(`${header}.${payload}`)
-    .sign(signingKey, 'base64url')
-
-  return `${header}.${payload}.${signature}`
-}
-
-function base64url(str: string): string {
-  return Buffer.from(str).toString('base64url')
-}
-
-/**
- * Get an unsigned playback URL (HLS manifest) for dev/public use.
- * Falls back to a placeholder account ID when CLOUDFLARE_ACCOUNT_ID is not set.
+ * Get an unsigned playback URL (iframe embed) for dev/public use.
  *
- * @param videoId - The Cloudflare Stream video UID
- * @returns Unsigned HLS manifest URL
+ * @param videoId - The Bunny.net Stream video GUID
+ * @returns Unsigned iframe embed URL
  */
 export function getPlaybackUrl(videoId: string): string {
-  return `https://customer-${process.env.CLOUDFLARE_ACCOUNT_ID || 'dev'}.cloudflarestream.com/${videoId}/manifest/video.m3u8`
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID || 'dev'
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`
 }
 
 /**
  * Get an unsigned iframe embed URL for dev/public use.
- * Falls back to a placeholder account ID when CLOUDFLARE_ACCOUNT_ID is not set.
  *
- * @param videoId - The Cloudflare Stream video UID
+ * @param videoId - The Bunny.net Stream video GUID
  * @returns Unsigned iframe embed URL
  */
 export function getIframeUrl(videoId: string): string {
-  return `https://customer-${process.env.CLOUDFLARE_ACCOUNT_ID || 'dev'}.cloudflarestream.com/${videoId}/iframe`
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID || 'dev'
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`
 }

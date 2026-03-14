@@ -92,7 +92,7 @@ function mockSupabaseUnauthenticated() {
   return mockSupabase
 }
 
-function mockCloudflareResponse(body: unknown, ok = true, status = 200) {
+function mockBunnyResponse(body: unknown, ok = true, status = 200) {
   return {
     ok,
     status,
@@ -117,12 +117,12 @@ describe('POST /api/admin/video/upload-url', () => {
     originalFetch = global.fetch
 
     savedEnv = {
-      CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
-      CLOUDFLARE_STREAM_API_TOKEN: process.env.CLOUDFLARE_STREAM_API_TOKEN,
+      BUNNY_STREAM_API_KEY: process.env.BUNNY_STREAM_API_KEY,
+      BUNNY_STREAM_LIBRARY_ID: process.env.BUNNY_STREAM_LIBRARY_ID,
     }
 
-    process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account-id'
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = 'test-stream-token'
+    process.env.BUNNY_STREAM_API_KEY = 'test-bunny-api-key'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-library-id'
 
     const mod = await import('@/app/api/admin/video/upload-url/route')
     POST = mod.POST
@@ -130,8 +130,8 @@ describe('POST /api/admin/video/upload-url', () => {
 
   afterEach(() => {
     global.fetch = originalFetch
-    process.env.CLOUDFLARE_ACCOUNT_ID = savedEnv.CLOUDFLARE_ACCOUNT_ID
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = savedEnv.CLOUDFLARE_STREAM_API_TOKEN
+    process.env.BUNNY_STREAM_API_KEY = savedEnv.BUNNY_STREAM_API_KEY
+    process.env.BUNNY_STREAM_LIBRARY_ID = savedEnv.BUNNY_STREAM_LIBRARY_ID
   })
 
   it('returns 401 when user is not authenticated', async () => {
@@ -162,18 +162,15 @@ describe('POST /api/admin/video/upload-url', () => {
     expect(body.error).toContain('Forbidden')
   })
 
-  it('returns upload URL and uid on successful Cloudflare response', async () => {
+  it('returns upload URL, uid, and authKey on successful Bunny.net response', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse({
-          success: true,
-          result: {
-            uid: 'cf-video-uid-123',
-            uploadURL: 'https://upload.cloudflarestream.com/tus/abc123',
-          },
+        mockBunnyResponse({
+          guid: 'bunny-video-guid-123',
+          title: 'Untitled Video',
         })
       )
     )
@@ -187,20 +184,19 @@ describe('POST /api/admin/video/upload-url', () => {
 
     expect(res.status).toBe(200)
     const body = await res.json()
-    expect(body.uploadUrl).toBeDefined()
-    expect(body.uid).toBe('cf-video-uid-123')
+    expect(body.uploadUrl).toContain('video.bunnycdn.com')
+    expect(body.uploadUrl).toContain('bunny-video-guid-123')
+    expect(body.uid).toBe('bunny-video-guid-123')
+    expect(body.authKey).toBe('test-bunny-api-key')
   })
 
-  it('passes maxDurationSeconds to Cloudflare when provided', async () => {
+  it('passes title to Bunny.net when provided', async () => {
     adminAuthorized()
 
     const mockFetch = vi.fn().mockResolvedValue(
-      mockCloudflareResponse({
-        success: true,
-        result: {
-          uid: 'cf-video-uid-456',
-          uploadURL: 'https://upload.cloudflarestream.com/tus/def456',
-        },
+      mockBunnyResponse({
+        guid: 'bunny-video-guid-456',
+        title: 'My Video Title',
       })
     )
     vi.stubGlobal('fetch', mockFetch)
@@ -208,41 +204,29 @@ describe('POST /api/admin/video/upload-url', () => {
     const req = new NextRequest('http://localhost:3000/api/admin/video/upload-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ maxDurationSeconds: 3600 }),
+      body: JSON.stringify({ title: 'My Video Title' }),
     })
     const res = await POST(req)
 
     expect(res.status).toBe(200)
     const body = await res.json()
-    expect(body.uid).toBe('cf-video-uid-456')
+    expect(body.uid).toBe('bunny-video-guid-456')
 
-    // Verify the Cloudflare API was called
+    // Verify the Bunny.net API was called with correct URL
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const fetchCall = mockFetch.mock.calls[0]
-    expect(fetchCall[0]).toContain('test-account-id')
+    expect(fetchCall[0]).toContain('test-library-id')
+    expect(fetchCall[0]).toContain('video.bunnycdn.com')
   })
 
-  it('returns 400 when body has invalid maxDurationSeconds', async () => {
-    adminAuthorized()
-
-    const req = new NextRequest('http://localhost:3000/api/admin/video/upload-url', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ maxDurationSeconds: -1 }),
-    })
-    const res = await POST(req)
-
-    expect(res.status).toBe(400)
-  })
-
-  it('returns 502 when Cloudflare API fails', async () => {
+  it('returns 502 when Bunny.net API fails', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse(
-          { success: false, errors: [{ message: 'Internal error' }] },
+        mockBunnyResponse(
+          { message: 'Internal error' },
           false,
           500
         )
@@ -261,9 +245,9 @@ describe('POST /api/admin/video/upload-url', () => {
     expect(body.error).toBeDefined()
   })
 
-  it('returns 500 when CLOUDFLARE_ACCOUNT_ID is not set', async () => {
+  it('returns 500 when BUNNY_STREAM_API_KEY is not set', async () => {
     adminAuthorized()
-    delete process.env.CLOUDFLARE_ACCOUNT_ID
+    delete process.env.BUNNY_STREAM_API_KEY
 
     const req = new NextRequest('http://localhost:3000/api/admin/video/upload-url', {
       method: 'POST',
@@ -277,9 +261,9 @@ describe('POST /api/admin/video/upload-url', () => {
     expect(body.error).toBeDefined()
   })
 
-  it('returns 500 when CLOUDFLARE_STREAM_API_TOKEN is not set', async () => {
+  it('returns 500 when BUNNY_STREAM_LIBRARY_ID is not set', async () => {
     adminAuthorized()
-    delete process.env.CLOUDFLARE_STREAM_API_TOKEN
+    delete process.env.BUNNY_STREAM_LIBRARY_ID
 
     const req = new NextRequest('http://localhost:3000/api/admin/video/upload-url', {
       method: 'POST',
@@ -293,7 +277,7 @@ describe('POST /api/admin/video/upload-url', () => {
     expect(body.error).toBeDefined()
   })
 
-  it('returns 502 when fetch to Cloudflare throws a network error', async () => {
+  it('returns 502 when fetch to Bunny.net throws a network error', async () => {
     adminAuthorized()
 
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Network error')))
@@ -329,12 +313,14 @@ describe('GET /api/admin/video/status/[uid]', () => {
     originalFetch = global.fetch
 
     savedEnv = {
-      CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
-      CLOUDFLARE_STREAM_API_TOKEN: process.env.CLOUDFLARE_STREAM_API_TOKEN,
+      BUNNY_STREAM_API_KEY: process.env.BUNNY_STREAM_API_KEY,
+      BUNNY_STREAM_LIBRARY_ID: process.env.BUNNY_STREAM_LIBRARY_ID,
+      BUNNY_STREAM_CDN_HOSTNAME: process.env.BUNNY_STREAM_CDN_HOSTNAME,
     }
 
-    process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account-id'
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = 'test-stream-token'
+    process.env.BUNNY_STREAM_API_KEY = 'test-bunny-api-key'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-library-id'
+    process.env.BUNNY_STREAM_CDN_HOSTNAME = 'vz-test123.b-cdn.net'
 
     const mod = await import('@/app/api/admin/video/status/[uid]/route')
     GET = mod.GET
@@ -342,8 +328,9 @@ describe('GET /api/admin/video/status/[uid]', () => {
 
   afterEach(() => {
     global.fetch = originalFetch
-    process.env.CLOUDFLARE_ACCOUNT_ID = savedEnv.CLOUDFLARE_ACCOUNT_ID
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = savedEnv.CLOUDFLARE_STREAM_API_TOKEN
+    process.env.BUNNY_STREAM_API_KEY = savedEnv.BUNNY_STREAM_API_KEY
+    process.env.BUNNY_STREAM_LIBRARY_ID = savedEnv.BUNNY_STREAM_LIBRARY_ID
+    process.env.BUNNY_STREAM_CDN_HOSTNAME = savedEnv.BUNNY_STREAM_CDN_HOSTNAME
   })
 
   it('returns 401 when user is not authenticated', async () => {
@@ -368,21 +355,17 @@ describe('GET /api/admin/video/status/[uid]', () => {
     expect(body.error).toContain('Forbidden')
   })
 
-  it('returns video status on successful Cloudflare response', async () => {
+  it('returns video status on successful Bunny.net response (finished)', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse({
-          success: true,
-          result: {
-            uid: 'test-uid',
-            status: { state: 'ready' },
-            duration: 120.5,
-            thumbnail: 'https://cloudflarestream.com/test-uid/thumbnails/thumbnail.jpg',
-            readyToStream: true,
-          },
+        mockBunnyResponse({
+          guid: 'test-uid',
+          status: 4,
+          length: 120.5,
+          thumbnailFileName: 'thumbnail.jpg',
         })
       )
     )
@@ -392,27 +375,23 @@ describe('GET /api/admin/video/status/[uid]', () => {
 
     expect(res.status).toBe(200)
     const body = await res.json()
-    expect(body.status).toBeDefined()
+    expect(body.status).toBe(4)
     expect(body.duration).toBe(120.5)
-    expect(body.thumbnail).toBeDefined()
+    expect(body.thumbnail).toBe('https://vz-test123.b-cdn.net/test-uid/thumbnail.jpg')
     expect(body.readyToStream).toBe(true)
   })
 
-  it('returns correct shape for in-progress video', async () => {
+  it('returns correct shape for processing video (not ready)', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse({
-          success: true,
-          result: {
-            uid: 'processing-uid',
-            status: { state: 'inprogress' },
-            duration: 0,
-            thumbnail: '',
-            readyToStream: false,
-          },
+        mockBunnyResponse({
+          guid: 'processing-uid',
+          status: 2,
+          length: 0,
+          thumbnailFileName: null,
         })
       )
     )
@@ -423,16 +402,17 @@ describe('GET /api/admin/video/status/[uid]', () => {
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.readyToStream).toBe(false)
+    expect(body.status).toBe(2)
   })
 
-  it('returns 502 when Cloudflare API fails', async () => {
+  it('returns 502 when Bunny.net API fails', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse(
-          { success: false, errors: [{ message: 'Not found' }] },
+        mockBunnyResponse(
+          { message: 'Not found' },
           false,
           404
         )
@@ -447,7 +427,7 @@ describe('GET /api/admin/video/status/[uid]', () => {
 
   it('returns 500 when env vars are missing', async () => {
     adminAuthorized()
-    delete process.env.CLOUDFLARE_ACCOUNT_ID
+    delete process.env.BUNNY_STREAM_API_KEY
 
     const req = new NextRequest('http://localhost:3000/api/admin/video/status/test-uid')
     const res = await GET(req, { params: Promise.resolve({ uid: 'test-uid' }) })
@@ -475,12 +455,12 @@ describe('DELETE /api/admin/video/[uid]', () => {
     originalFetch = global.fetch
 
     savedEnv = {
-      CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
-      CLOUDFLARE_STREAM_API_TOKEN: process.env.CLOUDFLARE_STREAM_API_TOKEN,
+      BUNNY_STREAM_API_KEY: process.env.BUNNY_STREAM_API_KEY,
+      BUNNY_STREAM_LIBRARY_ID: process.env.BUNNY_STREAM_LIBRARY_ID,
     }
 
-    process.env.CLOUDFLARE_ACCOUNT_ID = 'test-account-id'
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = 'test-stream-token'
+    process.env.BUNNY_STREAM_API_KEY = 'test-bunny-api-key'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-library-id'
 
     const mod = await import('@/app/api/admin/video/[uid]/route')
     DELETE = mod.DELETE
@@ -488,8 +468,8 @@ describe('DELETE /api/admin/video/[uid]', () => {
 
   afterEach(() => {
     global.fetch = originalFetch
-    process.env.CLOUDFLARE_ACCOUNT_ID = savedEnv.CLOUDFLARE_ACCOUNT_ID
-    process.env.CLOUDFLARE_STREAM_API_TOKEN = savedEnv.CLOUDFLARE_STREAM_API_TOKEN
+    process.env.BUNNY_STREAM_API_KEY = savedEnv.BUNNY_STREAM_API_KEY
+    process.env.BUNNY_STREAM_LIBRARY_ID = savedEnv.BUNNY_STREAM_LIBRARY_ID
   })
 
   it('returns 401 when user is not authenticated', async () => {
@@ -524,7 +504,7 @@ describe('DELETE /api/admin/video/[uid]', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse({ success: true, result: null }, true, 200)
+        mockBunnyResponse({ success: true }, true, 200)
       )
     )
 
@@ -538,11 +518,11 @@ describe('DELETE /api/admin/video/[uid]', () => {
     expect(body.success).toBe(true)
   })
 
-  it('calls Cloudflare DELETE API with correct uid', async () => {
+  it('calls Bunny.net DELETE API with correct uid', async () => {
     adminAuthorized()
 
     const mockFetch = vi.fn().mockResolvedValue(
-      mockCloudflareResponse({ success: true, result: null }, true, 200)
+      mockBunnyResponse({ success: true }, true, 200)
     )
     vi.stubGlobal('fetch', mockFetch)
 
@@ -554,17 +534,18 @@ describe('DELETE /api/admin/video/[uid]', () => {
     expect(mockFetch).toHaveBeenCalledTimes(1)
     const fetchUrl = mockFetch.mock.calls[0][0]
     expect(fetchUrl).toContain('my-video-uid')
-    expect(fetchUrl).toContain('test-account-id')
+    expect(fetchUrl).toContain('test-library-id')
+    expect(fetchUrl).toContain('video.bunnycdn.com')
   })
 
-  it('returns 502 when Cloudflare API fails', async () => {
+  it('returns 502 when Bunny.net API fails', async () => {
     adminAuthorized()
 
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        mockCloudflareResponse(
-          { success: false, errors: [{ message: 'Video not found' }] },
+        mockBunnyResponse(
+          { message: 'Video not found' },
           false,
           404
         )
@@ -581,7 +562,7 @@ describe('DELETE /api/admin/video/[uid]', () => {
 
   it('returns 500 when env vars are missing', async () => {
     adminAuthorized()
-    delete process.env.CLOUDFLARE_ACCOUNT_ID
+    delete process.env.BUNNY_STREAM_API_KEY
 
     const req = new NextRequest('http://localhost:3000/api/admin/video/test-uid', {
       method: 'DELETE',
@@ -608,28 +589,28 @@ describe('GET /api/video/signed/[uid]', () => {
     vi.resetModules()
 
     savedEnv = {
-      CLOUDFLARE_STREAM_SIGNING_KEY: process.env.CLOUDFLARE_STREAM_SIGNING_KEY,
-      CLOUDFLARE_STREAM_KEY_ID: process.env.CLOUDFLARE_STREAM_KEY_ID,
+      BUNNY_STREAM_TOKEN_SECRET: process.env.BUNNY_STREAM_TOKEN_SECRET,
+      BUNNY_STREAM_LIBRARY_ID: process.env.BUNNY_STREAM_LIBRARY_ID,
     }
 
     // Default: no signing keys (tests that need them will set them)
-    delete process.env.CLOUDFLARE_STREAM_SIGNING_KEY
-    delete process.env.CLOUDFLARE_STREAM_KEY_ID
+    delete process.env.BUNNY_STREAM_TOKEN_SECRET
+    delete process.env.BUNNY_STREAM_LIBRARY_ID
 
     const mod = await import('@/app/api/video/signed/[uid]/route')
     GET = mod.GET
   })
 
   afterEach(() => {
-    if (savedEnv.CLOUDFLARE_STREAM_SIGNING_KEY !== undefined) {
-      process.env.CLOUDFLARE_STREAM_SIGNING_KEY = savedEnv.CLOUDFLARE_STREAM_SIGNING_KEY
+    if (savedEnv.BUNNY_STREAM_TOKEN_SECRET !== undefined) {
+      process.env.BUNNY_STREAM_TOKEN_SECRET = savedEnv.BUNNY_STREAM_TOKEN_SECRET
     } else {
-      delete process.env.CLOUDFLARE_STREAM_SIGNING_KEY
+      delete process.env.BUNNY_STREAM_TOKEN_SECRET
     }
-    if (savedEnv.CLOUDFLARE_STREAM_KEY_ID !== undefined) {
-      process.env.CLOUDFLARE_STREAM_KEY_ID = savedEnv.CLOUDFLARE_STREAM_KEY_ID
+    if (savedEnv.BUNNY_STREAM_LIBRARY_ID !== undefined) {
+      process.env.BUNNY_STREAM_LIBRARY_ID = savedEnv.BUNNY_STREAM_LIBRARY_ID
     } else {
-      delete process.env.CLOUDFLARE_STREAM_KEY_ID
+      delete process.env.BUNNY_STREAM_LIBRARY_ID
     }
   })
 
@@ -644,17 +625,14 @@ describe('GET /api/video/signed/[uid]', () => {
     expect(body.error).toBeDefined()
   })
 
-  it('returns signed URL and iframe URL when signing keys are configured', async () => {
+  it('returns signed URL when signing keys are configured', async () => {
     mockSupabaseAuthenticated('user-abc')
 
-    process.env.CLOUDFLARE_STREAM_SIGNING_KEY = 'test-signing-key'
-    process.env.CLOUDFLARE_STREAM_KEY_ID = 'test-key-id'
+    process.env.BUNNY_STREAM_TOKEN_SECRET = 'test-token-secret'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-lib-id'
 
     mockGenerateSignedUrl.mockReturnValue(
-      'https://cloudflarestream.com/signed-token/manifest/video.m3u8'
-    )
-    mockGetIframeUrl.mockReturnValue(
-      'https://customer-test.cloudflarestream.com/test-uid/iframe'
+      'https://iframe.mediadelivery.net/embed/test-lib-id/test-uid?token=abc123&expires=999'
     )
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/test-uid')
@@ -662,18 +640,20 @@ describe('GET /api/video/signed/[uid]', () => {
 
     expect(res.status).toBe(200)
     const body = await res.json()
-    expect(body.url).toBe('https://cloudflarestream.com/signed-token/manifest/video.m3u8')
-    expect(body.iframe).toBe('https://customer-test.cloudflarestream.com/test-uid/iframe')
+    expect(body.url).toContain('iframe.mediadelivery.net')
+    expect(body.iframe).toContain('iframe.mediadelivery.net')
+    // For Bunny.net, url and iframe are the same signed embed URL
+    expect(body.url).toBe(body.iframe)
   })
 
   it('falls back to iframe URL when signing keys are not configured', async () => {
     mockSupabaseAuthenticated('user-abc')
 
-    delete process.env.CLOUDFLARE_STREAM_SIGNING_KEY
-    delete process.env.CLOUDFLARE_STREAM_KEY_ID
+    delete process.env.BUNNY_STREAM_TOKEN_SECRET
+    delete process.env.BUNNY_STREAM_LIBRARY_ID
 
     mockGetIframeUrl.mockReturnValue(
-      'https://customer-test.cloudflarestream.com/test-uid/iframe'
+      'https://iframe.mediadelivery.net/embed/dev/test-uid'
     )
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/test-uid')
@@ -681,20 +661,18 @@ describe('GET /api/video/signed/[uid]', () => {
 
     expect(res.status).toBe(200)
     const body = await res.json()
-    // Without signing keys, url falls back to getIframeUrl
-    expect(body.url).toBe('https://customer-test.cloudflarestream.com/test-uid/iframe')
-    expect(body.iframe).toBe('https://customer-test.cloudflarestream.com/test-uid/iframe')
+    expect(body.url).toBe('https://iframe.mediadelivery.net/embed/dev/test-uid')
+    expect(body.iframe).toBe('https://iframe.mediadelivery.net/embed/dev/test-uid')
     expect(mockGenerateSignedUrl).not.toHaveBeenCalled()
   })
 
   it('calls generateSignedUrl with the correct video uid when signing keys exist', async () => {
     mockSupabaseAuthenticated()
 
-    process.env.CLOUDFLARE_STREAM_SIGNING_KEY = 'test-signing-key'
-    process.env.CLOUDFLARE_STREAM_KEY_ID = 'test-key-id'
+    process.env.BUNNY_STREAM_TOKEN_SECRET = 'test-token-secret'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-lib-id'
 
-    mockGenerateSignedUrl.mockReturnValue('https://cloudflarestream.com/token/manifest/video.m3u8')
-    mockGetIframeUrl.mockReturnValue('https://customer-test.cloudflarestream.com/my-vid/iframe')
+    mockGenerateSignedUrl.mockReturnValue('https://iframe.mediadelivery.net/embed/test-lib-id/my-vid?token=t&expires=e')
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/my-vid')
     await GET(req, { params: Promise.resolve({ uid: 'my-vid' }) })
@@ -705,10 +683,10 @@ describe('GET /api/video/signed/[uid]', () => {
   it('calls getIframeUrl with the correct video uid', async () => {
     mockSupabaseAuthenticated()
 
-    delete process.env.CLOUDFLARE_STREAM_SIGNING_KEY
-    delete process.env.CLOUDFLARE_STREAM_KEY_ID
+    delete process.env.BUNNY_STREAM_TOKEN_SECRET
+    delete process.env.BUNNY_STREAM_LIBRARY_ID
 
-    mockGetIframeUrl.mockReturnValue('https://customer-test.cloudflarestream.com/my-vid/iframe')
+    mockGetIframeUrl.mockReturnValue('https://iframe.mediadelivery.net/embed/dev/my-vid')
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/my-vid')
     await GET(req, { params: Promise.resolve({ uid: 'my-vid' }) })
@@ -719,11 +697,11 @@ describe('GET /api/video/signed/[uid]', () => {
   it('returns 500 when generateSignedUrl throws', async () => {
     mockSupabaseAuthenticated()
 
-    process.env.CLOUDFLARE_STREAM_SIGNING_KEY = 'test-signing-key'
-    process.env.CLOUDFLARE_STREAM_KEY_ID = 'test-key-id'
+    process.env.BUNNY_STREAM_TOKEN_SECRET = 'test-token-secret'
+    process.env.BUNNY_STREAM_LIBRARY_ID = 'test-lib-id'
 
     mockGenerateSignedUrl.mockImplementation(() => {
-      throw new Error('Cloudflare Stream signing keys not configured')
+      throw new Error('Bunny.net Stream signing keys not configured')
     })
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/test-uid')
@@ -737,8 +715,8 @@ describe('GET /api/video/signed/[uid]', () => {
   it('does not require admin role — any authenticated user is allowed', async () => {
     mockSupabaseAuthenticated('regular-employee-id')
 
-    mockGenerateSignedUrl.mockReturnValue('https://cloudflarestream.com/token/manifest/video.m3u8')
-    mockGetIframeUrl.mockReturnValue('https://customer-test.cloudflarestream.com/uid/iframe')
+    mockGenerateSignedUrl.mockReturnValue('https://iframe.mediadelivery.net/embed/lib/uid?token=t&expires=e')
+    mockGetIframeUrl.mockReturnValue('https://iframe.mediadelivery.net/embed/dev/uid')
 
     const req = new NextRequest('http://localhost:3000/api/video/signed/test-uid')
     const res = await GET(req, { params: Promise.resolve({ uid: 'test-uid' }) })

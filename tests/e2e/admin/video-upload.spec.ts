@@ -117,10 +117,9 @@ test.describe('Video Upload Block', () => {
     test('shows the iframe player with correct src', async ({ page }) => {
       const iframe = page.getByTestId('video-player-iframe')
       await expect(iframe).toBeVisible()
-      await expect(iframe).toHaveAttribute(
-        'src',
-        'https://iframe.cloudflarestream.com/test-ready-789'
-      )
+      const src = await iframe.getAttribute('src')
+      expect(src).toContain('iframe.mediadelivery.net/embed/')
+      expect(src).toContain('test-ready-789')
     })
 
     test('iframe has correct dimensions', async ({ page }) => {
