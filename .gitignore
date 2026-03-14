@@ -12,6 +12,11 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
+
+# supabase
+supabase/.temp/
 
 # next.js
 /.next/
