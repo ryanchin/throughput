@@ -7,6 +7,7 @@ export type Zone = 'training' | 'sales'
 export type NavigationMode = 'sequential' | 'free'
 export type EnrollmentStatus = 'enrolled' | 'passed' | 'failed'
 export type Visibility = 'public' | 'internal' | `group:${string}`
+export type DocsPageType = 'knowledge' | 'docs'
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -304,6 +305,7 @@ export interface Database {
           order_index: number
           status: ContentStatus
           visibility: Visibility
+          type: DocsPageType
           search_vector: unknown
           created_by: string | null
           created_at: string
@@ -318,6 +320,7 @@ export interface Database {
           order_index?: number
           status?: ContentStatus
           visibility?: Visibility
+          type?: DocsPageType
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -330,6 +333,7 @@ export interface Database {
           order_index?: number
           status?: ContentStatus
           visibility?: Visibility
+          type?: DocsPageType
           updated_at?: string
         }
         Relationships: []

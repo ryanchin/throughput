@@ -3,17 +3,12 @@ import { z } from 'zod'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { createServiceClient } from '@/lib/supabase/server'
 import { fetchAllPagesAdmin } from '@/lib/knowledge/queries'
-import type { Json, Visibility, ContentStatus } from '@/lib/supabase/database.types'
+import type { Json, ContentStatus } from '@/lib/supabase/database.types'
 
 const createPageSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   slug: z.string().min(1, 'Slug is required'),
   parentId: z.string().uuid().nullable().optional(),
-  visibility: z.union([
-    z.literal('public'),
-    z.literal('internal'),
-    z.string().regex(/^group:.+$/, 'Group visibility must be in format "group:<name>"'),
-  ]).default('internal'),
   content: z.record(z.string(), z.unknown()).optional().default({
     type: 'doc',
     content: [{ type: 'paragraph' }],
@@ -22,9 +17,9 @@ const createPageSchema = z.object({
 })
 
 /**
- * POST /api/admin/knowledge
- * Creates a new knowledge page (docs_page).
- * Admin only. Uses service client to bypass RLS.
+ * POST /api/admin/docs-pages
+ * Creates a new documentation page (docs_page with type='docs').
+ * Admin only. Visibility is always 'public' for docs pages.
  */
 export async function POST(request: NextRequest) {
   const { error: authError } = await requireAdmin()
@@ -47,7 +42,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { title, slug, parentId, visibility, content, status } = parsed.data
+  const { title, slug, parentId, content, status } = parsed.data
   const serviceClient = createServiceClient()
 
   // Auto-calculate order_index: max sibling order_index + 1
@@ -56,6 +51,7 @@ export async function POST(request: NextRequest) {
   let siblingQuery = serviceClient
     .from('docs_pages')
     .select('order_index')
+    .eq('type', 'docs')
 
   if (parentFilter) {
     siblingQuery = siblingQuery.eq('parent_id', parentFilter)
@@ -77,11 +73,11 @@ export async function POST(request: NextRequest) {
       title,
       slug,
       parent_id: parentFilter,
-      visibility: visibility as Visibility,
+      visibility: 'public',
       content: content as unknown as Json,
       status: status as ContentStatus,
       order_index: nextOrderIndex,
-      type: 'knowledge' as const,
+      type: 'docs' as const,
     })
     .select()
     .single()
@@ -97,8 +93,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/admin/knowledge
- * Returns all knowledge pages (all statuses) for admin management.
+ * GET /api/admin/docs-pages
+ * Returns all docs pages (type='docs', all statuses) for admin management.
  * Admin only.
  */
 export async function GET() {
@@ -107,7 +103,7 @@ export async function GET() {
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
 
-  const { data: pages, error } = await fetchAllPagesAdmin()
+  const { data: pages, error } = await fetchAllPagesAdmin('docs')
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

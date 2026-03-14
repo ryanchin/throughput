@@ -1,18 +1,19 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import type { Visibility } from '@/lib/supabase/database.types'
+import type { DocsPageType, Visibility } from '@/lib/supabase/database.types'
 import type { NavPage } from './nav-tree'
 
 /**
  * Fetches the full nav tree for the knowledge section.
  * Uses the authenticated client so RLS filters by visibility.
  */
-export async function fetchNavPages(): Promise<NavPage[]> {
+export async function fetchNavPages(type: DocsPageType = 'knowledge'): Promise<NavPage[]> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
     .from('docs_pages')
     .select('id, title, slug, parent_id, order_index, visibility')
     .eq('status', 'published')
+    .eq('type', type)
     .order('order_index', { ascending: true })
 
   if (error || !data) return []
@@ -53,7 +54,7 @@ export async function fetchNavPages(): Promise<NavPage[]> {
  * Fetches a single knowledge page by slug path.
  * Returns null if not found or not accessible.
  */
-export async function fetchPageBySlug(slugPath: string) {
+export async function fetchPageBySlug(slugPath: string, type: DocsPageType = 'knowledge') {
   const supabase = await createClient()
   const slugParts = slugPath.split('/')
   const targetSlug = slugParts[slugParts.length - 1]
@@ -63,6 +64,7 @@ export async function fetchPageBySlug(slugPath: string) {
     .select('id, title, slug, content, parent_id, visibility, updated_at, created_by')
     .eq('slug', targetSlug)
     .eq('status', 'published')
+    .eq('type', type)
 
   if (error || !pages || pages.length === 0) return null
 
@@ -117,12 +119,13 @@ export async function fetchUserGroups(userId: string): Promise<string[]> {
 /**
  * Fetches all docs pages for admin (all statuses, all visibilities).
  */
-export async function fetchAllPagesAdmin() {
+export async function fetchAllPagesAdmin(type: DocsPageType = 'knowledge') {
   const serviceClient = createServiceClient()
 
   const { data, error } = await serviceClient
     .from('docs_pages')
     .select('id, title, slug, parent_id, order_index, status, visibility, updated_at')
+    .eq('type', type)
     .order('order_index', { ascending: true })
 
   return { data: data ?? [], error }
@@ -131,13 +134,14 @@ export async function fetchAllPagesAdmin() {
 /**
  * Fetches recently updated published knowledge pages.
  */
-export async function fetchRecentPages(limit = 10) {
+export async function fetchRecentPages(limit = 10, type: DocsPageType = 'knowledge') {
   const supabase = await createClient()
 
   const { data } = await supabase
     .from('docs_pages')
     .select('id, title, slug, parent_id, visibility, updated_at')
     .eq('status', 'published')
+    .eq('type', type)
     .order('updated_at', { ascending: false })
     .limit(limit)
 
