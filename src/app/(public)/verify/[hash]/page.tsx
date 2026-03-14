@@ -17,13 +17,13 @@ export async function generateMetadata({
     .single()
 
   if (!cert) {
-    return { title: 'Invalid Certificate | AAVA Certifications' }
+    return { title: 'Invalid Certificate | AAVA Product Studio Certifications' }
   }
 
   return {
     title: cert.revoked
-      ? `Certificate Revoked | AAVA Certifications`
-      : `Verify ${cert.cert_number} | AAVA Certifications`,
+      ? `Certificate Revoked | AAVA Product Studio Certifications`
+      : `Verify ${cert.cert_number} | AAVA Product Studio Certifications`,
   }
 }
 

@@ -52,7 +52,7 @@ export default function LessonViewer({ content }: LessonViewerProps) {
     editable: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none px-4 py-6',
+        class: 'docs-content max-w-none px-4 py-6',
       },
     },
   })

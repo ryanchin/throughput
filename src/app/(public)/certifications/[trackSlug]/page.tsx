@@ -23,7 +23,7 @@ export async function generateMetadata({
 
   return {
     title: track
-      ? `${track.title} | AAVA Certifications`
+      ? `${track.title} | AAVA Product Studio Certifications`
       : 'Track Not Found',
     description: track?.description ?? '',
   }

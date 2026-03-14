@@ -87,7 +87,7 @@ export default function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-surface p-8 shadow-card">
         <div className="mb-8 text-center">
-          <h1 className="bg-gradient-brand bg-clip-text text-3xl font-bold text-transparent">AAVA</h1>
+          <h1 className="bg-gradient-brand bg-clip-text text-3xl font-bold text-transparent">AAVA Product Studio</h1>
           <p className="mt-1 text-sm text-foreground-muted">Sign in to Throughput</p>
         </div>
 

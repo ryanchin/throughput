@@ -200,7 +200,7 @@ export function CertificationCards({
         <section>
           <h2 className="text-2xl font-bold text-foreground mb-2">Certification Path</h2>
           <p className="text-foreground-muted mb-8">
-            Progress through the tiers to build your AAVA credentials.
+            Progress through the tiers to build your AAVA Product Studio credentials.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tieredTracks.map((track) => (

@@ -9,7 +9,7 @@ export async function generateMetadata({
   params: Promise<{ trackSlug: string }>
 }): Promise<Metadata> {
   const { trackSlug } = await params
-  return { title: `Exam: ${trackSlug} | AAVA Certifications` }
+  return { title: `Exam: ${trackSlug} | AAVA Product Studio Certifications` }
 }
 
 export default async function CertExamPage({

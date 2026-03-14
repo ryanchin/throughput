@@ -43,7 +43,7 @@ const neueMachina = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Throughput | AAVA Training & Certification",
+  title: "Throughput | AAVA Product Studio Training & Certification",
   description:
     "Internal training and public certification platform for AAVA Product Studio",
 };

@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { CertificationCards } from '@/components/certifications/CertificationCards'
 
 export const metadata: Metadata = {
-  title: 'Get AAVA Certified | Throughput',
-  description: 'Earn stackable AAVA certifications to prove your PM methodology proficiency.',
+  title: 'Get AAVA Product Studio Certified | Throughput',
+  description: 'Earn stackable AAVA Product Studio certifications to prove your PM methodology proficiency.',
 }
 
 export default async function CertificationsPage() {
@@ -111,7 +111,7 @@ export default async function CertificationsPage() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-brand bg-clip-text text-transparent mb-4">
-            Get AAVA Certified
+            Get AAVA Product Studio Certified
           </h1>
           <p className="text-lg text-foreground-muted max-w-2xl mx-auto">
             Earn stackable credentials that signal your PM methodology proficiency.

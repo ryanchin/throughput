@@ -61,7 +61,7 @@ export function TopNav({ profile }: TopNavProps) {
         {/* Logo + Zone */}
         <div className="flex items-center gap-4">
           <Link href="/" className="bg-gradient-brand bg-clip-text text-lg font-bold text-transparent">
-            AAVA
+            AAVA Product Studio
           </Link>
           {currentZone && (
             <span className="rounded-md bg-accent-muted px-2 py-0.5 text-xs font-medium text-accent">

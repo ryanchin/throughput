@@ -4,7 +4,7 @@ import LessonViewer from '@/components/editor/LessonViewer'
 import type { JSONContent } from '@tiptap/react'
 
 export const metadata: Metadata = {
-  title: 'Documentation | AAVA',
+  title: 'Documentation | AAVA Product Studio',
   description: 'AAVA Product Studio methodology documentation — goals, research, ideation, roadmapping, sprint planning, execution, and retrospectives.',
 }
 
@@ -43,7 +43,7 @@ export default async function DocsHomePage() {
     return (
       <div className="mx-auto max-w-3xl">
         <h1 className="bg-gradient-brand bg-clip-text text-4xl font-bold text-transparent">
-          AAVA Documentation
+          AAVA Product Studio Documentation
         </h1>
         <p className="mt-4 text-foreground-muted">
           Documentation is being prepared. Check back soon.

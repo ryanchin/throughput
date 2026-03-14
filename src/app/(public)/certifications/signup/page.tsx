@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 import { CertSignupForm } from '@/components/certifications/CertSignupForm'
 
 export const metadata: Metadata = {
-  title: 'Create Account | AAVA Certifications',
-  description: 'Create a free account to take AAVA certification exams.',
+  title: 'Create Account | AAVA Product Studio Certifications',
+  description: 'Create a free account to take AAVA Product Studio certification exams.',
 }
 
 export default function CertSignupPage() {
@@ -18,7 +18,7 @@ export default function CertSignupPage() {
             Create Your Account
           </h1>
           <p className="mt-2 text-sm text-foreground-muted">
-            Free forever. Start earning AAVA certifications today.
+            Free forever. Start earning AAVA Product Studio certifications today.
           </p>
         </div>
         <CertSignupForm />

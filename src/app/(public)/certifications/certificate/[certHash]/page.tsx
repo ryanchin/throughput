@@ -21,7 +21,7 @@ export async function generateMetadata({
 
   return {
     title: cert
-      ? `Certificate ${cert.cert_number} | AAVA Certifications`
+      ? `Certificate ${cert.cert_number} | AAVA Product Studio Certifications`
       : 'Certificate Not Found',
   }
 }

@@ -42,7 +42,7 @@ export async function callOpenRouter(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
       'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL ?? 'https://throughput.aava.ai',
-      'X-Title': 'Throughput - AAVA Training Platform',
+      'X-Title': 'Throughput - AAVA Product Studio Training Platform',
     },
     body: JSON.stringify({
       model,
