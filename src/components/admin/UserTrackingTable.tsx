@@ -83,7 +83,7 @@ export default function UserTrackingTable({ users }: UserTrackingTableProps) {
 
   const SortIcon = ({ field }: { field: keyof UserRow }) => {
     if (sortField !== field) return <span className="text-foreground-subtle ml-1">&#8597;</span>
-    return <span className="text-accent ml-1">{sortAsc ? '&#8593;' : '&#8595;'}</span>
+    return <span className="text-accent ml-1">{sortAsc ? '↑' : '↓'}</span>
   }
 
   const formatDate = (date: string) => {
