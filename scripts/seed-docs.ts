@@ -455,7 +455,7 @@ async function main() {
     const { error } = await supabase
       .from('docs_pages')
       .insert({
-        title: data.title || 'Welcome to AAVA',
+        title: data.title || 'Welcome to Product Studio',
         slug: 'intro',
         content: tiptapContent,
         parent_id: null,
@@ -468,7 +468,7 @@ async function main() {
     if (error) {
       console.error('Failed to insert intro page:', error.message)
     } else {
-      console.log('  + Welcome to AAVA (intro)')
+      console.log('  + Welcome to Product Studio (intro)')
       introCount = 1
     }
   }

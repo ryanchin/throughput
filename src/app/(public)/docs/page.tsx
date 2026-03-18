@@ -4,8 +4,8 @@ import LessonViewer from '@/components/editor/LessonViewer'
 import type { JSONContent } from '@tiptap/react'
 
 export const metadata: Metadata = {
-  title: 'Documentation | AAVA Product Studio',
-  description: 'AAVA Product Studio methodology documentation — goals, research, ideation, roadmapping, sprint planning, execution, and retrospectives.',
+  title: 'Documentation | Product Studio',
+  description: 'Product Studio documentation — the AI-powered operating system for enterprise product teams. Goals, research, ideation, feasibility, roadmapping, PRDs, and more.',
 }
 
 async function getIntroPage() {
@@ -43,7 +43,7 @@ export default async function DocsHomePage() {
     return (
       <div className="mx-auto max-w-3xl">
         <h1 className="bg-gradient-brand bg-clip-text text-4xl font-bold text-transparent">
-          AAVA Product Studio Documentation
+          Product Studio Documentation
         </h1>
         <p className="mt-4 text-foreground-muted">
           Documentation is being prepared. Check back soon.
@@ -54,17 +54,6 @@ export default async function DocsHomePage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground">{page.title}</h1>
-        <p className="mt-2 text-sm text-foreground-muted">
-          Last updated{' '}
-          {new Date(page.updated_at).toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-        </p>
-      </div>
       <LessonViewer content={page.content as JSONContent} />
     </div>
   )

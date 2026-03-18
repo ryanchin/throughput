@@ -16,12 +16,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = await fetchPageBySlug(slugPath, 'docs')
 
   if (!page) {
-    return { title: 'Not Found | AAVA Product Studio Docs' }
+    return { title: 'Not Found | Product Studio Docs' }
   }
 
   return {
-    title: `${page.title} | AAVA Product Studio Docs`,
-    description: `${page.title} — AAVA Product Studio documentation`,
+    title: `${page.title} | Product Studio Docs`,
+    description: `${page.title} — Product Studio documentation for enterprise product teams.`,
   }
 }
 
@@ -77,19 +77,6 @@ export default async function DocPage({ params }: PageProps) {
             <span className="text-foreground">{page.title}</span>
           </nav>
         )}
-
-        {/* Page header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground">{page.title}</h1>
-          <p className="mt-2 text-sm text-foreground-muted">
-            Last updated{' '}
-            {new Date(page.updated_at).toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          </p>
-        </div>
 
         {/* Page content */}
         {page.content ? (
