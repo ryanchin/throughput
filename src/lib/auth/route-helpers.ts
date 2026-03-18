@@ -29,6 +29,8 @@ export const PUBLIC_ROUTES = [
   '/test-admin-knowledge',
   '/test-knowledge-search',
   '/test-landing',
+  '/test-sales-browse',
+  '/test-admin-sales-materials',
 ]
 
 /** Route zone -> required roles */

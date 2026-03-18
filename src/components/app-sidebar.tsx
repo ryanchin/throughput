@@ -10,6 +10,7 @@ import {
   LayoutDashboardIcon,
   GraduationCapIcon,
   UsersIcon,
+  FolderOpenIcon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -97,6 +98,11 @@ const adminItems: NavItem[] = [
     title: 'Docs',
     href: '/admin/docs',
     icon: BookOpenIcon,
+  },
+  {
+    title: 'Sales Materials',
+    href: '/admin/sales-materials',
+    icon: FolderOpenIcon,
   },
   {
     title: 'Users',

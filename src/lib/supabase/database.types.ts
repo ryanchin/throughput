@@ -488,6 +488,87 @@ export interface Database {
         }
         Relationships: []
       }
+      sales_materials: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          description: string | null
+          material_type: string
+          category: string | null
+          tags: string[]
+          content: Json | null
+          file_path: string | null
+          file_name: string | null
+          file_size_bytes: number | null
+          file_mime_type: string | null
+          shareable: boolean
+          share_token: string | null
+          status: string
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          description?: string | null
+          material_type: string
+          category?: string | null
+          tags?: string[]
+          content?: Json | null
+          file_path?: string | null
+          file_name?: string | null
+          file_size_bytes?: number | null
+          file_mime_type?: string | null
+          shareable?: boolean
+          share_token?: string | null
+          status?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          slug?: string
+          description?: string | null
+          material_type?: string
+          category?: string | null
+          tags?: string[]
+          content?: Json | null
+          file_path?: string | null
+          file_name?: string | null
+          file_size_bytes?: number | null
+          file_mime_type?: string | null
+          shareable?: boolean
+          share_token?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      sales_material_categories: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          name?: string
+          slug?: string
+          order_index?: number
+        }
+        Relationships: []
+      }
       user_groups: {
         Row: {
           user_id: string
