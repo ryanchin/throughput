@@ -288,32 +288,55 @@ export function markdownToTiptap(markdown: string): TiptapDoc {
       }
 
       case 'bullet': {
-        // Collect consecutive bullet items
+        // Collect bullet items, skipping blank lines between them
         const items: TiptapNode[] = []
         while (i < lines.length) {
           const cl = classifyLine(lines[i])
-          if (cl.kind !== 'bullet') break
-          items.push({
-            type: 'listItem',
-            content: [textToParagraph(cl.content ?? '')],
-          })
-          i++
+          if (cl.kind === 'bullet') {
+            items.push({
+              type: 'listItem',
+              content: [textToParagraph(cl.content ?? '')],
+            })
+            i++
+          } else if (cl.kind === 'empty') {
+            let peek = i + 1
+            while (peek < lines.length && classifyLine(lines[peek]).kind === 'empty') peek++
+            if (peek < lines.length && classifyLine(lines[peek]).kind === 'bullet') {
+              i = peek
+            } else {
+              break
+            }
+          } else {
+            break
+          }
         }
         nodes.push({ type: 'bulletList', content: items })
         break
       }
 
       case 'ordered': {
-        // Collect consecutive ordered items
+        // Collect ordered items, skipping blank lines between them
         const items: TiptapNode[] = []
         while (i < lines.length) {
           const cl = classifyLine(lines[i])
-          if (cl.kind !== 'ordered') break
-          items.push({
-            type: 'listItem',
-            content: [textToParagraph(cl.content ?? '')],
-          })
-          i++
+          if (cl.kind === 'ordered') {
+            items.push({
+              type: 'listItem',
+              content: [textToParagraph(cl.content ?? '')],
+            })
+            i++
+          } else if (cl.kind === 'empty') {
+            // Look ahead past empty line — if next non-empty line is ordered, continue
+            let peek = i + 1
+            while (peek < lines.length && classifyLine(lines[peek]).kind === 'empty') peek++
+            if (peek < lines.length && classifyLine(lines[peek]).kind === 'ordered') {
+              i = peek // skip empty lines, continue collecting
+            } else {
+              break // empty line followed by non-list content — end the list
+            }
+          } else {
+            break
+          }
         }
         nodes.push({ type: 'orderedList', content: items })
         break
