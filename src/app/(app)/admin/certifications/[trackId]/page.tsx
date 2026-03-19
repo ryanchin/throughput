@@ -64,6 +64,8 @@ export default async function EditCertTrackPage({
       <div className="mt-10">
         <QuestionPoolManager
           trackId={trackId}
+          trackTitle={track.title}
+          trackDescription={track.description}
           questions={questions ?? []}
           questionsPerExam={track.questions_per_exam}
           questionPoolSize={track.question_pool_size}

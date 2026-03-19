@@ -34,6 +34,9 @@ export const rateLimiters = {
   /** POST /api/admin/generate/lesson — 50 generations per admin per day */
   generateLesson: createLimiter('gen_lesson', { requests: 50, window: '1d' }),
 
+  /** POST /api/admin/generate/certification — 20 generations per admin per day */
+  generateCertification: createLimiter('gen_cert', { requests: 20, window: '1d' }),
+
   /** POST /api/certifications/signup — 10 attempts per IP per 15 minutes */
   authSignup: createLimiter('auth_signup', { requests: 10, window: '15m' }),
 }

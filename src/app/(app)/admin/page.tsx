@@ -8,6 +8,7 @@ import {
   getRecentCertifications,
 } from '@/lib/admin/analytics'
 import { ExportButtons } from '@/components/admin/ExportButtons'
+import { GenerationHistory } from '@/components/admin/GenerationHistory'
 
 export default async function AdminDashboardPage() {
   const [userStats, activityStats, courseStats, certStats, coursePerformance, missedQuestions, recentCerts] =
@@ -157,6 +158,12 @@ export default async function AdminDashboardPage() {
         ) : (
           <p className="text-sm text-foreground-muted">No certifications issued yet.</p>
         )}
+      </section>
+
+      {/* AI Generation History */}
+      <section>
+        <h2 className="mb-4 text-xl font-semibold text-foreground">AI Generation History</h2>
+        <GenerationHistory />
       </section>
     </div>
   )

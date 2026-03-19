@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { AiContextPanel } from '@/components/admin/AiContextPanel'
 import type { Database } from '@/lib/supabase/database.types'
 
 type CertQuestion = Database['public']['Tables']['cert_questions']['Row']
@@ -15,6 +16,8 @@ interface McOption {
 
 interface QuestionPoolManagerProps {
   trackId: string
+  trackTitle: string
+  trackDescription: string | null
   questions: CertQuestion[]
   questionsPerExam: number
   questionPoolSize: number
@@ -24,8 +27,16 @@ interface QuestionPoolManagerProps {
 // Main Component
 // ────────────────────────────────────────────
 
+const GENERATE_PROGRESS_MESSAGES = [
+  'Generating exam questions...',
+  'Creating answer rubrics...',
+  'Almost there...',
+]
+
 export function QuestionPoolManager({
   trackId,
+  trackTitle,
+  trackDescription,
   questions: initialQuestions,
   questionsPerExam,
   questionPoolSize,
@@ -35,6 +46,135 @@ export function QuestionPoolManager({
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  // AI generation state
+  const [showGeneratePanel, setShowGeneratePanel] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [generateProgressIndex, setGenerateProgressIndex] = useState(0)
+  const [generateError, setGenerateError] = useState<string | null>(null)
+  const [generateQuestionCount, setGenerateQuestionCount] = useState(20)
+
+  // AI context state for generation
+  const [genInstructions, setGenInstructions] = useState('')
+  const [genPreset, setGenPreset] = useState<string | null>(null)
+  const [genFileText, setGenFileText] = useState<string | null>(null)
+  const [genFileName, setGenFileName] = useState<string | null>(null)
+  const [genFileWordCount, setGenFileWordCount] = useState(0)
+  const [genFileUploading, setGenFileUploading] = useState(false)
+  const [genSelectedCourseIds, setGenSelectedCourseIds] = useState<string[]>([])
+
+  // Progressive overlay messages for generation
+  useEffect(() => {
+    if (!generating) {
+      setGenerateProgressIndex(0)
+      return
+    }
+    const intervals = [5000, 12000]
+    const timers = intervals.map((delay, i) =>
+      setTimeout(() => setGenerateProgressIndex(i + 1), delay)
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [generating])
+
+  async function handleGenerateQuestions() {
+    setGenerateError(null)
+    setGenerating(true)
+
+    try {
+      // Step 1: Call the certification generation API
+      const genRes = await fetch('/api/admin/generate/certification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackTitle,
+          trackDescription: trackDescription || undefined,
+          questionCount: generateQuestionCount,
+          questionTypes: ['multiple_choice', 'open_ended'],
+          instructions: genInstructions.trim() || undefined,
+          preset: genPreset || undefined,
+          fileText: genFileText || undefined,
+          fileName: genFileName || undefined,
+          courseIds: genSelectedCourseIds.length > 0 ? genSelectedCourseIds : undefined,
+        }),
+      })
+
+      if (!genRes.ok) {
+        const genData = await genRes.json()
+        setGenerateError(genData.error || 'Failed to generate questions')
+        return
+      }
+
+      const genData = await genRes.json()
+      const generatedQuestions = genData.questions as Array<{
+        question_text: string
+        question_type: string
+        options: Array<{ text: string; is_correct: boolean }> | null
+        correct_answer: string | null
+        rubric: string | null
+        difficulty: string
+        max_points: number
+      }>
+
+      // Step 2: Write each question to the DB
+      let writeErrors = 0
+      const newQuestions: CertQuestion[] = []
+
+      for (const q of generatedQuestions) {
+        try {
+          const writeRes = await fetch(`/api/admin/certifications/${trackId}/questions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question_text: q.question_text,
+              question_type: q.question_type,
+              options: q.options,
+              correct_answer: q.correct_answer,
+              rubric: q.rubric,
+              difficulty: q.difficulty,
+              max_points: q.max_points,
+              tags: [],
+            }),
+          })
+
+          if (writeRes.ok) {
+            const writeData = await writeRes.json()
+            newQuestions.push(writeData.question)
+          } else {
+            writeErrors++
+          }
+        } catch {
+          writeErrors++
+        }
+      }
+
+      // Update local state with newly created questions
+      if (newQuestions.length > 0) {
+        setQuestions((prev) => [...prev, ...newQuestions])
+      }
+
+      if (writeErrors > 0) {
+        setGenerateError(
+          `Generated ${generatedQuestions.length} questions, but ${writeErrors} failed to save. ${newQuestions.length} were added successfully.`
+        )
+      } else {
+        // Success -- close the panel
+        setShowGeneratePanel(false)
+        // Reset generation form state
+        setGenInstructions('')
+        setGenPreset(null)
+        setGenFileText(null)
+        setGenFileName(null)
+        setGenFileWordCount(0)
+        setGenSelectedCourseIds([])
+      }
+
+      router.refresh()
+    } catch {
+      setGenerateError('Network error. Please try again.')
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   const count = questions.length
   const poolReady = count >= questionsPerExam
@@ -85,17 +225,33 @@ export function QuestionPoolManager({
             )}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setShowAddForm(true)
-            setEditingId(null)
-          }}
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-background hover:bg-accent-hover transition-colors shadow-accent-glow"
-          data-testid="add-question-button"
-        >
-          Add Question
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setShowGeneratePanel((prev) => !prev)
+              setShowAddForm(false)
+              setEditingId(null)
+            }}
+            disabled={generating}
+            className="rounded-lg border border-accent bg-accent-muted px-4 py-2 text-sm font-medium text-accent hover:bg-accent/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            data-testid="generate-questions-button"
+          >
+            {generating ? 'Generating...' : 'Generate Questions'}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowAddForm(true)
+              setEditingId(null)
+              setShowGeneratePanel(false)
+            }}
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-background hover:bg-accent-hover transition-colors shadow-accent-glow"
+            data-testid="add-question-button"
+          >
+            Add Question
+          </button>
+        </div>
       </div>
 
       {/* Progress bar */}
@@ -107,6 +263,106 @@ export function QuestionPoolManager({
           />
         </div>
       </div>
+
+      {/* Generate questions panel */}
+      {showGeneratePanel && (
+        <div className="mt-6" data-testid="generate-questions-panel">
+          {generating && (
+            <div data-testid="generate-overlay" className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mb-4" />
+              <h2 className="text-lg font-semibold text-foreground">Generating certification questions...</h2>
+              <p className="mt-2 text-sm text-foreground-muted">
+                {GENERATE_PROGRESS_MESSAGES[Math.min(generateProgressIndex, GENERATE_PROGRESS_MESSAGES.length - 1)]}
+              </p>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-accent/30 bg-surface p-5 shadow-card space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground">Generate Questions with AI</h3>
+              <button
+                type="button"
+                onClick={() => setShowGeneratePanel(false)}
+                className="text-foreground-muted hover:text-foreground text-lg leading-none px-1 transition-colors"
+                aria-label="Close generate panel"
+              >
+                &times;
+              </button>
+            </div>
+
+            {generateError && (
+              <div className="rounded-lg border border-destructive/50 bg-destructive-muted px-4 py-2 text-sm text-destructive">
+                {generateError}
+              </div>
+            )}
+
+            <AiContextPanel
+              instructions={genInstructions}
+              onInstructionsChange={setGenInstructions}
+              preset={genPreset}
+              onPresetChange={setGenPreset}
+              fileText={genFileText}
+              fileName={genFileName}
+              fileWordCount={genFileWordCount}
+              onFileUploaded={(data) => {
+                setGenFileText(data.text)
+                setGenFileName(data.name)
+                setGenFileWordCount(data.wordCount)
+              }}
+              onFileRemoved={() => {
+                setGenFileText(null)
+                setGenFileName(null)
+                setGenFileWordCount(0)
+              }}
+              fileUploading={genFileUploading}
+              onFileUploadStart={() => setGenFileUploading(true)}
+              selectedCourseIds={genSelectedCourseIds}
+              onCourseIdsChange={setGenSelectedCourseIds}
+              showCoursePicker={true}
+            >
+              {/* Question count setting */}
+              <div className="space-y-4 pt-2 border-t border-border">
+                <div className="space-y-1.5">
+                  <label htmlFor="gen-question-count" className="text-sm font-medium text-foreground">
+                    Questions to Generate
+                  </label>
+                  <input
+                    id="gen-question-count"
+                    data-testid="gen-question-count-input"
+                    type="number"
+                    value={generateQuestionCount}
+                    onChange={(e) => setGenerateQuestionCount(Number(e.target.value))}
+                    min={1}
+                    max={100}
+                    className="w-32 bg-background border border-border text-foreground rounded-lg px-3 py-2 focus:border-accent focus:ring-1 focus:ring-accent outline-none"
+                  />
+                  <p className="text-xs text-foreground-muted">Between 1 and 100 questions (mix of multiple choice and open-ended)</p>
+                </div>
+              </div>
+            </AiContextPanel>
+
+            {/* Generate action */}
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                type="button"
+                onClick={handleGenerateQuestions}
+                disabled={generating || generateQuestionCount < 1 || generateQuestionCount > 100}
+                className="bg-accent text-background hover:bg-accent-hover rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-accent-glow"
+                data-testid="generate-submit-button"
+              >
+                {generating ? 'Generating...' : `Generate ${generateQuestionCount} Questions`}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowGeneratePanel(false)}
+                className="bg-muted border border-border text-foreground hover:bg-raised rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add question form */}
       {showAddForm && (

@@ -13,11 +13,38 @@ vi.mock('@/lib/supabase/server', () => ({
   createServiceClient: vi.fn(),
 }))
 
+vi.mock('@/lib/generate/context-builder', () => ({
+  buildContext: vi.fn(),
+}))
+
+vi.mock('@/lib/generate/log-generation', () => ({
+  logGeneration: vi.fn(),
+}))
+
+vi.mock('@/lib/openrouter/client', () => ({
+  callOpenRouter: vi.fn(),
+}))
+
+vi.mock('@/lib/generate/markdown-to-tiptap', () => ({
+  markdownToTiptap: vi.fn().mockReturnValue({ type: 'doc', content: [{ type: 'paragraph', content: [] }] }),
+}))
+
+vi.mock('@/lib/security/rate-limiter', () => ({
+  rateLimiters: { generateCourse: {} },
+  checkRateLimit: vi.fn().mockResolvedValue(null),
+}))
+
 import { requireAdmin } from '@/lib/auth/requireAdmin'
 import { createServiceClient } from '@/lib/supabase/server'
+import { buildContext } from '@/lib/generate/context-builder'
+import { logGeneration } from '@/lib/generate/log-generation'
+import { callOpenRouter } from '@/lib/openrouter/client'
 
 const mockRequireAdmin = vi.mocked(requireAdmin)
 const mockCreateServiceClient = vi.mocked(createServiceClient)
+const mockBuildContext = vi.mocked(buildContext)
+const mockLogGeneration = vi.mocked(logGeneration)
+const mockCallOpenRouter = vi.mocked(callOpenRouter)
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -52,7 +79,10 @@ const VALID_REQUEST_BODY = {
   includeQuizzes: true,
 }
 
-const VALID_LLM_RESPONSE = {
+/**
+ * Phase 1 outline response — no lesson content, just structure + quiz questions.
+ */
+const VALID_OUTLINE_RESPONSE = {
   title: 'Sprint Planning Fundamentals',
   description: 'A course about sprint planning.',
   learning_objectives: [
@@ -64,7 +94,6 @@ const VALID_LLM_RESPONSE = {
       title: 'Introduction to Sprint Planning',
       summary: 'Learn the basics of sprint planning.',
       key_topics: ['What is sprint planning', 'Sprint goals'],
-      content_outline: '# Introduction\n\nThis is the introduction.',
       quiz: {
         questions: [
           {
@@ -83,7 +112,6 @@ const VALID_LLM_RESPONSE = {
       title: 'Estimation Techniques',
       summary: 'Learn about estimation.',
       key_topics: ['Story points', 'T-shirt sizing'],
-      content_outline: '# Estimation\n\nEstimation techniques overview.',
       quiz: {
         questions: [
           {
@@ -101,26 +129,30 @@ const VALID_LLM_RESPONSE = {
   ],
 }
 
-function mockOpenRouterResponse(content: unknown) {
-  return {
-    ok: true,
-    json: () =>
-      Promise.resolve({
-        choices: [
-          { message: { content: JSON.stringify(content) } },
-        ],
-      }),
-    text: () => Promise.resolve(''),
-  }
-}
+/**
+ * Phase 2 lesson content responses — one per lesson.
+ */
+const LESSON_1_CONTENT = '## What Is Sprint Planning\n\nSprint planning is a core ceremony...\n\n## Sprint Goals\n\nEvery sprint needs a clear goal...'
+const LESSON_2_CONTENT = '## Story Points\n\nStory points measure relative effort...\n\n## T-Shirt Sizing\n\nAn alternative estimation approach...'
 
-function mockOpenRouterFailure(status: number, body: string) {
-  return {
-    ok: false,
-    status,
-    text: () => Promise.resolve(body),
-    json: () => Promise.resolve({}),
-  }
+/**
+ * Sets up callOpenRouter to return outline JSON on first call,
+ * then lesson content strings on subsequent calls.
+ */
+function setupCallOpenRouter(
+  outlineResponse: unknown = VALID_OUTLINE_RESPONSE,
+  lessonContents: string[] = [LESSON_1_CONTENT, LESSON_2_CONTENT]
+) {
+  let callCount = 0
+  mockCallOpenRouter.mockImplementation(async () => {
+    callCount++
+    if (callCount === 1) {
+      // Phase 1: return outline JSON as a string
+      return JSON.stringify(outlineResponse)
+    }
+    // Phase 2: return lesson content markdown
+    return lessonContents[callCount - 2] ?? '## Fallback\n\nFallback content.'
+  })
 }
 
 /**
@@ -219,12 +251,31 @@ function setupServiceClient(options: {
 }
 
 // ---------------------------------------------------------------------------
+// Common setup
+// ---------------------------------------------------------------------------
+
+function setupAdminAuth() {
+  mockRequireAdmin.mockResolvedValue({
+    profile: ADMIN_PROFILE as never,
+    error: null,
+    supabase: {} as never,
+  })
+}
+
+function setupDefaultContext(contextText = '') {
+  mockBuildContext.mockResolvedValue({
+    contextText,
+    totalWords: contextText.split(/\s+/).filter(Boolean).length,
+    wasSummarized: false,
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 describe('POST /api/admin/generate/course', () => {
   let POST: (request: NextRequest) => Promise<Response>
-  let originalFetch: typeof global.fetch
   let originalEnv: string | undefined
 
   beforeEach(async () => {
@@ -232,11 +283,13 @@ describe('POST /api/admin/generate/course', () => {
     vi.resetModules()
 
     // Save originals
-    originalFetch = global.fetch
     originalEnv = process.env.OPENROUTER_API_KEY
 
     // Set API key for tests
     process.env.OPENROUTER_API_KEY = 'test-api-key'
+
+    // Default context mock
+    setupDefaultContext()
 
     // Re-import the route to pick up fresh mocks
     const mod = await import('@/app/api/admin/generate/course/route')
@@ -244,7 +297,6 @@ describe('POST /api/admin/generate/course', () => {
   })
 
   afterEach(() => {
-    global.fetch = originalFetch
     process.env.OPENROUTER_API_KEY = originalEnv
   })
 
@@ -252,14 +304,8 @@ describe('POST /api/admin/generate/course', () => {
   // 1. Successful generation
   // -------------------------------------------------------------------------
   it('generates a course and returns 201 with courseId', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
-
-    global.fetch = vi.fn().mockResolvedValue(mockOpenRouterResponse(VALID_LLM_RESPONSE))
-
+    setupAdminAuth()
+    setupCallOpenRouter()
     const { mockFrom } = setupServiceClient()
 
     const req = createRequest(VALID_REQUEST_BODY)
@@ -283,6 +329,15 @@ describe('POST /api/admin/generate/course', () => {
       (c: string[]) => c[0] === 'quizzes'
     )
     expect(quizCalls).toHaveLength(2)
+
+    // Verify generation was logged
+    expect(mockLogGeneration).toHaveBeenCalledWith(
+      expect.objectContaining({
+        adminId: 'admin-id',
+        generationType: 'course',
+        status: 'success',
+      })
+    )
   })
 
   // -------------------------------------------------------------------------
@@ -322,11 +377,7 @@ describe('POST /api/admin/generate/course', () => {
   // 3. Validation failures
   // -------------------------------------------------------------------------
   it('returns 400 when title is missing', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
     const req = createRequest({
       zone: 'training',
@@ -341,11 +392,7 @@ describe('POST /api/admin/generate/course', () => {
   })
 
   it('returns 400 when description is under 10 characters', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
     const req = createRequest({
       title: 'Test Course',
@@ -364,11 +411,7 @@ describe('POST /api/admin/generate/course', () => {
   })
 
   it('returns 400 when lessonCount is 0', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
     const req = createRequest({
       title: 'Test Course',
@@ -383,11 +426,7 @@ describe('POST /api/admin/generate/course', () => {
   })
 
   it('returns 400 when lessonCount is 21', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
     const req = createRequest({
       title: 'Test Course',
@@ -402,11 +441,7 @@ describe('POST /api/admin/generate/course', () => {
   })
 
   it('returns 400 for invalid JSON body', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
     const req = new NextRequest(
       'http://localhost:3000/api/admin/generate/course',
@@ -423,155 +458,136 @@ describe('POST /api/admin/generate/course', () => {
     expect(body.error).toContain('Invalid JSON')
   })
 
+  it('returns 400 when preset is invalid', async () => {
+    setupAdminAuth()
+
+    const req = createRequest({
+      ...VALID_REQUEST_BODY,
+      preset: 'nonexistent',
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Validation failed')
+  })
+
+  it('returns 400 when courseIds contains non-UUID strings', async () => {
+    setupAdminAuth()
+
+    const req = createRequest({
+      ...VALID_REQUEST_BODY,
+      courseIds: ['not-a-uuid'],
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toContain('Validation failed')
+  })
+
   // -------------------------------------------------------------------------
   // 4. LLM returns invalid JSON
   // -------------------------------------------------------------------------
   it('returns 500 when LLM returns non-JSON text', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          choices: [
-            { message: { content: 'This is not valid JSON at all!!!' } },
-          ],
-        }),
-    })
+    mockCallOpenRouter.mockResolvedValueOnce('This is not valid JSON at all!!!')
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('Failed to parse LLM response')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   // -------------------------------------------------------------------------
   // 5. LLM returns valid JSON but missing required fields
   // -------------------------------------------------------------------------
   it('returns 500 when LLM returns empty JSON object', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue(mockOpenRouterResponse({}))
+    mockCallOpenRouter.mockResolvedValueOnce(JSON.stringify({}))
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('Failed to parse LLM response')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   it('returns 500 when LLM returns JSON with missing lessons array', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue(
-      mockOpenRouterResponse({
-        title: 'A Course',
-        description: 'Desc',
-        learning_objectives: ['One'],
-        // no lessons
-      })
-    )
+    mockCallOpenRouter.mockResolvedValueOnce(JSON.stringify({
+      title: 'A Course',
+      description: 'Desc',
+      learning_objectives: ['One'],
+      // no lessons
+    }))
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('Failed to parse LLM response')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   // -------------------------------------------------------------------------
   // 6. LLM API failure
   // -------------------------------------------------------------------------
   it('returns 500 when OpenRouter API returns an error status', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue(
-      mockOpenRouterFailure(429, 'Rate limit exceeded')
-    )
+    mockCallOpenRouter.mockRejectedValueOnce(new Error('OpenRouter API error (429): Rate limit exceeded'))
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('LLM request failed')
-    expect(body.error).toContain('429')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   it('returns 500 when LLM returns empty content', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          choices: [{ message: { content: null } }],
-        }),
-    })
+    mockCallOpenRouter.mockResolvedValueOnce('')
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('empty response')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   // -------------------------------------------------------------------------
   // 7. Missing API key
   // -------------------------------------------------------------------------
   it('returns 500 when OPENROUTER_API_KEY is not set', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    delete process.env.OPENROUTER_API_KEY
+    mockCallOpenRouter.mockRejectedValueOnce(new Error('OPENROUTER_API_KEY is not configured'))
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('API key is not configured')
+    expect(body.error).toContain('Failed to generate course outline')
   })
 
   // -------------------------------------------------------------------------
   // 8. DB insert failure triggers cleanup
   // -------------------------------------------------------------------------
   it('returns 500 and cleans up when lesson insert fails', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue(mockOpenRouterResponse(VALID_LLM_RESPONSE))
+    setupCallOpenRouter()
 
     const { mockFrom } = setupServiceClient({
       courseInsert: { data: { id: 'cleanup-course-id' }, error: null },
@@ -599,13 +615,9 @@ describe('POST /api/admin/generate/course', () => {
   // 9. Course insert failure
   // -------------------------------------------------------------------------
   it('returns 500 when course insert fails', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockResolvedValue(mockOpenRouterResponse(VALID_LLM_RESPONSE))
+    setupCallOpenRouter()
 
     setupServiceClient({
       courseInsert: { data: null, error: { message: 'Unique constraint violation' } },
@@ -623,19 +635,87 @@ describe('POST /api/admin/generate/course', () => {
   // 10. Network error calling LLM
   // -------------------------------------------------------------------------
   it('returns 500 when fetch to OpenRouter throws a network error', async () => {
-    mockRequireAdmin.mockResolvedValue({
-      profile: ADMIN_PROFILE as never,
-      error: null,
-      supabase: {} as never,
-    })
+    setupAdminAuth()
 
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
+    mockCallOpenRouter.mockRejectedValueOnce(new Error('Network error'))
 
     const req = createRequest(VALID_REQUEST_BODY)
     const res = await POST(req)
 
     expect(res.status).toBe(500)
     const body = await res.json()
-    expect(body.error).toContain('Failed to call LLM')
+    expect(body.error).toContain('Failed to generate course outline')
+
+    // Verify error generation was logged
+    expect(mockLogGeneration).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'error',
+      })
+    )
+  })
+
+  // -------------------------------------------------------------------------
+  // 11. AI context integration
+  // -------------------------------------------------------------------------
+  it('passes context fields to buildContext when provided', async () => {
+    setupAdminAuth()
+    setupDefaultContext('Some extra context from file and courses')
+    setupCallOpenRouter()
+    setupServiceClient()
+
+    const req = createRequest({
+      ...VALID_REQUEST_BODY,
+      instructions: 'Focus on agile methodology',
+      preset: 'technical',
+      fileText: 'Extracted text from a PDF',
+      fileName: 'guide.pdf',
+      courseIds: ['123e4567-e89b-12d3-a456-426614174000'],
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(201)
+
+    expect(mockBuildContext).toHaveBeenCalledWith({
+      instructions: 'Focus on agile methodology',
+      preset: 'technical',
+      fileText: 'Extracted text from a PDF',
+      fileName: 'guide.pdf',
+      fileWordCount: expect.any(Number),
+      courseIds: ['123e4567-e89b-12d3-a456-426614174000'],
+    })
+  })
+
+  it('returns 500 when buildContext fails', async () => {
+    setupAdminAuth()
+    mockBuildContext.mockRejectedValue(new Error('Context build failed'))
+
+    const req = createRequest(VALID_REQUEST_BODY)
+    const res = await POST(req)
+
+    expect(res.status).toBe(500)
+    const body = await res.json()
+    expect(body.error).toContain('Failed to build context')
+  })
+
+  it('works without any context fields (backward compatible)', async () => {
+    setupAdminAuth()
+    setupDefaultContext('')
+    setupCallOpenRouter()
+    setupServiceClient()
+
+    const req = createRequest(VALID_REQUEST_BODY)
+    const res = await POST(req)
+
+    expect(res.status).toBe(201)
+
+    // buildContext should have been called with null/empty defaults
+    expect(mockBuildContext).toHaveBeenCalledWith({
+      instructions: null,
+      preset: null,
+      fileText: null,
+      fileName: null,
+      fileWordCount: 0,
+      courseIds: [],
+    })
   })
 })
