@@ -37,6 +37,7 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
   const [lesson, setLesson] = useState<Lesson>(initialLesson)
   const [title, setTitle] = useState(initialLesson.title)
   const [slug, setSlug] = useState(initialLesson.slug)
+  const [editorKey, setEditorKey] = useState(0) // increment to force BlockEditor remount
   const [metaSaveStatus, setMetaSaveStatus] = useState<SaveStatus>('idle')
   const [regenerating, setRegenerating] = useState(false)
   const [showAiPanel, setShowAiPanel] = useState(false)
@@ -184,9 +185,12 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
         return
       }
 
+      // Update local state and force BlockEditor remount with new content
+      const { lesson: updatedLesson } = await patchRes.json()
+      setLesson(updatedLesson)
+      setEditorKey((k) => k + 1)
       setShowAiPanel(false)
       setAdjustmentInstructions('')
-      router.refresh()
     } catch {
       alert('An error occurred while generating lesson content.')
     } finally {
@@ -351,6 +355,7 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
 
           {/* Block editor */}
           <BlockEditor
+            key={editorKey}
             initialContent={lesson.content as JSONContent | undefined}
             onSave={handleContentSave}
             editable
