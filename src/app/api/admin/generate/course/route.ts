@@ -19,6 +19,8 @@ Generate a course OUTLINE in JSON. Return ONLY valid JSON, no markdown fences, n
 
 Generate the structure only — do NOT write lesson content yet. Each lesson just needs a title, summary, key topics, and quiz questions.
 
+IMPORTANT: Generate 8-10 quiz questions per lesson. Mix multiple_choice (with 4 options each), true_false, and open_ended types. Questions should test real understanding, not just recall.
+
 JSON structure:
 {
   "title": string,

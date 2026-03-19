@@ -201,7 +201,7 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
             body: JSON.stringify({
               trackTitle: title,
               trackDescription: `Quiz for lesson: ${title}`,
-              questionCount: Math.max(3, initialQuestions.length),
+              questionCount: Math.max(10, initialQuestions.length),
               questionTypes: ['multiple_choice', 'open_ended'],
               instructions: `Generate quiz questions that test understanding of this lesson content:\n\n${newContentText.slice(0, 3000)}`,
             }),
