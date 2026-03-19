@@ -87,7 +87,7 @@ export default function LessonNav({
                 <span className="text-foreground-subtle text-xs mr-1.5">
                   {index + 1}.
                 </span>
-                <span className="truncate">{lesson.title}</span>
+                <span className="break-words">{lesson.title}</span>
               </span>
 
               {lessonHasQuiz && (
@@ -117,7 +117,7 @@ export default function LessonNav({
 
               {/* Page-level TOC for the active module */}
               {isCurrent && currentLessonPageTitles.length > 1 && (
-                <ul className="ml-8 mt-1 mb-2 space-y-0.5 border-l border-border pl-3" role="list">
+                <ul className="ml-8 mt-1 mb-2 space-y-0.5 border-l border-border pl-3 overflow-hidden" role="list">
                   {currentLessonPageTitles.map((pageTitle, pageIndex) => (
                     <li key={pageIndex}>
                       <PageTocItem
@@ -167,7 +167,7 @@ function PageTocItem({
   return (
     <Link
       href={`${basePath}/${courseSlug}/${lessonSlug}?page=${pageIndex + 1}`}
-      className="block py-1 text-xs text-foreground-muted hover:text-accent transition-colors truncate"
+      className="block py-1 text-xs text-foreground-muted hover:text-accent transition-colors break-words"
       data-testid={`page-toc-item-${pageIndex}`}
     >
       {title}

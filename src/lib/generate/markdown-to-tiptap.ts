@@ -98,6 +98,7 @@ interface ClassifiedLine {
     | 'code_fence'
     | 'blockquote'
     | 'hr'
+    | 'table_row'
     | 'paragraph'
     | 'empty'
   level?: number // heading level or ordered list number
@@ -152,8 +153,65 @@ function classifyLine(line: string): ClassifiedLine {
     return { kind: 'blockquote', content: quoteMatch[1] }
   }
 
+  // Table row (starts and ends with |, or starts with |)
+  if (/^\|.+\|/.test(line.trim())) {
+    return { kind: 'table_row', content: line.trim() }
+  }
+
+  // Table row (starts and ends with |)
+  if (/^\|.+\|/.test(line.trim())) {
+    return { kind: 'table_row', content: line.trim() }
+  }
+
   // Plain paragraph
   return { kind: 'paragraph', content: line }
+}
+
+// ---------------------------------------------------------------------------
+// Table parsing
+// ---------------------------------------------------------------------------
+
+/**
+ * Parse markdown table rows into a Tiptap table node.
+ * Skips separator rows (|---|---|).
+ */
+function parseMarkdownTable(rows: string[]): TiptapNode | null {
+  if (rows.length === 0) return null
+
+  const parsedRows: string[][] = []
+  let isFirstRow = true
+
+  for (const row of rows) {
+    // Skip separator rows like |---|---|
+    if (/^\|[\s\-:|]+\|$/.test(row)) continue
+
+    const cells = row
+      .split('|')
+      .slice(1, -1) // Remove leading/trailing empty strings from split
+      .map((cell) => cell.trim())
+
+    if (cells.length > 0) {
+      parsedRows.push(cells)
+    }
+  }
+
+  if (parsedRows.length === 0) return null
+
+  const tableRows: TiptapNode[] = parsedRows.map((cells, rowIndex) => {
+    const isHeader = rowIndex === 0 && isFirstRow
+    const cellType = isHeader ? 'tableHeader' : 'tableCell'
+
+    const tableCells: TiptapNode[] = cells.map((cellText) => ({
+      type: cellType,
+      content: [textToParagraph(cellText)],
+    }))
+
+    return { type: 'tableRow', content: tableCells }
+  })
+
+  isFirstRow = false
+
+  return { type: 'table', content: tableRows }
 }
 
 // ---------------------------------------------------------------------------
@@ -170,7 +228,7 @@ function classifyLine(line: string): ClassifiedLine {
  *
  * Limitations (by design):
  * - No nested lists
- * - No tables or images
+ * - No images
  * - No link parsing
  *
  * @param markdown - The raw markdown string to convert
@@ -274,6 +332,22 @@ export function markdownToTiptap(markdown: string): TiptapDoc {
           type: 'blockquote',
           content: [textToParagraph(quoteLines.join(' '))],
         })
+        break
+      }
+
+      case 'table_row': {
+        // Collect consecutive table rows and convert to Tiptap table
+        const tableRows: string[] = []
+        while (i < lines.length) {
+          const cl = classifyLine(lines[i])
+          if (cl.kind !== 'table_row') break
+          tableRows.push(cl.content ?? '')
+          i++
+        }
+        const tableNode = parseMarkdownTable(tableRows)
+        if (tableNode) {
+          nodes.push(tableNode)
+        }
         break
       }
 
