@@ -24,6 +24,8 @@ interface PageData {
   order_index: number
   status: ContentStatus
   content: JSONContent | null
+  meta_title: string | null
+  meta_description: string | null
   updated_at: string
 }
 
@@ -46,8 +48,11 @@ export default function AdminDocsEditorPage() {
   const [slug, setSlug] = useState('')
   const [parentId, setParentId] = useState<string | null>(null)
   const [status, setStatus] = useState<ContentStatus>('draft')
+  const [metaTitle, setMetaTitle] = useState('')
+  const [metaDescription, setMetaDescription] = useState('')
   const [metaSaving, setMetaSaving] = useState(false)
   const [metaSaved, setMetaSaved] = useState(false)
+  const [aiGenerating, setAiGenerating] = useState(false)
 
   const metaSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -79,6 +84,8 @@ export default function AdminDocsEditorPage() {
           setSlug(pageData.page.slug)
           setParentId(pageData.page.parent_id)
           setStatus(pageData.page.status)
+          setMetaTitle(pageData.page.meta_title ?? '')
+          setMetaDescription(pageData.page.meta_description ?? '')
         } else {
           // The list response doesn't include content, so fetch the full page
           const pageRes = await fetch(`/api/admin/docs-pages/${pageId}`)
@@ -95,6 +102,8 @@ export default function AdminDocsEditorPage() {
             setSlug(current.slug)
             setParentId(current.parent_id)
             setStatus(current.status)
+            setMetaTitle(current.meta_title ?? '')
+            setMetaDescription(current.meta_description ?? '')
           }
         }
 
@@ -157,6 +166,8 @@ export default function AdminDocsEditorPage() {
           slug,
           parentId,
           status,
+          metaTitle: metaTitle || null,
+          metaDescription: metaDescription || null,
         }),
       })
 
@@ -170,7 +181,7 @@ export default function AdminDocsEditorPage() {
     } finally {
       setMetaSaving(false)
     }
-  }, [pageId, title, slug, parentId, status])
+  }, [pageId, title, slug, parentId, status, metaTitle, metaDescription])
 
   // Auto-save content via BlockEditor's onSave
   const handleContentSave = useCallback(
@@ -183,6 +194,25 @@ export default function AdminDocsEditorPage() {
     },
     [pageId]
   )
+
+  // Generate SEO metadata with AI
+  const handleGenerateSeo = useCallback(async () => {
+    setAiGenerating(true)
+    try {
+      const res = await fetch(`/api/admin/docs-pages/${pageId}/generate-seo`, {
+        method: 'POST',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.metaTitle) setMetaTitle(data.metaTitle)
+        if (data.metaDescription) setMetaDescription(data.metaDescription)
+      }
+    } catch {
+      // Handle generation error
+    } finally {
+      setAiGenerating(false)
+    }
+  }, [pageId])
 
   // Cleanup
   useEffect(() => {
@@ -304,6 +334,67 @@ export default function AdminDocsEditorPage() {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* SEO Metadata */}
+      <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">SEO Metadata</h2>
+          <button
+            type="button"
+            onClick={handleGenerateSeo}
+            disabled={aiGenerating}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground hover:border-accent/30 hover:text-accent transition-colors disabled:opacity-50"
+          >
+            {aiGenerating ? (
+              <>
+                <span className="size-3.5 animate-spin rounded-full border-2 border-foreground-muted border-t-transparent" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-3.5-6.5L16 7m-8 10-2.5 2.5M19.5 19.5 17 17M7 7 4.5 4.5" />
+                </svg>
+                Generate with AI
+              </>
+            )}
+          </button>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-foreground">
+            Meta Title
+            <span className="ml-1 text-xs text-foreground-muted">({metaTitle.length}/70)</span>
+          </label>
+          <input
+            type="text"
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value.slice(0, 70))}
+            placeholder="Page title for search engines"
+            className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-foreground">
+            Meta Description
+            <span className="ml-1 text-xs text-foreground-muted">({metaDescription.length}/160)</span>
+          </label>
+          <textarea
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value.slice(0, 160))}
+            rows={2}
+            placeholder="Brief description for search engine results"
+            className="w-full resize-none rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-foreground-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+
+        {!metaTitle && !metaDescription && (
+          <p className="text-xs text-foreground-muted">
+            No SEO metadata set. Click &ldquo;Generate with AI&rdquo; to create it from the page content, or enter it manually.
+          </p>
+        )}
       </div>
 
       {/* Content editor */}

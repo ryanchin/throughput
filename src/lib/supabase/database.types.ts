@@ -306,6 +306,8 @@ export interface Database {
           status: ContentStatus
           visibility: Visibility
           type: DocsPageType
+          meta_title: string | null
+          meta_description: string | null
           search_vector: unknown
           created_by: string | null
           created_at: string
@@ -321,6 +323,8 @@ export interface Database {
           status?: ContentStatus
           visibility?: Visibility
           type?: DocsPageType
+          meta_title?: string | null
+          meta_description?: string | null
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -334,6 +338,8 @@ export interface Database {
           status?: ContentStatus
           visibility?: Visibility
           type?: DocsPageType
+          meta_title?: string | null
+          meta_description?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -566,6 +572,42 @@ export interface Database {
           name?: string
           slug?: string
           order_index?: number
+        }
+        Relationships: []
+      }
+      generation_logs: {
+        Row: {
+          id: string
+          admin_id: string
+          generation_type: string
+          inputs: Json
+          output_summary: string | null
+          model: string
+          tokens_used: number | null
+          duration_ms: number | null
+          status: string
+          error_message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          admin_id: string
+          generation_type: string
+          inputs?: Json
+          output_summary?: string | null
+          model?: string
+          tokens_used?: number | null
+          duration_ms?: number | null
+          status?: string
+          error_message?: string | null
+          created_at?: string
+        }
+        Update: {
+          output_summary?: string | null
+          tokens_used?: number | null
+          duration_ms?: number | null
+          status?: string
+          error_message?: string | null
         }
         Relationships: []
       }

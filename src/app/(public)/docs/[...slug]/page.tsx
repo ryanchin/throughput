@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${page.title} | Product Studio Docs`,
-    description: `${page.title} — Product Studio documentation for enterprise product teams.`,
+    title: page.meta_title || `${page.title} | Product Studio Docs`,
+    description: page.meta_description || `${page.title} — Product Studio documentation for enterprise product teams.`,
   }
 }
 

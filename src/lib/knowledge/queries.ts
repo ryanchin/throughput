@@ -61,7 +61,7 @@ export async function fetchPageBySlug(slugPath: string, type: DocsPageType = 'kn
 
   const { data: pages, error } = await supabase
     .from('docs_pages')
-    .select('id, title, slug, content, parent_id, visibility, updated_at, created_by')
+    .select('id, title, slug, content, parent_id, visibility, meta_title, meta_description, updated_at, created_by')
     .eq('slug', targetSlug)
     .eq('status', 'published')
     .eq('type', type)

@@ -10,6 +10,8 @@ const updatePageSchema = z.object({
   content: z.record(z.string(), z.unknown()).optional(),
   status: z.enum(['draft', 'published']).optional(),
   orderIndex: z.number().int().min(0).optional(),
+  metaTitle: z.string().max(70).nullable().optional(),
+  metaDescription: z.string().max(160).nullable().optional(),
 })
 
 /**
@@ -76,7 +78,7 @@ export async function PATCH(
     )
   }
 
-  const { title, slug, parentId, content, status, orderIndex } = parsed.data
+  const { title, slug, parentId, content, status, orderIndex, metaTitle, metaDescription } = parsed.data
 
   // Build update object with only provided fields
   const updates: Record<string, unknown> = {}
@@ -86,6 +88,8 @@ export async function PATCH(
   if (content !== undefined) updates.content = content
   if (status !== undefined) updates.status = status
   if (orderIndex !== undefined) updates.order_index = orderIndex
+  if (metaTitle !== undefined) updates.meta_title = metaTitle
+  if (metaDescription !== undefined) updates.meta_description = metaDescription
   // Docs pages are always public — never allow visibility override
   updates.visibility = 'public'
 
