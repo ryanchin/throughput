@@ -103,7 +103,7 @@ export async function GET() {
     const courseLessons = lessonsByCoursId.get(course.id) ?? []
     const lessonCount = courseLessons.length
     const totalDurationMinutes = courseLessons.reduce(
-      (sum, l) => sum + (l.duration_minutes ?? 0),
+      (sum, l) => sum + (l.duration_minutes ?? 15),
       0
     )
     const completedLessonCount = courseLessons.filter((l) =>

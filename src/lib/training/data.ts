@@ -187,7 +187,7 @@ export async function getCatalogData(zone: Zone): Promise<CatalogData | null> {
       ...course,
       lesson_count: courseLessons.length,
       total_duration_minutes: courseLessons.reduce(
-        (sum, l) => sum + (l.duration_minutes ?? 0),
+        (sum, l) => sum + (l.duration_minutes ?? 15),
         0
       ),
     }
