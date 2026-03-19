@@ -42,6 +42,7 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
   const [regenerating, setRegenerating] = useState(false)
   const [showAiPanel, setShowAiPanel] = useState(false)
   const [adjustmentInstructions, setAdjustmentInstructions] = useState('')
+  const [alsoRegenerateQuiz, setAlsoRegenerateQuiz] = useState(true)
   const [contentSaveStatus, setContentSaveStatus] = useState<SaveStatus>('idle')
   const metaSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -189,8 +190,62 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
       const { lesson: updatedLesson } = await patchRes.json()
       setLesson(updatedLesson)
       setEditorKey((k) => k + 1)
+
+      // Regenerate quiz if requested and quiz exists
+      if (alsoRegenerateQuiz && initialQuiz) {
+        try {
+          const newContentText = extractTiptapText(content)
+          const quizRes = await fetch('/api/admin/generate/certification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              trackTitle: title,
+              trackDescription: `Quiz for lesson: ${title}`,
+              questionCount: Math.max(3, initialQuestions.length),
+              questionTypes: ['multiple_choice', 'open_ended'],
+              instructions: `Generate quiz questions that test understanding of this lesson content:\n\n${newContentText.slice(0, 3000)}`,
+            }),
+          })
+
+          if (quizRes.ok) {
+            const { questions } = await quizRes.json()
+            // Delete existing questions
+            for (const q of initialQuestions) {
+              await fetch(
+                `/api/admin/courses/${courseId}/lessons/${lesson.id}/quiz/questions/${q.id}`,
+                { method: 'DELETE' }
+              )
+            }
+            // Add new questions
+            for (let i = 0; i < questions.length; i++) {
+              const q = questions[i]
+              await fetch(
+                `/api/admin/courses/${courseId}/lessons/${lesson.id}/quiz/questions`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    question_text: q.question_text,
+                    question_type: q.question_type,
+                    options: q.options ?? null,
+                    correct_answer: q.correct_answer ?? null,
+                    rubric: q.rubric ?? null,
+                    max_points: q.max_points ?? 10,
+                    order_index: i,
+                  }),
+                }
+              )
+            }
+          }
+        } catch {
+          // Quiz regen failed — content is still saved, just note it
+          console.error('Quiz regeneration failed, but lesson content was saved')
+        }
+      }
+
       setShowAiPanel(false)
       setAdjustmentInstructions('')
+      router.refresh() // Refresh to pick up new quiz questions in sidebar
     } catch {
       alert('An error occurred while generating lesson content.')
     } finally {
@@ -322,6 +377,18 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
                     data-testid="adjustment-instructions"
                   />
                 </div>
+
+                {initialQuiz && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={alsoRegenerateQuiz}
+                      onChange={(e) => setAlsoRegenerateQuiz(e.target.checked)}
+                      className="rounded border-border text-accent focus:ring-accent"
+                    />
+                    <span className="text-xs text-foreground-muted">Also regenerate quiz questions to match new content</span>
+                  </label>
+                )}
 
                 <div className="flex items-center gap-2">
                   {lesson.content && adjustmentInstructions.trim() && (
