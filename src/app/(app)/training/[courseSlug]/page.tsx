@@ -26,7 +26,8 @@ export default async function TrainingCourseOverviewPage({
   const completedCount = completedLessonIds.length
   const totalLessons = lessons.length
   const progress = calculateProgress(completedCount, totalLessons)
-  const totalDuration = lessons.reduce((sum, l) => sum + (l.duration_minutes ?? 0), 0)
+  // Use explicit duration if set, otherwise estimate from lesson count (~15 min per lesson)
+  const totalDuration = lessons.reduce((sum, l) => sum + (l.duration_minutes ?? 15), 0)
 
   const nextLessonSlug = getNextLessonSlug(lessons, completedLessonIds)
   const firstLessonSlug = lessons.length > 0 ? lessons[0].slug : null
@@ -48,17 +49,9 @@ export default async function TrainingCourseOverviewPage({
     <div data-testid="course-overview">
       {/* Hero section */}
       <div className="relative rounded-xl overflow-hidden mb-8">
-        {course.cover_image_url ? (
-          <img
-            src={course.cover_image_url}
-            alt={`${course.title} cover`}
-            className="w-full h-56 object-cover"
-          />
-        ) : (
-          <div className="w-full h-56 bg-gradient-brand opacity-20" />
-        )}
+        <div className="w-full h-56 bg-gradient-brand opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="absolute bottom-0 left-0 right-0 p-6 pt-12">
           <div className="flex items-center gap-3 mb-3">
             <span className="rounded-full bg-accent-muted px-3 py-1 text-xs font-medium text-accent uppercase tracking-wide">
               Training
