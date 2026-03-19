@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -56,6 +57,12 @@ export default function LessonViewer({ content }: LessonViewerProps) {
       },
     },
   })
+
+  useEffect(() => {
+    if (editor) {
+      editor.commands.setContent(content)
+    }
+  }, [editor, content])
 
   if (!editor) return null
 
