@@ -134,9 +134,11 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/training" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-brand text-sm font-bold text-white">
-                PS
-              </div>
+              <img
+                src="/ascendion-logo.webp"
+                alt="Ascendion"
+                className="aspect-square size-8 rounded-lg object-cover"
+              />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">Product Studio</span>
                 <span className="truncate text-xs text-sidebar-foreground/60">

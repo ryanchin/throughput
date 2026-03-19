@@ -1025,6 +1025,32 @@ SUPABASE_TEST_SERVICE_ROLE_KEY=
 
 ---
 
+## gstack
+
+Use the `/browse` skill from gstack for **all web browsing**. Never use `mcp__claude-in-chrome__*` tools.
+
+### Available skills
+
+| Skill | Purpose |
+|-------|---------|
+| `/office-hours` | Office hours sessions |
+| `/plan-ceo-review` | Plan CEO review |
+| `/plan-eng-review` | Plan engineering review |
+| `/plan-design-review` | Plan design review |
+| `/design-consultation` | Design consultation |
+| `/review` | Code review |
+| `/ship` | Ship code |
+| `/browse` | Web browsing (use this instead of MCP browser tools) |
+| `/qa` | QA testing |
+| `/qa-only` | QA testing only |
+| `/design-review` | Design review |
+| `/setup-browser-cookies` | Set up browser cookies |
+| `/retro` | Retrospective |
+| `/debug` | Debug issues |
+| `/document-release` | Document a release |
+
+---
+
 ## Git Conventions
 
 ```

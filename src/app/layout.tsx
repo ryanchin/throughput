@@ -43,9 +43,13 @@ const neueMachina = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Throughput | AAVA Product Studio Training & Certification",
+  title: "Throughput | Ascendion Product Studio Training & Certification",
   description:
-    "Internal training and public certification platform for AAVA Product Studio",
+    "Internal training and public certification platform for Ascendion Product Studio",
+  icons: {
+    icon: "/ascendion-logo.webp",
+    apple: "/ascendion-logo.webp",
+  },
 };
 
 export default function RootLayout({
