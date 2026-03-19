@@ -27,6 +27,10 @@ interface LessonNavProps {
   currentLessonPageTitles?: string[]
   /** Whether the current lesson has a quiz. */
   currentLessonHasQuiz?: boolean
+  /** Current page index within the active lesson (for TOC highlighting). */
+  currentPageIndex?: number
+  /** Callback when a page TOC item is clicked. */
+  onPageClick?: (pageIndex: number) => void
 }
 
 export default function LessonNav({
@@ -39,6 +43,8 @@ export default function LessonNav({
   navigationMode,
   currentLessonPageTitles = [],
   currentLessonHasQuiz = false,
+  currentPageIndex = 0,
+  onPageClick,
 }: LessonNavProps) {
   const completedLessonIds = lessonProgress
     .filter((p) => p.completed_at !== null)
@@ -120,13 +126,19 @@ export default function LessonNav({
                 <ul className="ml-8 mt-1 mb-2 space-y-0.5 border-l border-border pl-3 overflow-hidden" role="list">
                   {currentLessonPageTitles.map((pageTitle, pageIndex) => (
                     <li key={pageIndex}>
-                      <PageTocItem
-                        title={pageTitle}
-                        pageIndex={pageIndex}
-                        basePath={basePath}
-                        courseSlug={courseSlug}
-                        lessonSlug={lesson.slug}
-                      />
+                      <button
+                        onClick={() => onPageClick?.(pageIndex)}
+                        className={cn(
+                          'block w-full text-left py-1 text-xs transition-colors break-words',
+                          pageIndex === currentPageIndex
+                            ? 'text-accent font-medium'
+                            : 'text-foreground-muted hover:text-accent'
+                        )}
+                        data-testid={`page-toc-item-${pageIndex}`}
+                        aria-current={pageIndex === currentPageIndex ? 'page' : undefined}
+                      >
+                        {pageTitle}
+                      </button>
                     </li>
                   ))}
                   {currentLessonHasQuiz && (
@@ -147,31 +159,6 @@ export default function LessonNav({
         })}
       </ul>
     </nav>
-  )
-}
-
-/** Individual page item in the TOC — uses client-side navigation via query param. */
-function PageTocItem({
-  title,
-  pageIndex,
-  basePath,
-  courseSlug,
-  lessonSlug,
-}: {
-  title: string
-  pageIndex: number
-  basePath: string
-  courseSlug: string
-  lessonSlug: string
-}) {
-  return (
-    <Link
-      href={`${basePath}/${courseSlug}/${lessonSlug}?page=${pageIndex + 1}`}
-      className="block py-1 text-xs text-foreground-muted hover:text-accent transition-colors break-words"
-      data-testid={`page-toc-item-${pageIndex}`}
-    >
-      {title}
-    </Link>
   )
 }
 

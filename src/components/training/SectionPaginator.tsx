@@ -1,13 +1,19 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+// Note: useSearchParams intentionally NOT used — page state is local to avoid
+// Next.js SSR/client hydration issues with query params in client components
 import LessonViewer from '@/components/editor/LessonViewer'
 import type { JSONContent } from '@tiptap/react'
 import type { ContentPage } from '@/lib/training/content-splitter'
 
 interface SectionPaginatorProps {
   pages: ContentPage[]
+  /** Initial page index from server-side URL parsing */
+  initialPage?: number
+  /** Controlled page index — when set externally (e.g. from sidebar TOC click) */
+  currentPageOverride?: number
   quizUrl?: string
   hasQuiz: boolean
   hasPassedQuiz: boolean
@@ -17,48 +23,52 @@ interface SectionPaginatorProps {
 
 export function SectionPaginator({
   pages,
+  initialPage = 0,
   quizUrl,
   hasQuiz,
   hasPassedQuiz,
   completeButton,
   onPageChange,
+  currentPageOverride,
 }: SectionPaginatorProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const contentRef = useRef<HTMLDivElement>(null)
-  const [transitioning, setTransitioning] = useState(false)
 
   const totalPages = pages.length
+  const [currentPage, setCurrentPage] = useState(
+    Math.max(0, Math.min(initialPage, totalPages - 1))
+  )
+  const [transitioning, setTransitioning] = useState(false)
 
-  // Derive current page from URL — single source of truth
-  const urlPageParam = searchParams.get('page')
-  const currentPage = Math.max(0, Math.min(
-    (urlPageParam ? parseInt(urlPageParam, 10) - 1 : 0),
-    totalPages - 1
-  ))
+  // Sync with external override (sidebar TOC clicks)
+  useEffect(() => {
+    if (currentPageOverride !== undefined && currentPageOverride !== currentPage) {
+      setCurrentPage(Math.max(0, Math.min(currentPageOverride, totalPages - 1)))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPageOverride, totalPages])
 
   const isFirstPage = currentPage === 0
   const isLastContentPage = currentPage === totalPages - 1
   const page = pages[currentPage]
 
-  // Notify parent when page changes
+  // Sync URL and notify parent when page changes
   useEffect(() => {
+    // Update URL without triggering navigation
+    window.history.replaceState(null, '', `${pathname}?page=${currentPage + 1}`)
     onPageChange?.(currentPage)
-  }, [currentPage, onPageChange])
+  }, [currentPage, pathname, onPageChange])
 
   const goToPage = useCallback((index: number) => {
-    if (index < 0 || index >= totalPages) return
+    if (index < 0 || index >= totalPages || index === currentPage) return
     setTransitioning(true)
-    // Brief fade-out, then update URL (which updates currentPage via searchParams)
     setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set('page', String(index + 1))
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+      setCurrentPage(index)
       setTransitioning(false)
       contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 75)
-  }, [totalPages, searchParams, router, pathname])
+  }, [totalPages, currentPage])
 
   const goNext = useCallback(() => {
     if (isLastContentPage && hasQuiz && !hasPassedQuiz && quizUrl) {
@@ -76,14 +86,23 @@ export function SectionPaginator({
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase()
       if (tag === 'input' || tag === 'textarea' || tag === 'select') return
       if ((e.target as HTMLElement)?.isContentEditable) return
-
       if (e.key === 'ArrowRight') { e.preventDefault(); goNext() }
       if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev() }
     }
-
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [goNext, goPrev])
+
+  // Listen for popstate (browser back/forward) to sync page
+  useEffect(() => {
+    function handlePopState() {
+      const params = new URLSearchParams(window.location.search)
+      const p = parseInt(params.get('page') ?? '1', 10) - 1
+      setCurrentPage(Math.max(0, Math.min(p, totalPages - 1)))
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [totalPages])
 
   const prefersReducedMotion = typeof window !== 'undefined'
     && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
@@ -93,9 +112,7 @@ export function SectionPaginator({
     return (
       <div>
         {page?.content && <LessonViewer content={page.content as JSONContent} />}
-        <div className="mt-8 pt-6 border-t border-border">
-          {completeButton}
-        </div>
+        <div className="mt-8 pt-6 border-t border-border">{completeButton}</div>
       </div>
     )
   }
@@ -154,7 +171,6 @@ export function SectionPaginator({
               <button
                 onClick={() => router.push(quizUrl)}
                 className="bg-accent text-background rounded-lg px-4 py-2 hover:bg-accent-hover transition-colors text-sm font-medium"
-                aria-label="Take quiz"
               >
                 Take Quiz →
               </button>
