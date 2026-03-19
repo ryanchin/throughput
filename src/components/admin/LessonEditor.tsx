@@ -39,6 +39,8 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
   const [slug, setSlug] = useState(initialLesson.slug)
   const [metaSaveStatus, setMetaSaveStatus] = useState<SaveStatus>('idle')
   const [regenerating, setRegenerating] = useState(false)
+  const [showAiPanel, setShowAiPanel] = useState(false)
+  const [adjustmentInstructions, setAdjustmentInstructions] = useState('')
   const [contentSaveStatus, setContentSaveStatus] = useState<SaveStatus>('idle')
   const metaSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -130,9 +132,9 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
     [courseId, lesson.id]
   )
 
-  /** Regenerate lesson content with AI */
-  async function handleRegenerateLesson() {
-    if (lesson.content) {
+  /** Regenerate or adjust lesson content with AI */
+  async function handleRegenerateLesson(mode: 'regenerate' | 'adjust') {
+    if (mode === 'regenerate' && lesson.content) {
       const confirmed = window.confirm(
         'Replace existing content? This will overwrite the current lesson content with AI-generated content.'
       )
@@ -141,13 +143,22 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
 
     setRegenerating(true)
     try {
+      // Build instructions: for adjustment mode, include current content context + specific instructions
+      let instructions = adjustmentInstructions.trim()
+      if (mode === 'adjust' && lesson.content) {
+        // Extract current content text for context
+        const currentText = extractTiptapText(lesson.content)
+        instructions = `ADJUSTMENT MODE: The lesson already has content. Make the following specific adjustments to the existing content while keeping the overall structure:\n\n${adjustmentInstructions}\n\nCurrent content for reference:\n${currentText.slice(0, 4000)}`
+      }
+
       const generateRes = await fetch('/api/admin/generate/lesson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           courseTitle: title,
           lessonTitle: title,
-          additionalNotes: '',
+          additionalNotes: adjustmentInstructions.trim() || undefined,
+          instructions: instructions || undefined,
         }),
       })
 
@@ -159,7 +170,6 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
 
       const { content } = await generateRes.json()
 
-      // Save the generated content to the lesson
       const patchRes = await fetch(
         `/api/admin/courses/${courseId}/lessons/${lesson.id}`,
         {
@@ -174,12 +184,26 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
         return
       }
 
+      setShowAiPanel(false)
+      setAdjustmentInstructions('')
       router.refresh()
     } catch {
       alert('An error occurred while generating lesson content.')
     } finally {
       setRegenerating(false)
     }
+  }
+
+  /** Extract plain text from Tiptap JSON for context */
+  function extractTiptapText(content: unknown): string {
+    if (!content || typeof content !== 'object') return ''
+    const node = content as Record<string, unknown>
+    let text = ''
+    if (node.text && typeof node.text === 'string') text += node.text
+    if (Array.isArray(node.content)) {
+      for (const child of node.content) text += extractTiptapText(child) + ' '
+    }
+    return text.trim()
   }
 
   /** Resolve a combined save status for the header indicator */
@@ -268,24 +292,61 @@ export function LessonEditor({ courseId, lesson: initialLesson, initialQuiz, ini
             <div className="mt-3">
               <button
                 type="button"
-                onClick={handleRegenerateLesson}
+                onClick={() => setShowAiPanel(!showAiPanel)}
                 disabled={regenerating}
                 className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground-muted transition-colors hover:bg-raised hover:text-foreground disabled:opacity-50"
                 data-testid="regenerate-lesson-button"
               >
-                {regenerating ? (
-                  <>
-                    <span className="animate-spin">⟳</span>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Regenerate with AI
-                  </>
-                )}
+                <Sparkles className="h-3.5 w-3.5" />
+                {showAiPanel ? 'Hide AI Panel' : 'AI Assist'}
               </button>
             </div>
+
+            {/* AI adjustment/regeneration panel */}
+            {showAiPanel && (
+              <div className="mt-3 rounded-lg border border-accent-muted bg-raised p-4 space-y-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-foreground">
+                    What do you want to change?
+                  </label>
+                  <textarea
+                    value={adjustmentInstructions}
+                    onChange={(e) => setAdjustmentInstructions(e.target.value)}
+                    rows={3}
+                    placeholder="e.g., Make it more technical, add healthcare examples, shorten the introduction, add a hands-on exercise..."
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-foreground-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                    data-testid="adjustment-instructions"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {lesson.content && adjustmentInstructions.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => handleRegenerateLesson('adjust')}
+                      disabled={regenerating}
+                      className="rounded-lg bg-accent text-background px-3 py-1.5 text-sm font-medium hover:bg-accent-hover transition-colors disabled:opacity-50"
+                      data-testid="adjust-content-button"
+                    >
+                      {regenerating ? 'Adjusting...' : 'Adjust Content'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRegenerateLesson('regenerate')}
+                    disabled={regenerating}
+                    className="rounded-lg border border-border bg-background text-foreground px-3 py-1.5 text-sm font-medium hover:bg-raised transition-colors disabled:opacity-50"
+                    data-testid="regenerate-content-button"
+                  >
+                    {regenerating ? 'Generating...' : 'Regenerate from Scratch'}
+                  </button>
+                </div>
+
+                {regenerating && (
+                  <p className="text-xs text-foreground-muted">This typically takes 15-30 seconds...</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Block editor */}
