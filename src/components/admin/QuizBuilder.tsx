@@ -567,11 +567,16 @@ export function QuizBuilder({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question_type: type,
-          question_text: '',
+          question_text: 'New question — click to edit',
           max_points: 10,
           correct_answer: type === 'true_false' ? 'true' : null,
-          options: type === 'multiple_choice' ? defaultOptions : null,
-          rubric: type === 'open_ended' ? '' : null,
+          options: type === 'multiple_choice'
+            ? [
+                { text: 'Option A', is_correct: true },
+                { text: 'Option B', is_correct: false },
+              ]
+            : null,
+          rubric: type === 'open_ended' ? 'Evaluate the response for completeness and accuracy.' : null,
         }),
       })
       if (!res.ok) {
