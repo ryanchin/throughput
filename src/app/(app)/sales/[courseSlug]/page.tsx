@@ -49,7 +49,7 @@ export default async function SalesCourseOverviewPage({
       <div className="relative rounded-xl overflow-hidden mb-8">
         <div className="w-full h-56 bg-gradient-brand opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-20">
+        <div className="absolute inset-0 flex flex-col justify-center px-6">
           <div className="flex items-center gap-3 mb-3">
             <span className="rounded-full bg-secondary-muted px-3 py-1 text-xs font-medium text-secondary uppercase tracking-wide">
               Sales
