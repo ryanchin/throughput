@@ -1,20 +1,17 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import LessonViewer from '@/components/editor/LessonViewer'
 import type { JSONContent } from '@tiptap/react'
 import type { ContentPage } from '@/lib/training/content-splitter'
 
 interface SectionPaginatorProps {
   pages: ContentPage[]
-  /** Quiz link URL if the lesson has a quiz. Renders as the final "page". */
   quizUrl?: string
   hasQuiz: boolean
   hasPassedQuiz: boolean
-  /** Lesson complete button rendered after last page/quiz */
   completeButton: React.ReactNode
-  /** Callback when page changes — used to update sidebar */
   onPageChange?: (pageIndex: number) => void
 }
 
@@ -27,39 +24,41 @@ export function SectionPaginator({
   onPageChange,
 }: SectionPaginatorProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const contentRef = useRef<HTMLDivElement>(null)
-
-  // Parse page from URL, default to 0
-  const urlPage = parseInt(searchParams.get('page') ?? '1', 10) - 1
-  const [currentPage, setCurrentPage] = useState(
-    Math.max(0, Math.min(urlPage, pages.length - 1))
-  )
   const [transitioning, setTransitioning] = useState(false)
 
   const totalPages = pages.length
+
+  // Derive current page from URL — single source of truth
+  const urlPageParam = searchParams.get('page')
+  const currentPage = Math.max(0, Math.min(
+    (urlPageParam ? parseInt(urlPageParam, 10) - 1 : 0),
+    totalPages - 1
+  ))
+
   const isFirstPage = currentPage === 0
   const isLastContentPage = currentPage === totalPages - 1
   const page = pages[currentPage]
 
-  // Sync URL when page changes
+  // Notify parent when page changes
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('page', String(currentPage + 1))
-    router.replace(`?${params.toString()}`, { scroll: false })
     onPageChange?.(currentPage)
-  }, [currentPage, router, searchParams, onPageChange])
+  }, [currentPage, onPageChange])
 
   const goToPage = useCallback((index: number) => {
     if (index < 0 || index >= totalPages) return
     setTransitioning(true)
+    // Brief fade-out, then update URL (which updates currentPage via searchParams)
     setTimeout(() => {
-      setCurrentPage(index)
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('page', String(index + 1))
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
       setTransitioning(false)
-      // Scroll to top of content
       contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 75) // Half of 150ms transition — swap at midpoint
-  }, [totalPages])
+    }, 75)
+  }, [totalPages, searchParams, router, pathname])
 
   const goNext = useCallback(() => {
     if (isLastContentPage && hasQuiz && !hasPassedQuiz && quizUrl) {
@@ -71,7 +70,7 @@ export function SectionPaginator({
 
   const goPrev = useCallback(() => goToPage(currentPage - 1), [currentPage, goToPage])
 
-  // Keyboard navigation — only when focus is not in an input
+  // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase()
@@ -86,7 +85,6 @@ export function SectionPaginator({
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [goNext, goPrev])
 
-  // Check prefers-reduced-motion
   const prefersReducedMotion = typeof window !== 'undefined'
     && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
 
@@ -96,7 +94,6 @@ export function SectionPaginator({
       <div>
         {page?.content && <LessonViewer content={page.content as JSONContent} />}
         <div className="mt-8 pt-6 border-t border-border">
-          {hasQuiz && !hasPassedQuiz && quizUrl && <QuizButton url={quizUrl} />}
           {completeButton}
         </div>
       </div>
@@ -135,7 +132,6 @@ export function SectionPaginator({
         role="navigation"
         aria-label="Lesson page navigation"
       >
-        {/* Previous */}
         <div className="w-32">
           {!isFirstPage && (
             <button
@@ -148,12 +144,10 @@ export function SectionPaginator({
           )}
         </div>
 
-        {/* Page count */}
         <span className="text-sm text-foreground-muted">
           Page {currentPage + 1} of {totalPages}
         </span>
 
-        {/* Next / Quiz / Complete */}
         <div className="w-32 flex justify-end">
           {isLastContentPage ? (
             hasQuiz && !hasPassedQuiz && quizUrl ? (
@@ -179,16 +173,5 @@ export function SectionPaginator({
         </div>
       </nav>
     </div>
-  )
-}
-
-function QuizButton({ url }: { url: string }) {
-  return (
-    <a
-      href={url}
-      className="inline-flex items-center gap-2 rounded-lg bg-secondary text-foreground px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity mb-4"
-    >
-      Take Quiz
-    </a>
   )
 }
