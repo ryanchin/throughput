@@ -7,6 +7,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import { markdownToTiptap } from '../src/lib/generate/markdown-to-tiptap'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -61,79 +62,6 @@ async function generateLessonContent(courseTitle: string, lessonTitle: string, l
   return data.choices?.[0]?.message?.content ?? ''
 }
 
-/** Convert markdown to basic Tiptap JSON (heading + paragraph nodes). */
-function markdownToBasicTiptap(markdown: string): object {
-  const lines = markdown.split('\n')
-  const nodes: object[] = []
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed) continue
-
-    const h2Match = trimmed.match(/^##\s+(.+)/)
-    const h3Match = trimmed.match(/^###\s+(.+)/)
-    const bulletMatch = trimmed.match(/^[-*]\s+(.+)/)
-    const numberedMatch = trimmed.match(/^\d+\.\s+(.+)/)
-
-    if (h2Match) {
-      nodes.push({
-        type: 'heading',
-        attrs: { level: 2 },
-        content: [{ type: 'text', text: h2Match[1] }],
-      })
-    } else if (h3Match) {
-      nodes.push({
-        type: 'heading',
-        attrs: { level: 3 },
-        content: [{ type: 'text', text: h3Match[1] }],
-      })
-    } else if (bulletMatch) {
-      nodes.push({
-        type: 'bulletList',
-        content: [{
-          type: 'listItem',
-          content: [{
-            type: 'paragraph',
-            content: [{ type: 'text', text: bulletMatch[1] }],
-          }],
-        }],
-      })
-    } else if (numberedMatch) {
-      nodes.push({
-        type: 'orderedList',
-        content: [{
-          type: 'listItem',
-          content: [{
-            type: 'paragraph',
-            content: [{ type: 'text', text: numberedMatch[1] }],
-          }],
-        }],
-      })
-    } else {
-      // Handle bold text within paragraphs
-      const parts: object[] = []
-      const boldRegex = /\*\*(.+?)\*\*/g
-      let lastIndex = 0
-      let match
-      while ((match = boldRegex.exec(trimmed)) !== null) {
-        if (match.index > lastIndex) {
-          parts.push({ type: 'text', text: trimmed.slice(lastIndex, match.index) })
-        }
-        parts.push({ type: 'text', marks: [{ type: 'bold' }], text: match[1] })
-        lastIndex = match.index + match[0].length
-      }
-      if (lastIndex < trimmed.length) {
-        parts.push({ type: 'text', text: trimmed.slice(lastIndex) })
-      }
-      if (parts.length > 0) {
-        nodes.push({ type: 'paragraph', content: parts })
-      }
-    }
-  }
-
-  return { type: 'doc', content: nodes }
-}
-
 async function main() {
   const targetCourseId = process.argv[2]
 
@@ -173,7 +101,7 @@ async function main() {
         const wordCount = markdown.split(/\s+/).filter(Boolean).length
         const sectionCount = (markdown.match(/^## /gm) || []).length
 
-        const tiptapContent = markdownToBasicTiptap(markdown)
+        const tiptapContent = markdownToTiptap(markdown)
 
         const { error: updateError } = await supabase
           .from('lessons')
