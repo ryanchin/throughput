@@ -460,7 +460,7 @@ export function CourseForm({ course }: CourseFormProps) {
               <>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--foreground-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                 <span className="mt-2 text-xs text-foreground-muted">Click to upload cover image</span>
-                <span className="text-xs text-foreground-subtle">PNG, JPG, WebP, GIF — max 5 MB</span>
+                <span className="text-xs text-foreground-subtle">PNG, JPG, WebP, GIF — 800x400 px recommended — max 5 MB</span>
               </>
             )}
           </label>
