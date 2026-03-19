@@ -187,7 +187,9 @@ export default function TestQuizPlayer() {
           results={dynamicResults}
           courseSlug="test-course"
           lessonSlug="test-lesson"
+          lessonId="test-lesson-id"
           basePath="/training"
+          nextLessonSlug="test-next-lesson"
           onRetake={() => setMode('player')}
         />
       ) : (
@@ -195,7 +197,9 @@ export default function TestQuizPlayer() {
           results={MOCK_RESULTS_FAILED}
           courseSlug="test-course"
           lessonSlug="test-lesson"
+          lessonId="test-lesson-id"
           basePath="/training"
+          nextLessonSlug={null}
           onRetake={() => setMode('player')}
         />
       )}

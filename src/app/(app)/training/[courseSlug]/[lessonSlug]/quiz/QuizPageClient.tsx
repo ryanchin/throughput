@@ -29,7 +29,9 @@ interface QuizPageClientProps {
   passingScore: number
   courseSlug: string
   lessonSlug: string
+  lessonId: string
   basePath: string
+  nextLessonSlug: string | null
 }
 
 interface QuizResults {
@@ -73,7 +75,9 @@ export default function QuizPageClient(props: QuizPageClientProps) {
         results={results}
         courseSlug={props.courseSlug}
         lessonSlug={props.lessonSlug}
+        lessonId={props.lessonId}
         basePath={props.basePath}
+        nextLessonSlug={props.nextLessonSlug}
         onRetake={() => setResults(null)}
       />
     )

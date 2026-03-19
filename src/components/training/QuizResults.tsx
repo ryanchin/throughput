@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
@@ -29,7 +30,9 @@ interface QuizResultsProps {
   results: QuizResults
   courseSlug: string
   lessonSlug: string
+  lessonId: string
   basePath: string
+  nextLessonSlug: string | null
   onRetake: () => void
 }
 
@@ -37,9 +40,30 @@ export default function QuizResultsComponent({
   results,
   courseSlug,
   lessonSlug,
+  lessonId,
   basePath,
+  nextLessonSlug,
   onRetake,
 }: QuizResultsProps) {
+  const [completing, setCompleting] = useState(false)
+  const [completed, setCompleted] = useState(false)
+
+  // Auto-complete lesson after passing quiz
+  useEffect(() => {
+    if (!results.attempt.passed || completed || completing) return
+    setCompleting(true)
+    fetch('/api/training/progress', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lessonId }),
+    })
+      .then((res) => {
+        if (res.ok) setCompleted(true)
+      })
+      .catch(() => {})
+      .finally(() => setCompleting(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [results.attempt.passed, lessonId])
   const { attempt, responses, quizTitle, passingScore } = results
   const passed = attempt.passed
   const score = Math.round(attempt.score)
@@ -243,13 +267,22 @@ export default function QuizResultsComponent({
           Back to Lesson
         </Link>
 
-        {passed && (
+        {passed && nextLessonSlug && (
           <Link
-            href={`${basePath}/${courseSlug}`}
+            href={`${basePath}/${courseSlug}/${nextLessonSlug}`}
             className="rounded-lg bg-accent text-background px-4 py-2.5
               text-sm font-medium hover:bg-accent-hover transition-colors"
           >
-            Next Lesson
+            Next Module →
+          </Link>
+        )}
+        {passed && !nextLessonSlug && (
+          <Link
+            href={`${basePath}/${courseSlug}/results`}
+            className="rounded-lg bg-accent text-background px-4 py-2.5
+              text-sm font-medium hover:bg-accent-hover transition-colors"
+          >
+            View Results
           </Link>
         )}
       </div>

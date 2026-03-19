@@ -69,6 +69,19 @@ export default async function QuizPage({
         : q.options,
   }))
 
+  // Find the next lesson for navigation after quiz pass
+  const { data: allLessons } = await supabase
+    .from('lessons')
+    .select('slug, order_index')
+    .eq('course_id', course.id)
+    .eq('status', 'published')
+    .order('order_index', { ascending: true })
+
+  const currentLessonIndex = (allLessons ?? []).findIndex((l) => l.slug === lessonSlug)
+  const nextLesson = currentLessonIndex >= 0 && currentLessonIndex < (allLessons ?? []).length - 1
+    ? (allLessons ?? [])[currentLessonIndex + 1]
+    : null
+
   return (
     <QuizPageClient
       quizId={quiz.id}
@@ -77,7 +90,9 @@ export default async function QuizPage({
       passingScore={quiz.passing_score}
       courseSlug={courseSlug}
       lessonSlug={lessonSlug}
+      lessonId={lesson.id}
       basePath="/training"
+      nextLessonSlug={nextLesson?.slug ?? null}
     />
   )
 }
