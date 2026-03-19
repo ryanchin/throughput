@@ -1,10 +1,12 @@
+import { Suspense } from 'react'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getLessonData } from '@/lib/training/data'
 import { calculateProgress } from '@/lib/training/progress'
+import { splitContentIntoPages, extractPageTitles } from '@/lib/training/content-splitter'
 import LessonNav from '@/components/training/LessonNav'
 import LessonCompleteButton from '@/components/training/LessonCompleteButton'
-import LessonViewer from '@/components/editor/LessonViewer'
+import { PaginatedLesson } from './PaginatedLesson'
 import type { JSONContent } from '@tiptap/react'
 
 export default async function TrainingLessonPage({
@@ -39,6 +41,10 @@ export default async function TrainingLessonPage({
   const currentIndex = lessons.findIndex((l) => l.slug === lessonSlug)
   const lessonNumber = currentIndex + 1
 
+  // Split content into pages at ## heading boundaries
+  const pages = splitContentIntoPages(lesson.content as JSONContent | null)
+  const pageTitles = extractPageTitles(lesson.content as JSONContent | null)
+
   // Build props for LessonNav
   const lessonProgress = lessons.map((l) => ({
     lesson_id: l.id,
@@ -51,6 +57,8 @@ export default async function TrainingLessonPage({
       lessonId: l.id,
       passed: l.id === lesson.id ? hasPassedQuiz : false,
     }))
+
+  const quizUrl = hasQuiz ? `/training/${courseSlug}/${lessonSlug}/quiz` : undefined
 
   return (
     <div data-testid="lesson-page" className="flex gap-0 lg:gap-8">
@@ -73,6 +81,8 @@ export default async function TrainingLessonPage({
               courseSlug={courseSlug}
               basePath="/training"
               navigationMode={course.navigation_mode}
+              currentLessonPageTitles={pageTitles}
+              currentLessonHasQuiz={hasQuiz}
             />
           </div>
         </div>
@@ -80,11 +90,11 @@ export default async function TrainingLessonPage({
 
       {/* Main content area */}
       <div className="flex-1 min-w-0 space-y-6">
-        {/* Progress bar */}
+        {/* Course progress bar */}
         <div className="bg-surface border border-border rounded-xl shadow-card p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-foreground-muted">
-              Lesson {lessonNumber} of {totalLessons}
+              Module {lessonNumber} of {totalLessons}
             </span>
             <span className="text-sm font-medium text-accent">{progress}%</span>
           </div>
@@ -96,42 +106,34 @@ export default async function TrainingLessonPage({
           </div>
         </div>
 
-        {/* Lesson title */}
+        {/* Module title */}
         <h1 className="text-3xl font-bold text-foreground">{lesson.title}</h1>
 
-        {/* Lesson content */}
+        {/* Paginated content */}
         {lesson.content ? (
-          <LessonViewer content={lesson.content as JSONContent} />
+          <Suspense fallback={<div className="h-40 bg-muted rounded-lg animate-pulse" />}>
+            <PaginatedLesson
+              pages={pages}
+              quizUrl={quizUrl}
+              hasQuiz={hasQuiz}
+              hasPassedQuiz={hasPassedQuiz}
+              completeButton={
+                <LessonCompleteButton
+                  lessonId={lesson.id}
+                  courseSlug={courseSlug}
+                  basePath="/training"
+                  isCompleted={isCurrentLessonCompleted}
+                  hasQuiz={hasQuiz}
+                  quizPassed={hasPassedQuiz}
+                />
+              }
+            />
+          </Suspense>
         ) : (
           <div className="rounded-xl border border-border bg-surface p-8 text-center">
-            <p className="text-foreground-muted">
-              This lesson has no content yet.
-            </p>
+            <p className="text-foreground-muted">This lesson has no content yet.</p>
           </div>
         )}
-
-        {/* Quiz link + complete button */}
-        <div className="flex flex-col gap-4 pt-4 border-t border-border">
-          {hasQuiz && !hasPassedQuiz && (
-            <Link
-              href={`/training/${courseSlug}/${lessonSlug}/quiz`}
-              className="inline-flex items-center gap-2 rounded-lg bg-secondary text-foreground
-                px-4 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity w-fit"
-            >
-              <QuizIcon />
-              Take Quiz
-            </Link>
-          )}
-
-          <LessonCompleteButton
-            lessonId={lesson.id}
-            courseSlug={courseSlug}
-            basePath="/training"
-            isCompleted={isCurrentLessonCompleted}
-            hasQuiz={hasQuiz}
-            quizPassed={hasPassedQuiz}
-          />
-        </div>
 
         {/* Mobile lesson navigation */}
         <div className="lg:hidden mt-8">
@@ -148,6 +150,8 @@ export default async function TrainingLessonPage({
                 courseSlug={courseSlug}
                 basePath="/training"
                 navigationMode={course.navigation_mode}
+                currentLessonPageTitles={pageTitles}
+                currentLessonHasQuiz={hasQuiz}
               />
             </div>
           </details>
@@ -157,41 +161,10 @@ export default async function TrainingLessonPage({
   )
 }
 
-// -- Inline SVG icons --
-
 function BackIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
-    </svg>
-  )
-}
-
-function QuizIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M9 11l3 3L22 4" />
-      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
     </svg>
   )
 }

@@ -23,6 +23,10 @@ interface LessonNavProps {
   courseSlug: string
   basePath: string
   navigationMode: 'sequential' | 'free'
+  /** Page titles for the currently active lesson (from extractPageTitles). */
+  currentLessonPageTitles?: string[]
+  /** Whether the current lesson has a quiz. */
+  currentLessonHasQuiz?: boolean
 }
 
 export default function LessonNav({
@@ -33,6 +37,8 @@ export default function LessonNav({
   courseSlug,
   basePath,
   navigationMode,
+  currentLessonPageTitles = [],
+  currentLessonHasQuiz = false,
 }: LessonNavProps) {
   const completedLessonIds = lessonProgress
     .filter((p) => p.completed_at !== null)
@@ -44,7 +50,7 @@ export default function LessonNav({
 
   return (
     <nav data-testid="lesson-nav" aria-label="Lesson navigation">
-      <ul className="space-y-0.5">
+      <ul className="space-y-0.5" role="list">
         {lessons.map((lesson, index) => {
           const isCurrent = lesson.slug === currentLessonSlug
           const isCompleted = completedSet.has(lesson.id)
@@ -65,7 +71,6 @@ export default function LessonNav({
                 !isCurrent && !accessible && 'text-foreground-subtle cursor-not-allowed'
               )}
             >
-              {/* Status indicator */}
               <span className="flex-shrink-0 w-5 flex items-center justify-center">
                 {isCompleted ? (
                   <CheckCircleIcon />
@@ -78,7 +83,6 @@ export default function LessonNav({
                 )}
               </span>
 
-              {/* Lesson number + title */}
               <span className="flex-1 min-w-0">
                 <span className="text-foreground-subtle text-xs mr-1.5">
                   {index + 1}.
@@ -86,7 +90,6 @@ export default function LessonNav({
                 <span className="truncate">{lesson.title}</span>
               </span>
 
-              {/* Quiz badge */}
               {lessonHasQuiz && (
                 <span
                   className={cn(
@@ -111,6 +114,34 @@ export default function LessonNav({
               ) : (
                 content
               )}
+
+              {/* Page-level TOC for the active module */}
+              {isCurrent && currentLessonPageTitles.length > 1 && (
+                <ul className="ml-8 mt-1 mb-2 space-y-0.5 border-l border-border pl-3" role="list">
+                  {currentLessonPageTitles.map((pageTitle, pageIndex) => (
+                    <li key={pageIndex}>
+                      <PageTocItem
+                        title={pageTitle}
+                        pageIndex={pageIndex}
+                        basePath={basePath}
+                        courseSlug={courseSlug}
+                        lessonSlug={lesson.slug}
+                      />
+                    </li>
+                  ))}
+                  {currentLessonHasQuiz && (
+                    <li>
+                      <Link
+                        href={`${basePath}/${courseSlug}/${lesson.slug}/quiz`}
+                        className="flex items-center gap-1.5 py-1 text-xs text-foreground-muted hover:text-accent transition-colors"
+                      >
+                        <span>📝</span>
+                        <span>Quiz</span>
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              )}
             </li>
           )
         })}
@@ -119,21 +150,36 @@ export default function LessonNav({
   )
 }
 
+/** Individual page item in the TOC — uses client-side navigation via query param. */
+function PageTocItem({
+  title,
+  pageIndex,
+  basePath,
+  courseSlug,
+  lessonSlug,
+}: {
+  title: string
+  pageIndex: number
+  basePath: string
+  courseSlug: string
+  lessonSlug: string
+}) {
+  return (
+    <Link
+      href={`${basePath}/${courseSlug}/${lessonSlug}?page=${pageIndex + 1}`}
+      className="block py-1 text-xs text-foreground-muted hover:text-accent transition-colors truncate"
+      data-testid={`page-toc-item-${pageIndex}`}
+    >
+      {title}
+    </Link>
+  )
+}
+
 // -- Inline SVG icons --
 
 function CheckCircleIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="var(--success)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
       <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
@@ -150,15 +196,7 @@ function CurrentDotIcon() {
 
 function EmptyCircleIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="var(--border)"
-      strokeWidth="2"
-      aria-hidden="true"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--border)" strokeWidth="2" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
     </svg>
   )
@@ -166,17 +204,7 @@ function EmptyCircleIcon() {
 
 function LockIcon() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
