@@ -47,6 +47,7 @@ export function CourseForm({ course }: CourseFormProps) {
   const [navigationMode, setNavigationMode] = useState<'sequential' | 'free'>(course?.navigation_mode ?? 'sequential')
   const [passingScore, setPassingScore] = useState(course?.passing_score ?? 70)
   const [coverImageUrl, setCoverImageUrl] = useState(course?.cover_image_url ?? '')
+  const [coverUploading, setCoverUploading] = useState(false)
   const [status, setStatus] = useState<'draft' | 'published'>(course?.status as 'draft' | 'published' ?? 'draft')
 
   const [aiMode, setAiMode] = useState(false)
@@ -410,14 +411,60 @@ export function CourseForm({ course }: CourseFormProps) {
         {errors.passing_score && <p className="text-xs text-destructive">{errors.passing_score}</p>}
       </div>
 
-      {/* Cover Image URL */}
+      {/* Cover Image */}
       <div className="space-y-1.5">
-        <label htmlFor="cover-image" className="text-sm font-medium text-foreground">Cover Image URL</label>
-        <input id="cover-image" type="text" value={coverImageUrl}
-          onChange={(e) => setCoverImageUrl(e.target.value)}
-          placeholder="https://example.com/image.jpg"
-          className="w-full bg-background border border-border text-foreground rounded-lg px-3 py-2 focus:border-accent focus:ring-1 focus:ring-accent outline-none placeholder:text-foreground-subtle" />
-        <p className="text-xs text-foreground-muted">Optional. Full upload support coming in a future iteration.</p>
+        <label className="text-sm font-medium text-foreground">Cover Image</label>
+        {coverImageUrl && (
+          <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border mb-2">
+            <img src={coverImageUrl} alt="Cover preview" className="w-full h-full object-cover" />
+            <button
+              type="button"
+              onClick={() => setCoverImageUrl('')}
+              className="absolute top-2 right-2 bg-background/80 rounded-full p-1 text-foreground-muted hover:text-destructive transition-colors"
+              aria-label="Remove cover image"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        )}
+        {!coverImageUrl && (
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-accent/30 transition-colors bg-background">
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0]
+                if (!file) return
+                setCoverUploading(true)
+                try {
+                  const formData = new FormData()
+                  formData.append('file', file)
+                  const res = await fetch('/api/admin/courses/cover-upload', {
+                    method: 'POST',
+                    body: formData,
+                  })
+                  if (res.ok) {
+                    const data = await res.json()
+                    setCoverImageUrl(data.url)
+                  }
+                } catch {} finally {
+                  setCoverUploading(false)
+                  e.target.value = ''
+                }
+              }}
+            />
+            {coverUploading ? (
+              <div className="size-5 animate-spin rounded-full border-2 border-foreground-muted border-t-transparent" />
+            ) : (
+              <>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--foreground-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span className="mt-2 text-xs text-foreground-muted">Click to upload cover image</span>
+                <span className="text-xs text-foreground-subtle">PNG, JPG, WebP, GIF — max 5 MB</span>
+              </>
+            )}
+          </label>
+        )}
         {errors.cover_image_url && <p className="text-xs text-destructive">{errors.cover_image_url}</p>}
       </div>
 
