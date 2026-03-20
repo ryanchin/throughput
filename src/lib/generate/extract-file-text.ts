@@ -28,9 +28,10 @@ export async function extractFileText(
 
 /** Extract text from a PDF buffer using pdf-parse. */
 async function extractPdfText(buffer: Buffer): Promise<string> {
-  // Dynamic import to avoid bundling issues
+  // Import pdf-parse/lib/pdf-parse directly to avoid the index.js wrapper
+  // which tries to load a test PDF file (./test/data/05-versions-space.pdf)
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>
+  const pdfParse = require('pdf-parse/lib/pdf-parse') as (buf: Buffer) => Promise<{ text: string }>
   const result = await pdfParse(buffer)
   return result.text.trim()
 }
