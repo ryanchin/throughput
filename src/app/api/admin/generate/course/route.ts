@@ -75,7 +75,7 @@ Do NOT write a brief overview. Write the FULL training content.`
 const generateCourseSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   zone: z.enum(['training', 'sales']).default('training'),
-  description: z.string().min(10, 'Description must be at least 10 characters').max(2000),
+  description: z.string().min(1, 'Description is required').max(2000),
   lessonCount: z.number().int().min(1).max(20).nullable().optional(),
   includeQuizzes: z.boolean().default(true),
   instructions: z.string().max(5000).optional(),
@@ -112,6 +112,9 @@ export async function POST(request: NextRequest) {
   }
 
   const parsed = generateCourseSchema.safeParse(body)
+  if (!parsed.success) {
+    console.error('[generate/course] Validation failed:', JSON.stringify(parsed.error.issues, null, 2))
+  }
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Validation failed', details: parsed.error.issues },
