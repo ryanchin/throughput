@@ -48,7 +48,7 @@ const generateCertificationSchema = z.object({
     .min(1)
     .default(['multiple_choice', 'open_ended']),
   // AI context fields
-  instructions: z.string().max(5000).optional(),
+  instructions: z.string().max(50000).optional(),
   preset: z.enum(['technical', 'conversational', 'assessment', 'beginner']).optional(),
   fileText: z.string().optional(),
   fileName: z.string().optional(),

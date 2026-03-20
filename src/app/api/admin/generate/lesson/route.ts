@@ -29,7 +29,7 @@ const generateLessonSchema = z.object({
   lessonTitle: z.string().min(1, 'Lesson title is required'),
   additionalNotes: z.string().max(2000).optional(),
   // AI context fields
-  instructions: z.string().max(5000).optional(),
+  instructions: z.string().max(50000).optional(),
   preset: z.enum(['technical', 'conversational', 'assessment', 'beginner']).optional(),
   fileText: z.string().optional(),
   fileName: z.string().optional(),
