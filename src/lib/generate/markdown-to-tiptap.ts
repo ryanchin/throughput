@@ -116,8 +116,8 @@ function classifyLine(line: string): ClassifiedLine {
     return { kind: 'hr' }
   }
 
-  // Heading (# through ###)
-  const headingMatch = line.match(/^(#{1,3})\s+(.+)$/)
+  // Heading (# through ######)
+  const headingMatch = line.match(/^(#{1,6})\s+(.+)$/)
   if (headingMatch) {
     return {
       kind: 'heading',

@@ -27,9 +27,9 @@ const generateLessonSchema = z.object({
   courseTitle: z.string().min(1, 'Course title is required'),
   courseDescription: z.string().optional(),
   lessonTitle: z.string().min(1, 'Lesson title is required'),
-  additionalNotes: z.string().max(2000).optional(),
+  additionalNotes: z.string().optional(),
   // AI context fields
-  instructions: z.string().max(50000).optional(),
+  instructions: z.string().optional(),
   preset: z.enum(['technical', 'conversational', 'assessment', 'beginner']).optional(),
   fileText: z.string().optional(),
   fileName: z.string().optional(),
@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
 
   const parsed = generateLessonSchema.safeParse(body)
   if (!parsed.success) {
+    console.error('[generate/lesson] Validation failed:', JSON.stringify(parsed.error.issues, null, 2))
     return NextResponse.json(
       { error: 'Validation failed', details: parsed.error.issues },
       { status: 400 }

@@ -60,7 +60,6 @@ describe('CourseForm', () => {
       expect(screen.getByLabelText('Description')).toHaveValue('')
       expect(screen.getByLabelText('Zone')).toHaveValue('training')
       expect(screen.getByLabelText('Passing Score (%)')).toHaveValue(70)
-      expect(screen.getByLabelText('Cover Image URL')).toHaveValue('')
     })
 
     it('shows the Create Course submit button', () => {
@@ -321,7 +320,8 @@ describe('CourseForm', () => {
       expect(screen.getByLabelText('Description')).toHaveValue('Learn sprint planning')
       expect(screen.getByLabelText('Zone')).toHaveValue('sales')
       expect(screen.getByLabelText('Passing Score (%)')).toHaveValue(80)
-      expect(screen.getByLabelText('Cover Image URL')).toHaveValue('https://example.com/img.jpg')
+      // Cover image is now a file upload, not a text input — verify the preview renders
+      expect(screen.getByAltText('Cover preview')).toBeInTheDocument()
     })
 
     it('shows the Save Changes submit button', () => {
@@ -429,17 +429,12 @@ describe('CourseForm', () => {
       expect(screen.getByText('Description must be 2000 characters or less')).toBeInTheDocument()
     })
 
-    it('validates cover image URL format', async () => {
-      const user = userEvent.setup()
+    it('validates cover image via file upload (no URL text input)', () => {
+      // Cover image is now a file upload widget, not a text URL input.
+      // URL validation happens server-side after upload. Verify the upload
+      // UI renders when no image is set.
       render(<CourseForm />)
-
-      await user.clear(screen.getByLabelText('Title'))
-      await user.type(screen.getByLabelText('Title'), 'Test')
-      await user.type(screen.getByLabelText('Cover Image URL'), 'not-a-url')
-
-      await user.click(screen.getByRole('button', { name: 'Create Course' }))
-
-      expect(screen.getByText('Must be a valid URL')).toBeInTheDocument()
+      expect(screen.getByText('Click to upload cover image')).toBeInTheDocument()
     })
 
     it('validates passing score range', async () => {

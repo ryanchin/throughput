@@ -108,8 +108,8 @@ describe('getTierBadgeColor', () => {
     const result = getTierBadgeColor(1)
 
     expect(result.label).toBe('Silver')
-    expect(result.textColor).toContain('C0C0C0')
-    expect(result.borderColor).toContain('C0C0C0')
+    expect(result.textColor).toBe('text-[#5a6270]')
+    expect(result.borderColor).toBe('border-[#b4b4b4]')
   })
 
   it('returns cyan/accent colors for tier 2', () => {

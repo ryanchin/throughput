@@ -78,7 +78,7 @@ const generateCourseSchema = z.object({
   description: z.string().min(1, 'Description is required').max(2000),
   lessonCount: z.number().int().min(1).max(20).nullable().optional(),
   includeQuizzes: z.boolean().default(true),
-  instructions: z.string().max(50000).optional(),
+  instructions: z.string().optional(),
   preset: z.enum(['technical', 'conversational', 'assessment', 'beginner']).optional(),
   fileText: z.string().optional(),
   fileName: z.string().optional(),

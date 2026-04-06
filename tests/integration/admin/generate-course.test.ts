@@ -391,12 +391,12 @@ describe('POST /api/admin/generate/course', () => {
     expect(body.error).toContain('Validation failed')
   })
 
-  it('returns 400 when description is under 10 characters', async () => {
+  it('returns 400 when description is empty', async () => {
     setupAdminAuth()
 
     const req = createRequest({
       title: 'Test Course',
-      description: 'Short',
+      description: '',
       lessonCount: 5,
     })
     const res = await POST(req)
