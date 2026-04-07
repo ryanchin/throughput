@@ -31,9 +31,10 @@ export async function GET() {
   // Pipeline value: sum of value for open opportunities
   const pipelineValue = openOpps.reduce((sum, o) => sum + (Number(o.value) || 0), 0)
 
-  // Weighted pipeline: sum of (value * probability / 100) for open opportunities
+  // Weighted pipeline: sum of (value * probability) for open opportunities
+  // Probability is stored as 0–1 decimal in the DB
   const weightedPipeline = openOpps.reduce(
-    (sum, o) => sum + ((Number(o.value) || 0) * (o.probability ?? 0)) / 100,
+    (sum, o) => sum + (Number(o.value) || 0) * (Number(o.probability) ?? 0),
     0
   )
 
@@ -42,14 +43,14 @@ export async function GET() {
 
   // Won this month
   const wonThisMonth = (opportunities ?? []).filter(
-    (o) => o.stage === 'closed_won' && o.updated_at >= startOfMonth
+    (o) => o.stage === '7a. Closed Won' && o.updated_at >= startOfMonth
   )
   const wonCount = wonThisMonth.length
   const wonValue = wonThisMonth.reduce((sum, o) => sum + (Number(o.value) || 0), 0)
 
   // Lost this month
   const lostCount = (opportunities ?? []).filter(
-    (o) => o.stage === 'closed_lost' && o.updated_at >= startOfMonth
+    (o) => o.stage === '7b. Closed Lost' && o.updated_at >= startOfMonth
   ).length
 
   // Stage breakdown: count + total value per stage
@@ -79,12 +80,13 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    pipelineValue,
-    weightedPipeline,
-    dealCount,
-    wonThisMonth: { count: wonCount, value: wonValue },
-    lostThisMonth: { count: lostCount },
-    stageBreakdown,
-    companiesByStatus,
+    pipeline_value: pipelineValue,
+    weighted_pipeline: weightedPipeline,
+    active_deals: dealCount,
+    won_this_month: wonCount,
+    won_value_this_month: wonValue,
+    lost_this_month: lostCount,
+    stage_breakdown: stageBreakdown,
+    companies_by_status: companiesByStatus,
   })
 }

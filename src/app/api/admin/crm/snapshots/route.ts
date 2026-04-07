@@ -53,7 +53,7 @@ export async function POST() {
 
   const totalPipelineValue = openOpps.reduce((sum, o) => sum + (Number(o.value) || 0), 0)
   const weightedPipelineValue = openOpps.reduce(
-    (sum, o) => sum + ((Number(o.value) || 0) * (o.probability ?? 0)) / 100,
+    (sum, o) => sum + (Number(o.value) || 0) * (o.probability ?? 0),
     0
   )
   const dealCount = openOpps.length
@@ -71,13 +71,13 @@ export async function POST() {
   }
 
   const wonCount = (opportunities ?? []).filter(
-    (o) => o.stage === 'closed_won' && o.updated_at >= startOfMonth
+    (o) => o.stage === '7a. Closed Won' && o.updated_at >= startOfMonth
   ).length
   const wonValue = (opportunities ?? [])
-    .filter((o) => o.stage === 'closed_won' && o.updated_at >= startOfMonth)
+    .filter((o) => o.stage === '7a. Closed Won' && o.updated_at >= startOfMonth)
     .reduce((sum, o) => sum + (Number(o.value) || 0), 0)
   const lostCount = (opportunities ?? []).filter(
-    (o) => o.stage === 'closed_lost' && o.updated_at >= startOfMonth
+    (o) => o.stage === '7b. Closed Lost' && o.updated_at >= startOfMonth
   ).length
 
   // Upsert: if a snapshot for today exists, update it; otherwise insert

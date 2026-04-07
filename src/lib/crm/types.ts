@@ -40,6 +40,7 @@ export interface Opportunity {
   title: string
   value: number
   stage: Stage
+  probability: number | null
   expected_close_date: string | null
   notes: string | null
   close_reason: string | null

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog'
 
 interface CloseReasonModalProps {
-  stage: 'closed_won' | 'closed_lost'
+  stage: '7a. Closed Won' | '7b. Closed Lost'
   open: boolean
   onOpenChange: (open: boolean) => void
   onConfirm: (reason: string) => void
@@ -31,8 +31,8 @@ const REASON_LABELS: Record<string, string> = {
 
 export function CloseReasonModal({ stage, open, onOpenChange, onConfirm }: CloseReasonModalProps) {
   const [selectedReason, setSelectedReason] = useState('')
-  const reasons = stage === 'closed_won' ? CLOSE_REASONS_WON : CLOSE_REASONS_LOST
-  const title = stage === 'closed_won' ? 'Why was this deal won?' : 'Why was this deal lost?'
+  const reasons = stage === '7a. Closed Won' ? CLOSE_REASONS_WON : CLOSE_REASONS_LOST
+  const title = stage === '7a. Closed Won' ? 'Why was this deal won?' : 'Why was this deal lost?'
 
   function handleConfirm() {
     if (!selectedReason) return

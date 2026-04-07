@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireCrmAccess } from '@/lib/auth/requireCrmAccess'
 import { companyUpdateSchema } from '@/lib/crm/schemas'
+import { OPEN_STAGES } from '@/lib/crm/constants'
 
 /**
  * Converts empty strings to null for optional fields before DB update.
@@ -57,7 +58,7 @@ export async function GET(
       .from('crm_opportunities')
       .select('value')
       .eq('company_id', companyId)
-      .in('stage', ['lead', 'qualified', 'proposal', 'negotiation']),
+      .in('stage', OPEN_STAGES as unknown as string[]),
   ])
 
   const totalPipelineValue = (pipelineResult.data ?? []).reduce(

@@ -8,6 +8,12 @@ interface RouteParams {
   params: Promise<{ opportunityId: string }>
 }
 
+/** Reshape Supabase's `crm_companies` join key to the expected `company` key */
+function shapeOpportunity(opp: Record<string, unknown>) {
+  const { crm_companies, ...rest } = opp
+  return { ...rest, company: crm_companies ?? null }
+}
+
 /**
  * GET /api/admin/crm/opportunities/[opportunityId]
  * Fetches a single opportunity by ID with the related company name.
@@ -21,7 +27,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
   const { data: opportunity, error } = await supabase
     .from('crm_opportunities')
-    .select('*, crm_companies(name)')
+    .select('*, crm_companies(id, name)')
     .eq('id', opportunityId)
     .single()
 
@@ -29,7 +35,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 })
   }
 
-  return NextResponse.json({ opportunity })
+  return NextResponse.json({ opportunity: shapeOpportunity(opportunity as Record<string, unknown>) })
 }
 
 /**
@@ -107,14 +113,14 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     .from('crm_opportunities')
     .update(update)
     .eq('id', opportunityId)
-    .select('*, crm_companies(name)')
+    .select('*, crm_companies(id, name)')
     .single()
 
   if (error) {
     return NextResponse.json({ error: 'Failed to update opportunity' }, { status: 500 })
   }
 
-  return NextResponse.json({ opportunity })
+  return NextResponse.json({ opportunity: shapeOpportunity(opportunity as Record<string, unknown>) })
 }
 
 /**

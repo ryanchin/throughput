@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from('crm_opportunities')
-    .select('*, crm_companies(name)')
+    .select('*, crm_companies(id, name)')
     .order('updated_at', { ascending: false })
 
   if (stage) {
@@ -38,7 +38,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch opportunities' }, { status: 500 })
   }
 
-  return NextResponse.json({ opportunities })
+  // Reshape crm_companies join to the expected `company` key
+  const shaped = (opportunities ?? []).map((opp) => {
+    const { crm_companies, ...rest } = opp as Record<string, unknown>
+    return { ...rest, company: crm_companies ?? null }
+  })
+
+  return NextResponse.json({ opportunities: shaped })
 }
 
 /**
@@ -92,12 +98,13 @@ export async function POST(request: NextRequest) {
       notes,
       created_by: profile!.id,
     })
-    .select('*, crm_companies(name)')
+    .select('*, crm_companies(id, name)')
     .single()
 
   if (error) {
     return NextResponse.json({ error: 'Failed to create opportunity' }, { status: 500 })
   }
 
-  return NextResponse.json({ opportunity }, { status: 201 })
+  const { crm_companies, ...rest } = opportunity as Record<string, unknown>
+  return NextResponse.json({ opportunity: { ...rest, company: crm_companies ?? null } }, { status: 201 })
 }

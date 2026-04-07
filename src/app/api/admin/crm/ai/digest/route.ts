@@ -35,17 +35,17 @@ export async function POST() {
 
   const totalPipeline = openOpps.reduce((sum, o) => sum + (Number(o.value) || 0), 0)
   const weightedPipeline = openOpps.reduce(
-    (sum, o) => sum + ((Number(o.value) || 0) * (o.probability ?? 0)) / 100,
+    (sum, o) => sum + (Number(o.value) || 0) * (o.probability ?? 0),
     0
   )
   const dealCount = openOpps.length
 
   const wonThisWeek = allOpps.filter(
-    (o) => o.stage === 'closed_won' && o.updated_at >= oneWeekAgoStr
+    (o) => o.stage === '7a. Closed Won' && o.updated_at >= oneWeekAgoStr
   )
   const wonValueThisWeek = wonThisWeek.reduce((sum, o) => sum + (Number(o.value) || 0), 0)
   const lostThisWeek = allOpps.filter(
-    (o) => o.stage === 'closed_lost' && o.updated_at >= oneWeekAgoStr
+    (o) => o.stage === '7b. Closed Lost' && o.updated_at >= oneWeekAgoStr
   ).length
 
   // Stage breakdown

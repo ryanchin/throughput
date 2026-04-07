@@ -1,0 +1,2388 @@
+{
+  "accounts": [
+    {
+      "name": "Premera",
+      "segment": "Flagship",
+      "parent_customer": false,
+      "arr": 2650000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "T-Mobile",
+      "segment": "Flagship",
+      "parent_customer": false,
+      "arr": 6156000,
+      "health": "R",
+      "renewal_date": null,
+      "champion": "Ameet, Marley",
+      "top_risk": "CPO to CIO Reorg",
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "DirecTV",
+      "segment": "Flagship",
+      "parent_customer": false,
+      "arr": 2400000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Joanne Bickler,#joanneb@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "MSFT",
+      "segment": "Flagship",
+      "parent_customer": true,
+      "arr": 2600000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Zach (MSP), Marley",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "DSG",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": 288000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "FIS",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": 384000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Gordian",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": 77000,
+      "health": "G",
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "ScanHealth",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Capital One",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": 264000,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Pfizer",
+      "segment": "Small",
+      "parent_customer": true,
+      "arr": 0,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "HP",
+      "segment": "Existing",
+      "parent_customer": true,
+      "arr": 264000,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Huron",
+      "segment": "Small",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "United Airlines",
+      "segment": "Small",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Hanover",
+      "segment": "Nitor",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Wellsky",
+      "segment": "Nitor",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Enlace Health",
+      "segment": "Small",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Rewards Network",
+      "segment": "Small",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "CareSource",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "CVS",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Ziosk",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Starbucks",
+      "segment": "Large",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "GBST",
+      "segment": "International",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "London Stock Exchange",
+      "segment": "International",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Experian",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "TransUnion",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Brandscapes [Nitor]",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Johnson & Johnson",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "API",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "ShiftKey",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Pathward",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Minecraft",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Meta",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Zach Usher,#zachu@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Apple",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": "Marley Harrison,#marleyh@moodysnwc.com",
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "Bank of America",
+      "segment": "International",
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": null,
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    },
+    {
+      "name": "API Global Solutions",
+      "segment": null,
+      "parent_customer": true,
+      "arr": null,
+      "health": null,
+      "renewal_date": null,
+      "champion": null,
+      "top_risk": null,
+      "next_action": null,
+      "owners": []
+    }
+  ],
+  "deals": [
+    {
+      "name": "Product and AI Opportunities + Product Studio",
+      "account": "Alaska Airlines",
+      "agentic_type": "AAVA",
+      "deal_type": null,
+      "source": "Moodys New",
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": "2026-05-15",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "name": "Product Manager",
+      "account": "Amazon",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": "Parent",
+      "est_value_annualized": 100000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 100000,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": "Final interview Monday, 3/30",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Product Manager 2",
+      "account": "Amazon",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 100000,
+      "stage": "6. Negotiation/ Review",
+      "probability": 0.8,
+      "weighted_value": 80000,
+      "target_close_date": "2026-06-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": []
+    },
+    {
+      "name": "Combo pitch Product & Program. Portal & website redesign.",
+      "account": "API Solutions (Nitor)",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 2000000,
+      "stage": "3. Qualification",
+      "probability": 0.2,
+      "weighted_value": 400000,
+      "target_close_date": "2026-03-31",
+      "actual_close_date": null,
+      "next_step": "Qualifying w Nitor (No current work w Nitor)",
+      "next_step_date": "2026-02-23",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Capital One Product Disruption",
+      "account": "Capital One",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-02-28",
+      "actual_close_date": null,
+      "next_step": "Send questions to Rohit/Ritesh",
+      "next_step_date": "2026-02-06",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Staff Aug - Product Management",
+      "account": "Capital One",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 280000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-01-05",
+      "actual_close_date": "2026-01-05",
+      "next_step": null,
+      "next_step_date": "2026-01-20",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Security Posture Consolidation",
+      "account": "Capital One",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 300000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-01-30",
+      "actual_close_date": null,
+      "next_step": "Follow-up with Jacob Schnell?",
+      "next_step_date": "2026-01-30",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Release Train Engineer",
+      "account": "CareSource",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-01-19",
+      "actual_close_date": null,
+      "next_step": "Awaiting feedback from client via Grishma",
+      "next_step_date": "2026-01-21",
+      "stalled": true,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "PgM Staff Aug in Hartford, CT",
+      "account": "CVS",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 150000,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2025-12-15",
+      "actual_close_date": null,
+      "next_step": "Client is holding off until next week. Follow-up w Yash on 1/12.",
+      "next_step_date": "2025-01-20",
+      "stalled": true,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "DTV new product manager role",
+      "account": "DirecTV",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 300000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 300000,
+      "target_close_date": "2026-04-20",
+      "actual_close_date": "2026-04-20",
+      "next_step": "Manjari interview w Ryan",
+      "next_step_date": "2026-01-30",
+      "stalled": false,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "name": "Product Manager role - new 2/10 for Ana",
+      "account": "DirecTV",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 300000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-02",
+      "actual_close_date": null,
+      "next_step": "Confirm client will hire for this role",
+      "next_step_date": "2026-02-12",
+      "stalled": false,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "name": "MCP Implementation",
+      "account": "DirecTV",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 0,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-02",
+      "actual_close_date": null,
+      "next_step": "Follow-up with Sumit",
+      "next_step_date": "2026-01-23",
+      "stalled": false,
+      "owners": [
+        "Joanne"
+      ]
+    },
+    {
+      "name": "PgM Director Staff Aug - John Butler",
+      "account": "DSG",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 280000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 280000,
+      "target_close_date": "2026-01-26",
+      "actual_close_date": "2026-01-26",
+      "next_step": null,
+      "next_step_date": "2026-01-13",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Partner Portal RFP - Initial Phase, Link w Marriott",
+      "account": "DSG",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 200000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-31",
+      "actual_close_date": null,
+      "next_step": "Connect on 2/20 work thru RFP, up against others.",
+      "next_step_date": "2026-02-20",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Product Management Investment",
+      "account": "Enlace Health",
+      "agentic_type": "Non-Agentic",
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-02-28",
+      "actual_close_date": null,
+      "next_step": "Awaiting update from Satyam",
+      "next_step_date": "2026-01-07",
+      "stalled": true,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Pgm Mgmt Staff Aug - Yair",
+      "account": "FIS",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 220000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 220000,
+      "target_close_date": "2026-01-19",
+      "actual_close_date": "2026-01-19",
+      "next_step": null,
+      "next_step_date": "2026-01-12",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "PgM Staff Aug - Gretchen",
+      "account": "FIS",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 150000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 150000,
+      "target_close_date": "2026-01-23",
+      "actual_close_date": "2026-01-23",
+      "next_step": null,
+      "next_step_date": "2026-01-09",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "FISERVE CA Product Role",
+      "account": "Fiserv",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 226000,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-16",
+      "actual_close_date": null,
+      "next_step": "Sourcing candidates",
+      "next_step_date": "2026-02-13",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Agile & Product/Program Support",
+      "account": "Gordian (Nitor)",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 75000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 75000,
+      "target_close_date": "2026-01-30",
+      "actual_close_date": "2026-01-30",
+      "next_step": "Kathy D onboarding",
+      "next_step_date": "2026-01-09",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Agile & Product/Program Support",
+      "account": "Gordian (Nitor)",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 510000,
+      "stage": "2. Investigation & Analysis",
+      "probability": 0.1,
+      "weighted_value": 51000,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": []
+    },
+    {
+      "name": "Product/Program Work On & Offshore",
+      "account": "HP",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-01",
+      "actual_close_date": null,
+      "next_step": "Ameet touch base with Prakash on next steps.",
+      "next_step_date": "2026-01-08",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Project Manager Roles",
+      "account": "J&J",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": "Parent",
+      "est_value_annualized": 450000,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": "Gathering submissions",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Product Engagement",
+      "account": "Jama Software",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Nitor",
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": null,
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Potential Product Role",
+      "account": "Meta",
+      "agentic_type": "Agentic, Non-Aava",
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 280000,
+      "stage": "2. Investigation & Analysis",
+      "probability": 0.1,
+      "weighted_value": 28000,
+      "target_close_date": "2026-03-15",
+      "actual_close_date": null,
+      "next_step": "Marley connect with CSE on next steps",
+      "next_step_date": "2026-03-02",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Data Center/ Land Management",
+      "account": "Microsoft",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "New Team TPMs",
+      "account": "Microsoft",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": []
+    },
+    {
+      "name": "Minecraft Program Roles - 4 roles",
+      "account": "Minecraft",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 496520,
+      "stage": "2. Investigation & Analysis",
+      "probability": 0.1,
+      "weighted_value": 49652,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": "Recruiting team actively sourcing",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "PgM Staff Aug",
+      "account": "MSFT",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 2000000,
+      "stage": "7a. Closed WON",
+      "probability": 1.0,
+      "weighted_value": 2000000,
+      "target_close_date": "2026-01-30",
+      "actual_close_date": "2026-01-30",
+      "next_step": "Backfill rejected candidate",
+      "next_step_date": "2026-01-12",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Microsoft - Product Launch PMO",
+      "account": "MSFT",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": "Parent",
+      "est_value_annualized": 4250000,
+      "stage": "7a. Closed WON",
+      "probability": 1.0,
+      "weighted_value": 4250000,
+      "target_close_date": "2026-02-27",
+      "actual_close_date": null,
+      "next_step": "SoW Routed, Awaiting Feedback, follow up",
+      "next_step_date": "2026-02-10",
+      "stalled": false,
+      "owners": [
+        "Zach",
+        "Marley"
+      ]
+    },
+    {
+      "name": "AI Engineer role",
+      "account": "Pfizer",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 15000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2025-12-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": "2026-01-12",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Product and AI Opportunities + Product Studio",
+      "account": "Port of Seattle",
+      "agentic_type": "AAVA",
+      "deal_type": null,
+      "source": "Moodys New",
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": "2026-05-15",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "name": "Potential Backfill of Kathy Duran",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-01",
+      "actual_close_date": null,
+      "next_step": "Deliberate on whether its best to keep Kathy at Premera or Gordian. Sounds favorable that Kayla will allow backfill.",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "5 PgM Roles",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-01",
+      "actual_close_date": null,
+      "next_step": "Follow-up with Kayla and Scott on budget approval",
+      "next_step_date": "2026-01-20",
+      "stalled": true,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Premera Expansion",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 3000000,
+      "stage": "3. Qualification",
+      "probability": 0.2,
+      "weighted_value": 600000,
+      "target_close_date": "2026-06-01",
+      "actual_close_date": null,
+      "next_step": "Plan with George Bickel, happy hours/etc.",
+      "next_step_date": "2026-01-20",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "AI SI Partner POD",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": null,
+      "est_value_annualized": 1700000,
+      "stage": "6. Negotiation/ Review",
+      "probability": 0.8,
+      "weighted_value": 1360000,
+      "target_close_date": "2026-02-04",
+      "actual_close_date": null,
+      "next_step": "Myra - email Srini to follow-up. 1) Meeting with Premera Procrement, Malle, Srini on next steps for Ascendion SI and offshore work. 2) approval for offshore 3) Work Assignment for 6 roles",
+      "next_step_date": "2026-01-30",
+      "stalled": false,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "name": "Onshore AI Engineering Support",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": null,
+      "est_value_annualized": 600000,
+      "stage": "7a. Closed WON",
+      "probability": 1.0,
+      "weighted_value": 600000,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": "Continue sourcing. 1 architect role & 5 Engineer roles. 1 architect role closed (Naveen) - sent Srini 3 Engineering profiles - he was inclined on 1?",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "name": "Premera IDR Expansion",
+      "account": "Premera",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 500000,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Reslinc Product Work",
+      "account": "Reslinc",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-02-28",
+      "actual_close_date": null,
+      "next_step": "Qualifying w Nitor.",
+      "next_step_date": "2026-02-13",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "AAVA Consulting",
+      "account": "Santander",
+      "agentic_type": "AAVA",
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 350000,
+      "stage": "7a. Closed WON",
+      "probability": 1.0,
+      "weighted_value": 350000,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": "Mollly interviewing",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "PgM Role",
+      "account": "ScanHealth",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 200000,
+      "stage": "7a. Closed WON",
+      "probability": 1.0,
+      "weighted_value": 200000,
+      "target_close_date": "2026-02-27",
+      "actual_close_date": null,
+      "next_step": "Rani Prathyusha",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Data Analyst",
+      "account": "ScanHealth",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2025-11-10",
+      "actual_close_date": null,
+      "next_step": "Candidate interview on 1/9 or 1/12",
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Debt Collections Product Owner (Hybrid in Austin, TX)",
+      "account": "Second Round",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Nitor",
+      "est_value_annualized": 280000,
+      "stage": "6. Negotiation/ Review",
+      "probability": 0.8,
+      "weighted_value": 224000,
+      "target_close_date": "2026-05-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Starbucks POC",
+      "account": "Starbucks",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": "Parent",
+      "est_value_annualized": 1800000,
+      "stage": "3. Qualification",
+      "probability": 0.2,
+      "weighted_value": 360000,
+      "target_close_date": "2026-02-15",
+      "actual_close_date": null,
+      "next_step": "Complete POC and present to Hanako",
+      "next_step_date": "2026-01-19",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Grammarly Product Role",
+      "account": "Superhuman",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 240000,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-03-02",
+      "actual_close_date": null,
+      "next_step": "Sourcing candidates",
+      "next_step_date": "2026-02-13",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "TMO Money Product & Program",
+      "account": "T-Mobile",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 200000,
+      "stage": "7a. Closed Won",
+      "probability": 1.0,
+      "weighted_value": 200000,
+      "target_close_date": "2026-01-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": "2026-01-20",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "T-Builder Modernization",
+      "account": "T-Mobile",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": null,
+      "est_value_annualized": 0,
+      "stage": "7b. Closed Lost",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-02-27",
+      "actual_close_date": null,
+      "next_step": "Follow-up with TMO Procurement [Vin Mota out until 1/12]",
+      "next_step_date": "2026-01-15",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "Go To Market Strategy for S&OP",
+      "account": "ToolsGroup (Nitor)",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Nitor",
+      "est_value_annualized": null,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": null,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "AAVA Product Studio",
+      "account": "ToolsGroup (Nitor)",
+      "agentic_type": "AAVA",
+      "deal_type": null,
+      "source": "Nitor",
+      "est_value_annualized": 300000,
+      "stage": "5. Proposal Presentation",
+      "probability": 0.5,
+      "weighted_value": 150000,
+      "target_close_date": "2026-04-01",
+      "actual_close_date": null,
+      "next_step": null,
+      "next_step_date": null,
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "TransUnion/Volker",
+      "account": "TransUnion",
+      "agentic_type": "Agentic, Non-Aava",
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "1. Inquiry",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-02-15",
+      "actual_close_date": null,
+      "next_step": "Follow-up w Gopal",
+      "next_step_date": "2026-01-22",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Program Management Role",
+      "account": "United Airlines",
+      "agentic_type": null,
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 0,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2025-12-01",
+      "actual_close_date": null,
+      "next_step": "Candidate interviews ongoing",
+      "next_step_date": "2026-01-20",
+      "stalled": false,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Blood therapies product development and enhancement",
+      "account": "Wellsky",
+      "agentic_type": null,
+      "deal_type": "Large",
+      "source": "Parent",
+      "est_value_annualized": 600000,
+      "stage": "7c. Shelf",
+      "probability": 0.0,
+      "weighted_value": 0,
+      "target_close_date": "2026-01-30",
+      "actual_close_date": null,
+      "next_step": "Awaiting update on Nurture activity by Nitor (Sheetal, Amit, Onkar)",
+      "next_step_date": null,
+      "stalled": true,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Potential Product Work",
+      "account": "Ziosk (Nitor)",
+      "agentic_type": "AAVA",
+      "deal_type": null,
+      "source": "Parent",
+      "est_value_annualized": 1000000,
+      "stage": "3. Qualification",
+      "probability": 0.2,
+      "weighted_value": 200000,
+      "target_close_date": "2026-03-15",
+      "actual_close_date": null,
+      "next_step": "Meet with Ziosk head of gaming for pitch",
+      "next_step_date": "2026-01-19",
+      "stalled": false,
+      "owners": [
+        "Marley"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "name": "DTV Marketing Analyst",
+      "function": "Program",
+      "priority": 2,
+      "status": "Open",
+      "open_date": "2025-10-27",
+      "target_fill_date": "2026-02-15",
+      "role_stage": "3. Client Interviews",
+      "days_open": 161,
+      "blocker": "Confirming  DTV marketing team is interested",
+      "owners": [
+        "Joanne"
+      ]
+    },
+    {
+      "name": "United Airlines Program Manager",
+      "function": "Program",
+      "priority": 1,
+      "status": "Cancelled",
+      "open_date": "2025-12-23",
+      "target_fill_date": "2026-02-15",
+      "role_stage": "4. Final Interview",
+      "days_open": 104,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Premera AI Architect",
+      "function": "Engineering",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-01-01",
+      "target_fill_date": "2026-02-15",
+      "role_stage": "2. Internal Interview",
+      "days_open": 95,
+      "blocker": null,
+      "owners": []
+    },
+    {
+      "name": "Premera AI TPM",
+      "function": "Product",
+      "priority": 2,
+      "status": "Open",
+      "open_date": "2026-01-30",
+      "target_fill_date": "2026-02-15",
+      "role_stage": "1. Sourcing",
+      "days_open": 66,
+      "blocker": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "name": "ScanHealth Data Analyst",
+      "function": "Program",
+      "priority": 1,
+      "status": "Cancelled",
+      "open_date": "2025-12-15",
+      "target_fill_date": "2026-02-09",
+      "role_stage": "4. Final Interview",
+      "days_open": 112,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "DTV Product Manager Billing & Payments",
+      "function": "Product",
+      "priority": 1,
+      "status": "Filled",
+      "open_date": "2026-01-15",
+      "target_fill_date": "2026-02-09",
+      "role_stage": "3. Client Interviews",
+      "days_open": 81,
+      "blocker": null,
+      "owners": [
+        "Joanne"
+      ]
+    },
+    {
+      "name": "DTV Product Manager Other Role",
+      "function": "Product",
+      "priority": 1,
+      "status": "Open",
+      "open_date": null,
+      "target_fill_date": null,
+      "role_stage": null,
+      "days_open": null,
+      "blocker": null,
+      "owners": []
+    },
+    {
+      "name": "MSFT MSP Pgm Role 1",
+      "function": "Program",
+      "priority": 1,
+      "status": "Filled",
+      "open_date": "2026-01-13",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 83,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSP Pgm Role 2",
+      "function": "Program",
+      "priority": 1,
+      "status": "Filled",
+      "open_date": "2026-01-13",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 83,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSP Pgm Role 3",
+      "function": "Program",
+      "priority": 1,
+      "status": "Filled- External",
+      "open_date": "2026-01-13",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 83,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSP Pgm Role 4",
+      "function": "Program",
+      "priority": 1,
+      "status": "Filled- External",
+      "open_date": "2026-01-21",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 75,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSP Pgm Role 5",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-01-27",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 69,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSP Pgm Role 6",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-01-13",
+      "target_fill_date": "2026-02-23",
+      "role_stage": "3. Client Interviews",
+      "days_open": 83,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "MSFT MSM Pgm Role - Russell Hacker",
+      "function": "Program",
+      "priority": 1,
+      "status": "Fulfilled",
+      "open_date": "2026-01-01",
+      "target_fill_date": "2026-02-16",
+      "role_stage": "7. Pending Start Date Confirm",
+      "days_open": 95,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Premera PO/BA",
+      "function": "Program",
+      "priority": 1,
+      "status": "Fulfilled",
+      "open_date": "2026-02-03",
+      "target_fill_date": "2026-02-16",
+      "role_stage": "1. Sourcing",
+      "days_open": 62,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Scan Health Salesforce Market Cloud Program Manager",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-03",
+      "target_fill_date": "2026-03-02",
+      "role_stage": "1. Sourcing",
+      "days_open": 62,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Amazon Data Engineering Program Manager",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-02",
+      "target_fill_date": "2026-03-02",
+      "role_stage": "1. Sourcing",
+      "days_open": 63,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "Grammarly TPM",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-10",
+      "target_fill_date": "2026-03-10",
+      "role_stage": "1. Sourcing",
+      "days_open": 55,
+      "blocker": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "name": "DePuy  Principal Program Manager \u2013 Commercial Domain",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-13",
+      "target_fill_date": null,
+      "role_stage": null,
+      "days_open": 52,
+      "blocker": null,
+      "owners": []
+    },
+    {
+      "name": "DePuy Principal Program Manager \u2013 R&D Domain",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-13",
+      "target_fill_date": null,
+      "role_stage": null,
+      "days_open": 52,
+      "blocker": null,
+      "owners": []
+    },
+    {
+      "name": "DePuy Principal Program Manager \u2013 Data & Analytics Domain",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-13",
+      "target_fill_date": null,
+      "role_stage": null,
+      "days_open": 52,
+      "blocker": null,
+      "owners": []
+    },
+    {
+      "name": "J&J Supply Chain",
+      "function": "Program",
+      "priority": 1,
+      "status": "Open",
+      "open_date": "2026-02-13",
+      "target_fill_date": null,
+      "role_stage": null,
+      "days_open": 52,
+      "blocker": null,
+      "owners": []
+    }
+  ],
+  "actions": [
+    {
+      "date_added": "2026-02-04",
+      "category": "Follow-up",
+      "related_item": "HP",
+      "description": "Follow-up with Akash on HP next steps, angle for next opportunity.",
+      "due_date": "2026-02-05",
+      "status": "On Hold",
+      "priority": 2,
+      "notes": "Pending",
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "T-Mobile Product",
+      "description": "Follow-up on plans for Simran, Pedro, Salil",
+      "due_date": "2026-02-06",
+      "status": "Completed",
+      "priority": 1,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-04",
+      "category": "Meeting",
+      "related_item": "Healthcare Clients",
+      "description": "Schedule meeting with HC CPs",
+      "due_date": "2026-02-05",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Meeting",
+      "related_item": "UK/BOA",
+      "description": "Reschedule meeting with Ed/ Dilip",
+      "due_date": "2026-02-05",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "FIS Escalation",
+      "description": "Zach follow-up on Yair Escalation",
+      "due_date": "2026-02-05",
+      "status": "Completed",
+      "priority": 1,
+      "notes": "Feedback provided to Yair, closed w/ Somyo\nOngoing monitoring by Zach",
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-06",
+      "category": "Follow-up",
+      "related_item": "Premera Lead",
+      "description": "Evaluate Tunde",
+      "due_date": "2026-02-05",
+      "status": "Completed",
+      "priority": null,
+      "notes": "We approve, Aaron confirmed end on 3/31",
+      "owners": [
+        "Zach",
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-01",
+      "category": "Follow-up",
+      "related_item": "Microsoft Product PMO",
+      "description": "Follow-up on SoW submission",
+      "due_date": "2026-02-10",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "Healthcare Clients",
+      "description": "Prep fro 2/10 Meeting: confirm agenda, Who are we, Why us, + Product Studio & Share w Ameet.",
+      "due_date": "2026-02-06",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "ScanHealth",
+      "description": "Meet Malle critical conversation (eg Data Analyst)",
+      "due_date": "2026-02-10",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach",
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-09",
+      "category": "Follow-up",
+      "related_item": "FISERV",
+      "description": "Fiserve Product Management Role, follow up with CP.",
+      "due_date": "2026-02-10",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2025-02-03",
+      "category": "Meeting",
+      "related_item": "FIS",
+      "description": "Demo AAVA Product Studio - Pre Meet w Program Team",
+      "due_date": "2026-02-13",
+      "status": "In Progress",
+      "priority": null,
+      "notes": "Rescheduled for Friday, 2/13",
+      "owners": [
+        "Marley",
+        "Ryan"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "Minecraft",
+      "description": "6 TAM Nearshore",
+      "due_date": "2026-02-13",
+      "status": "In Progress",
+      "priority": null,
+      "notes": "No word from Shannon as of 2/19",
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "DSG",
+      "description": "Follow-up with Mike Samson",
+      "due_date": "2026-02-13",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2025-02-12",
+      "category": "Follow-up",
+      "related_item": "HP",
+      "description": "Global ERP rollout role program manager for HP",
+      "due_date": "2026-02-13",
+      "status": "On Hold",
+      "priority": null,
+      "notes": "Decide not one we want to pursue",
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-17",
+      "category": "Task",
+      "related_item": "MSFT",
+      "description": "Need Jr PM JD to check for Simran's",
+      "due_date": "2026-02-20",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-05",
+      "category": "Follow-up",
+      "related_item": "Meta & Apple",
+      "description": "Follow-up w/ Nick Hall",
+      "due_date": "2026-02-17",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2025-02-10",
+      "category": "Meeting",
+      "related_item": "Healthcare Clients",
+      "description": "Scehdule Product Studio Demo",
+      "due_date": "2026-02-17",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-17",
+      "category": "Follow-up",
+      "related_item": "Enlace Health",
+      "description": "Follow-up with Ashok on opportunity now that MSA signed",
+      "due_date": "2026-02-20",
+      "status": "In Progress",
+      "priority": null,
+      "notes": "Marley to connect 2/20",
+      "owners": [
+        "Marley",
+        "Ryan"
+      ]
+    },
+    {
+      "date_added": "2026-02-16",
+      "category": "Presentation",
+      "related_item": "Ziosk",
+      "description": "Ziosk Workshop on March 5th",
+      "due_date": "2026-02-20",
+      "status": "In Progress",
+      "priority": null,
+      "notes": "Schedule time with Madhu for workshop prep > Marley will focus.",
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-24",
+      "category": "Meeting",
+      "related_item": "API International",
+      "description": "Client meeting on 2/24",
+      "due_date": "2026-02-20",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley",
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-19",
+      "category": "Follow-up",
+      "related_item": "DSG Partner Portal RFP",
+      "description": "Work with the team on the RFP , understand scope",
+      "due_date": "2026-02-23",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-19",
+      "category": "Meeting",
+      "related_item": "META Proposal",
+      "description": "Work with the team on next steps, contacts to target meet early next week of 2/23",
+      "due_date": "2026-02-23",
+      "status": "In Progress",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-20",
+      "category": "Meeting",
+      "related_item": "Capital One",
+      "description": "Work with Rohit on next steps",
+      "due_date": "2026-02-23",
+      "status": "In Progress",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-16",
+      "category": "Follow-Up",
+      "related_item": "Product Studio",
+      "description": "India Based Product Manager",
+      "due_date": "2026-02-24",
+      "status": "In Progress",
+      "priority": null,
+      "notes": "Pending Radha approval.",
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2025-02-12",
+      "category": "Meeting",
+      "related_item": "Product Studio",
+      "description": "Demo AAVA w Prakash, set up meeting Ryan and Ameet",
+      "due_date": "2026-02-27",
+      "status": "Completed",
+      "priority": null,
+      "notes": "Prakash can meet early AM 3/3 for the Demo",
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-01",
+      "category": "Presentation",
+      "related_item": "Starbucks POC",
+      "description": "Present to Hanako",
+      "due_date": "2026-02-27",
+      "status": "Completed",
+      "priority": null,
+      "notes": "Client pushed to next Friday, 2/27 | 2nd time pushed out.",
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-23",
+      "category": "Task",
+      "related_item": null,
+      "description": "Zach send Ameet note about Recruiting partnership to forward Steve Burden",
+      "due_date": "2026-02-23",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-24",
+      "category": "Task",
+      "related_item": "API International",
+      "description": "Zach send Ameet note about sucess of meeting today, 2/24",
+      "due_date": "2026-02-24",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-25",
+      "category": "Follow-Up",
+      "related_item": "Charter Comm",
+      "description": "Follow-up with Senthil",
+      "due_date": "2026-02-26",
+      "status": "Not Started",
+      "priority": null,
+      "notes": "Schedule time with Ameet, Marley, Senthil Nallisivan",
+      "owners": [
+        "Marley"
+      ]
+    },
+    {
+      "date_added": "2026-02-26",
+      "category": "Task",
+      "related_item": "Santander",
+      "description": "White board session & follow-up with Pedro",
+      "due_date": "2026-02-26",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Zach"
+      ]
+    },
+    {
+      "date_added": "2026-02-26",
+      "category": "Meeting",
+      "related_item": "Satyam's Team",
+      "description": "Whiteboarding session for March or April, onsite",
+      "due_date": "2026-03-03",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-27",
+      "category": "Meeting",
+      "related_item": "Starbucks POC",
+      "description": "Marley send a write up on how the demo went 2/27",
+      "due_date": "2026-02-27",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-27",
+      "category": "Meeting",
+      "related_item": "Recruiting Sync",
+      "description": "Set up a call with our recruiters, Sankalp and team, collaboration, 0930-1000 3/3\nCelebrate, confirm operating model, Zach",
+      "due_date": "2026-02-27",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-02-26",
+      "category": "Meeting",
+      "related_item": "AAVA Demo",
+      "description": "To UK BOA team",
+      "due_date": "2026-02-27",
+      "status": "Completed",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Myra"
+      ]
+    },
+    {
+      "date_added": "2026-03-10",
+      "category": "Follow-up",
+      "related_item": "Alaska Airlines",
+      "description": "Product / AI/ Product Studio > are there any Case Studies from United Airlines",
+      "due_date": "2026-05-01",
+      "status": "Not Started",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "date_added": "2026-03-10",
+      "category": "Follow-up",
+      "related_item": "Port of Seattle",
+      "description": "Follow-up on their needs, need something to take to them",
+      "due_date": "2026-05-01",
+      "status": "Not Started",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Ameet"
+      ]
+    },
+    {
+      "date_added": "2026-03-18",
+      "category": "Follow-up",
+      "related_item": "London Stock Exchange",
+      "description": "Callum called for Product Team",
+      "due_date": null,
+      "status": "Not Started",
+      "priority": null,
+      "notes": null,
+      "owners": [
+        "Marley"
+      ]
+    }
+  ],
+  "consultant_plan": [
+    {
+      "week_start": "2026-02-02",
+      "starting_hc": 47,
+      "hires": 0,
+      "attrition": 2,
+      "ending_hc": 45,
+      "notes": "DTV Ti Jury (-1)\nPeter Schenk (-1)"
+    },
+    {
+      "week_start": "2026-02-09",
+      "starting_hc": 45,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 45,
+      "notes": null
+    },
+    {
+      "week_start": "2026-02-16",
+      "starting_hc": 45,
+      "hires": 3,
+      "attrition": 0,
+      "ending_hc": 48,
+      "notes": "MSFT Planned (+3)"
+    },
+    {
+      "week_start": "2026-02-23",
+      "starting_hc": 48,
+      "hires": 0,
+      "attrition": 1,
+      "ending_hc": 47,
+      "notes": "Ricardo Lo (-1)"
+    },
+    {
+      "week_start": "2026-03-02",
+      "starting_hc": 47,
+      "hires": 12,
+      "attrition": 0,
+      "ending_hc": 59,
+      "notes": "MSFT Planned (+11)\nDTV Planned (+1)"
+    },
+    {
+      "week_start": "2026-03-09",
+      "starting_hc": 59,
+      "hires": 0,
+      "attrition": 1,
+      "ending_hc": 58,
+      "notes": "MSFT Planned (+2)\nDTV (-1)"
+    },
+    {
+      "week_start": "2026-03-16",
+      "starting_hc": 58,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 58,
+      "notes": null
+    },
+    {
+      "week_start": "2026-03-23",
+      "starting_hc": 58,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 58,
+      "notes": null
+    },
+    {
+      "week_start": "2026-03-30",
+      "starting_hc": 58,
+      "hires": 17,
+      "attrition": 16,
+      "ending_hc": 59,
+      "notes": "Simran (-1)\nSalil (-1)\nTMO lost (-17)\nPremera (17)"
+    },
+    {
+      "week_start": "2026-04-06",
+      "starting_hc": 59,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 59,
+      "notes": null
+    },
+    {
+      "week_start": "2026-04-13",
+      "starting_hc": 59,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 59,
+      "notes": null
+    },
+    {
+      "week_start": "2026-04-20",
+      "starting_hc": 59,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 59,
+      "notes": null
+    },
+    {
+      "week_start": "2026-04-27",
+      "starting_hc": 59,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 59,
+      "notes": null
+    },
+    {
+      "week_start": "2026-05-04",
+      "starting_hc": 59,
+      "hires": 3,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-05-11",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-05-18",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-05-25",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-06-01",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-06-08",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-06-15",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-06-22",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    },
+    {
+      "week_start": "2026-06-29",
+      "starting_hc": 62,
+      "hires": 0,
+      "attrition": 0,
+      "ending_hc": 62,
+      "notes": null
+    }
+  ],
+  "config": {
+    "target_date": "2026-06-30",
+    "current_consultant_count": 45,
+    "target_consultant_count": 120,
+    "monthly_attrition_pct": 0.02,
+    "avg_onboarding_ramp_weeks": 4
+  },
+  "users": [
+    "Zach",
+    "Marley",
+    "Ameet",
+    "Joanne",
+    "Myra",
+    "Ryan"
+  ]
+}

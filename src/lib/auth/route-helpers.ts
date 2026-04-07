@@ -37,6 +37,7 @@ export const PUBLIC_ROUTES = [
 export const ZONE_ROLES: Record<string, string[]> = {
   '/training': ['employee', 'sales', 'admin'],
   '/sales': ['sales', 'admin'],
+  '/admin/crm': ['admin', 'sales'],
   '/admin': ['admin'],
   '/knowledge': ['employee', 'sales', 'admin'],
 }
