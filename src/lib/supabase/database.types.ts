@@ -629,6 +629,230 @@ export interface Database {
         }
         Relationships: []
       }
+      crm_companies: {
+        Row: {
+          id: string
+          name: string
+          website: string | null
+          industry: string | null
+          company_size: string | null
+          status: string
+          notes: string | null
+          tags: string[]
+          ai_enriched: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          website?: string | null
+          industry?: string | null
+          company_size?: string | null
+          status?: string
+          notes?: string | null
+          tags?: string[]
+          ai_enriched?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          website?: string | null
+          industry?: string | null
+          company_size?: string | null
+          status?: string
+          notes?: string | null
+          tags?: string[]
+          ai_enriched?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_contacts: {
+        Row: {
+          id: string
+          company_id: string
+          name: string
+          email: string | null
+          phone: string | null
+          title: string | null
+          linkedin_url: string | null
+          is_primary: boolean
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          name: string
+          email?: string | null
+          phone?: string | null
+          title?: string | null
+          linkedin_url?: string | null
+          is_primary?: boolean
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          email?: string | null
+          phone?: string | null
+          title?: string | null
+          linkedin_url?: string | null
+          is_primary?: boolean
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_opportunities: {
+        Row: {
+          id: string
+          company_id: string
+          contact_id: string | null
+          title: string
+          value: number | null
+          stage: string
+          probability: number | null
+          expected_close_date: string | null
+          close_reason: string | null
+          ai_score: number | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          contact_id?: string | null
+          title: string
+          value?: number | null
+          stage?: string
+          probability?: number | null
+          expected_close_date?: string | null
+          close_reason?: string | null
+          ai_score?: number | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          title?: string
+          value?: number | null
+          stage?: string
+          probability?: number | null
+          expected_close_date?: string | null
+          close_reason?: string | null
+          ai_score?: number | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_activities: {
+        Row: {
+          id: string
+          company_id: string
+          contact_id: string | null
+          opportunity_id: string | null
+          type: string
+          subject: string
+          description: string | null
+          activity_date: string
+          completed: boolean
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          company_id: string
+          contact_id?: string | null
+          opportunity_id?: string | null
+          type: string
+          subject: string
+          description?: string | null
+          activity_date?: string
+          completed?: boolean
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          subject?: string
+          description?: string | null
+          activity_date?: string
+          completed?: boolean
+        }
+        Relationships: []
+      }
+      crm_nl_parse_log: {
+        Row: {
+          id: string
+          raw_input: string
+          parsed_actions: Json
+          accepted: boolean | null
+          modified_actions: Json | null
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          raw_input: string
+          parsed_actions: Json
+          accepted?: boolean | null
+          modified_actions?: Json | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          accepted?: boolean | null
+          modified_actions?: Json | null
+        }
+        Relationships: []
+      }
+      crm_pipeline_snapshots: {
+        Row: {
+          id: string
+          snapshot_date: string
+          total_pipeline_value: number | null
+          weighted_pipeline_value: number | null
+          deal_count: number | null
+          stage_breakdown: Json | null
+          won_count: number
+          won_value: number | null
+          lost_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          snapshot_date?: string
+          total_pipeline_value?: number | null
+          weighted_pipeline_value?: number | null
+          deal_count?: number | null
+          stage_breakdown?: Json | null
+          won_count?: number
+          won_value?: number | null
+          lost_count?: number
+          created_at?: string
+        }
+        Update: {
+          snapshot_date?: string
+          total_pipeline_value?: number | null
+          weighted_pipeline_value?: number | null
+          deal_count?: number | null
+          stage_breakdown?: Json | null
+          won_count?: number
+          won_value?: number | null
+          lost_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {}
     Functions: {}

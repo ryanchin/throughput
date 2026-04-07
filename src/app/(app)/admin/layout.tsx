@@ -8,7 +8,10 @@ export default async function AdminLayout({
 }) {
   const profile = await getProfile()
 
-  if (!profile || profile.role !== 'admin') {
+  // Allow admin and sales roles. Non-CRM admin pages do their own
+  // admin-only checks in their server components (belt-and-suspenders).
+  // Sales users can only access /admin/crm/* routes.
+  if (!profile || !['admin', 'sales'].includes(profile.role)) {
     redirect('/training')
   }
 

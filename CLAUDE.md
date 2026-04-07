@@ -1087,3 +1087,23 @@ Branch naming: `feat/[feature-name]`, `fix/[issue]`, `test/[area]`
 - **Certificate verification hash** — use `crypto.createHash('sha256').update(cert.id + cert.user_id + cert.issued_at).digest('hex')`. Store it on the `certificates` row. The public `/verify/[hash]` page looks up by this hash, not by UUID (prevents enumeration).
 - **RLS + service role** — quiz submission and cert grading writes use the service role key in the API route after manually validating the session. Document this clearly in the API route file with a comment explaining why.
 - **Supabase free tier Storage** — 1GB limit. Use for cover images, lesson images, and badge PNG files only. Video lives in Bunny.net Stream.
+
+## Skill routing
+
+When the user's request matches an available skill, ALWAYS invoke it using the Skill
+tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
+The skill has specialized workflows that produce better results than ad-hoc answers.
+
+Key routing rules:
+- Product ideas, "is this worth building", brainstorming → invoke office-hours
+- Bugs, errors, "why is this broken", 500 errors → invoke investigate
+- Ship, deploy, push, create PR → invoke ship
+- QA, test the site, find bugs → invoke qa
+- Code review, check my diff → invoke review
+- Update docs after shipping → invoke document-release
+- Weekly retro → invoke retro
+- Design system, brand → invoke design-consultation
+- Visual audit, design polish → invoke design-review
+- Architecture review → invoke plan-eng-review
+- Save progress, checkpoint, resume → invoke checkpoint
+- Code quality, health check → invoke health

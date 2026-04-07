@@ -11,6 +11,7 @@ import {
   GraduationCapIcon,
   UsersIcon,
   FolderOpenIcon,
+  Building2Icon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -119,6 +120,7 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
   )
 
   const isAdmin = profile.role === 'admin'
+  const hasCrmAccess = ['admin', 'sales'].includes(profile.role)
 
   function isActive(href: string): boolean {
     // For /admin, exact match only (don't highlight for /admin/courses etc.)
@@ -173,6 +175,57 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* CRM section — visible to admin + sales */}
+        {hasCrmAccess && (
+          <SidebarGroup>
+            <SidebarGroupLabel>CRM</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={pathname === '/admin/crm'}
+                    tooltip="CRM Dashboard"
+                    render={<Link href="/admin/crm" />}
+                  >
+                    <Building2Icon className="size-4" />
+                    <span>Dashboard</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/companies')}
+                    tooltip="Companies"
+                    render={<Link href="/admin/crm/companies" />}
+                  >
+                    <Building2Icon className="size-4" />
+                    <span>Companies</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/opportunities')}
+                    tooltip="Pipeline"
+                    render={<Link href="/admin/crm/opportunities" />}
+                  >
+                    <BarChart3Icon className="size-4" />
+                    <span>Pipeline</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/activities')}
+                    tooltip="Activities"
+                    render={<Link href="/admin/crm/activities" />}
+                  >
+                    <FileTextIcon className="size-4" />
+                    <span>Activities</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Admin section */}
         {isAdmin && (
