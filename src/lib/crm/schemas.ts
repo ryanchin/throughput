@@ -1,5 +1,16 @@
 import { z } from 'zod'
-import { STAGES, COMPANY_SIZES, COMPANY_STATUSES, ACTIVITY_TYPES } from './constants'
+import {
+  STAGES,
+  COMPANY_SIZES,
+  COMPANY_STATUSES,
+  ACTIVITY_TYPES,
+  CONSULTANT_STATUSES,
+  CONSULTANT_SENIORITIES,
+  CONSULTANT_FUNCTIONS,
+  CANDIDATE_STATUSES,
+  ASSIGNMENT_STATUSES,
+  ASSIGNMENT_END_REASONS,
+} from './constants'
 
 // ============================================================
 // Company Schemas
@@ -117,4 +128,111 @@ export const csvImportSchema = z.object({
     status: z.string().optional(),
     notes: z.string().optional(),
   })).min(1).max(1000),
+})
+
+// ============================================================
+// Resources — Consultant Schemas
+// ============================================================
+
+export const consultantCreateSchema = z.object({
+  first_name: z.string().min(1, 'First name is required').max(100),
+  last_name: z.string().min(1, 'Last name is required').max(100),
+  email: z.string().email('Must be a valid email').optional(),
+  function: z.enum(CONSULTANT_FUNCTIONS),
+  seniority: z.enum(CONSULTANT_SENIORITIES).optional().nullable(),
+  skills: z.array(z.string().max(100)).max(50).default([]),
+  status: z.enum(CONSULTANT_STATUSES).default('Active - Bench'),
+  current_account_id: z.string().uuid().optional().nullable(),
+  start_date: z.string().optional().nullable(),
+  expected_end_date: z.string().optional().nullable(),
+  bill_rate: z.number().min(0).max(9999999.99).optional().nullable(),
+  cost_rate: z.number().min(0).max(9999999.99).optional().nullable(),
+  hire_date: z.string().optional().nullable(),
+  location: z.string().max(255).optional().nullable(),
+  notes: z.string().max(5000).optional().nullable(),
+})
+
+export const consultantUpdateSchema = z.object({
+  function: z.enum(CONSULTANT_FUNCTIONS).optional(),
+  seniority: z.enum(CONSULTANT_SENIORITIES).optional().nullable(),
+  skills: z.array(z.string().max(100)).max(50).optional(),
+  status: z.enum(CONSULTANT_STATUSES).optional(),
+  current_account_id: z.string().uuid().optional().nullable(),
+  current_deal_id: z.string().uuid().optional().nullable(),
+  start_date: z.string().optional().nullable(),
+  expected_end_date: z.string().optional().nullable(),
+  bill_rate: z.number().min(0).max(9999999.99).optional().nullable(),
+  cost_rate: z.number().min(0).max(9999999.99).optional().nullable(),
+  hire_date: z.string().optional().nullable(),
+  location: z.string().max(255).optional().nullable(),
+  notes: z.string().max(5000).optional().nullable(),
+})
+
+export const consultantSearchSchema = z.object({
+  status: z.enum(CONSULTANT_STATUSES).optional(),
+  function: z.enum(CONSULTANT_FUNCTIONS).optional(),
+  account_id: z.string().uuid().optional(),
+  search: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+})
+
+// ============================================================
+// Resources — Candidate Schemas
+// ============================================================
+
+export const candidateCreateSchema = z.object({
+  first_name: z.string().min(1, 'First name is required').max(100),
+  last_name: z.string().min(1, 'Last name is required').max(100),
+  email: z.string().email().optional().or(z.literal('')).nullable(),
+  phone: z.string().max(50).optional().or(z.literal('')).nullable(),
+  function: z.enum(CONSULTANT_FUNCTIONS),
+  seniority: z.enum(CONSULTANT_SENIORITIES).optional().nullable(),
+  skills: z.array(z.string().max(100)).max(50).default([]),
+  status: z.enum(CANDIDATE_STATUSES).default('New'),
+  source: z.string().max(100).optional().nullable(),
+  target_role_id: z.string().uuid().optional().nullable(),
+  target_account_id: z.string().uuid().optional().nullable(),
+  resume_url: z.string().url().optional().or(z.literal('')).nullable(),
+  interview_notes: z.string().max(10000).optional().nullable(),
+  date_added: z.string().optional(),
+  notes: z.string().max(5000).optional().nullable(),
+})
+
+export const candidateUpdateSchema = candidateCreateSchema.partial()
+
+export const candidateSearchSchema = z.object({
+  status: z.enum(CANDIDATE_STATUSES).optional(),
+  function: z.enum(CONSULTANT_FUNCTIONS).optional(),
+  search: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+})
+
+// ============================================================
+// Resources — Assignment Schemas
+// ============================================================
+
+export const assignmentCreateSchema = z.object({
+  consultant_id: z.string().uuid(),
+  account_id: z.string().uuid(),
+  deal_id: z.string().uuid().optional().nullable(),
+  role_id: z.string().uuid().optional().nullable(),
+  start_date: z.string().min(1, 'Start date is required'),
+  expected_end_date: z.string().optional().nullable(),
+  actual_end_date: z.string().optional().nullable(),
+  bill_rate: z.number().min(0).max(9999999.99).optional().nullable(),
+  status: z.enum(ASSIGNMENT_STATUSES).default('Planned'),
+  end_reason: z.enum(ASSIGNMENT_END_REASONS).optional().nullable(),
+  notes: z.string().max(5000).optional().nullable(),
+})
+
+export const assignmentUpdateSchema = assignmentCreateSchema.partial().omit({ consultant_id: true })
+
+export const assignmentSearchSchema = z.object({
+  consultant_id: z.string().uuid().optional(),
+  account_id: z.string().uuid().optional(),
+  status: z.enum(ASSIGNMENT_STATUSES).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
 })

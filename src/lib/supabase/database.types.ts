@@ -9,6 +9,15 @@ export type EnrollmentStatus = 'enrolled' | 'passed' | 'failed'
 export type Visibility = 'public' | 'internal' | `group:${string}`
 export type DocsPageType = 'knowledge' | 'docs'
 
+// Resources module types
+export type ConsultantUserRole = 'admin' | 'staff' | 'consultant'
+export type ConsultantStatus = 'Active - Placed' | 'Active - Bench' | 'On Leave' | 'Offboarded'
+export type ConsultantSeniority = 'Junior' | 'Mid' | 'Senior' | 'Principal' | 'Director'
+export type ConsultantFunction = 'Program' | 'Product' | 'Engineering'
+export type CandidateStatus = 'New' | 'Screening' | 'Interviewing' | 'Offer Extended' | 'Hired' | 'Rejected' | 'Withdrawn'
+export type AssignmentStatus = 'Planned' | 'Active' | 'Completed' | 'Cancelled'
+export type AssignmentEndReason = 'Contract End' | 'Client Request' | 'Consultant Resignation' | 'Replaced' | 'Project Cancelled' | 'Mutual Agreement'
+
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
@@ -21,6 +30,7 @@ export interface Database {
           full_name: string | null
           avatar_url: string | null
           role: UserRole
+          user_role: ConsultantUserRole
           signup_context: string | null
           created_at: string
           updated_at: string
@@ -31,6 +41,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           role?: UserRole
+          user_role?: ConsultantUserRole
           signup_context?: string | null
           created_at?: string
           updated_at?: string
@@ -41,6 +52,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           role?: UserRole
+          user_role?: ConsultantUserRole
           signup_context?: string | null
           updated_at?: string
         }
@@ -850,6 +862,233 @@ export interface Database {
           won_count?: number
           won_value?: number | null
           lost_count?: number
+        }
+        Relationships: []
+      }
+      crm_roles: {
+        Row: {
+          id: string
+          name: string
+          account_id: string | null
+          function: string | null
+          priority: number | null
+          status: string
+          open_date: string | null
+          target_fill_date: string | null
+          role_stage: string | null
+          next_step: string | null
+          next_step_due: string | null
+          blocker: string | null
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          account_id?: string | null
+          function?: string | null
+          priority?: number | null
+          status?: string
+          open_date?: string | null
+          target_fill_date?: string | null
+          role_stage?: string | null
+          next_step?: string | null
+          next_step_due?: string | null
+          blocker?: string | null
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          account_id?: string | null
+          function?: string | null
+          priority?: number | null
+          status?: string
+          open_date?: string | null
+          target_fill_date?: string | null
+          role_stage?: string | null
+          next_step?: string | null
+          next_step_due?: string | null
+          blocker?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_consultants: {
+        Row: {
+          id: string
+          user_id: string
+          function: ConsultantFunction
+          seniority: ConsultantSeniority | null
+          skills: string[]
+          status: ConsultantStatus
+          current_account_id: string | null
+          current_deal_id: string | null
+          start_date: string | null
+          expected_end_date: string | null
+          bill_rate: number | null
+          cost_rate: number | null
+          hire_date: string | null
+          location: string | null
+          notes: string | null
+          promoted_from_candidate_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          function: ConsultantFunction
+          seniority?: ConsultantSeniority | null
+          skills?: string[]
+          status?: ConsultantStatus
+          current_account_id?: string | null
+          current_deal_id?: string | null
+          start_date?: string | null
+          expected_end_date?: string | null
+          bill_rate?: number | null
+          cost_rate?: number | null
+          hire_date?: string | null
+          location?: string | null
+          notes?: string | null
+          promoted_from_candidate_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          function?: ConsultantFunction
+          seniority?: ConsultantSeniority | null
+          skills?: string[]
+          status?: ConsultantStatus
+          current_account_id?: string | null
+          current_deal_id?: string | null
+          start_date?: string | null
+          expected_end_date?: string | null
+          bill_rate?: number | null
+          cost_rate?: number | null
+          hire_date?: string | null
+          location?: string | null
+          notes?: string | null
+          promoted_from_candidate_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_candidates: {
+        Row: {
+          id: string
+          first_name: string
+          last_name: string
+          email: string | null
+          phone: string | null
+          function: ConsultantFunction
+          seniority: ConsultantSeniority | null
+          skills: string[]
+          status: CandidateStatus
+          source: string | null
+          target_role_id: string | null
+          target_account_id: string | null
+          resume_url: string | null
+          interview_notes: string | null
+          date_added: string
+          promoted_to_consultant_id: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          first_name: string
+          last_name: string
+          email?: string | null
+          phone?: string | null
+          function: ConsultantFunction
+          seniority?: ConsultantSeniority | null
+          skills?: string[]
+          status?: CandidateStatus
+          source?: string | null
+          target_role_id?: string | null
+          target_account_id?: string | null
+          resume_url?: string | null
+          interview_notes?: string | null
+          date_added?: string
+          promoted_to_consultant_id?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          first_name?: string
+          last_name?: string
+          email?: string | null
+          phone?: string | null
+          function?: ConsultantFunction
+          seniority?: ConsultantSeniority | null
+          skills?: string[]
+          status?: CandidateStatus
+          source?: string | null
+          target_role_id?: string | null
+          target_account_id?: string | null
+          resume_url?: string | null
+          interview_notes?: string | null
+          date_added?: string
+          promoted_to_consultant_id?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_assignments: {
+        Row: {
+          id: string
+          consultant_id: string
+          account_id: string
+          deal_id: string | null
+          role_id: string | null
+          start_date: string
+          expected_end_date: string | null
+          actual_end_date: string | null
+          bill_rate: number | null
+          status: AssignmentStatus
+          end_reason: AssignmentEndReason | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          consultant_id: string
+          account_id: string
+          deal_id?: string | null
+          role_id?: string | null
+          start_date: string
+          expected_end_date?: string | null
+          actual_end_date?: string | null
+          bill_rate?: number | null
+          status?: AssignmentStatus
+          end_reason?: AssignmentEndReason | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          consultant_id?: string
+          account_id?: string
+          deal_id?: string | null
+          role_id?: string | null
+          start_date?: string
+          expected_end_date?: string | null
+          actual_end_date?: string | null
+          bill_rate?: number | null
+          status?: AssignmentStatus
+          end_reason?: AssignmentEndReason | null
+          notes?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

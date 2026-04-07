@@ -137,6 +137,30 @@ export const ROLE_STAGES = [
 export type RoleStage = typeof ROLE_STAGES[number]
 
 // ============================================================
+// Resources — Consultants, Candidates, Assignments (§2–3 of Resources Spec)
+// ============================================================
+
+export const CONSULTANT_STATUSES = ['Active - Placed', 'Active - Bench', 'On Leave', 'Offboarded'] as const
+export type ConsultantStatus = typeof CONSULTANT_STATUSES[number]
+
+export const CONSULTANT_SENIORITIES = ['Junior', 'Mid', 'Senior', 'Principal', 'Director'] as const
+export type ConsultantSeniority = typeof CONSULTANT_SENIORITIES[number]
+
+export const CONSULTANT_FUNCTIONS = ['Program', 'Product', 'Engineering'] as const
+export type ConsultantFunction = typeof CONSULTANT_FUNCTIONS[number]
+
+export const CANDIDATE_STATUSES = ['New', 'Screening', 'Interviewing', 'Offer Extended', 'Hired', 'Rejected', 'Withdrawn'] as const
+export type CandidateStatus = typeof CANDIDATE_STATUSES[number]
+
+export const ACTIVE_CANDIDATE_STATUSES: CandidateStatus[] = ['Screening', 'Interviewing', 'Offer Extended']
+
+export const ASSIGNMENT_STATUSES = ['Planned', 'Active', 'Completed', 'Cancelled'] as const
+export type AssignmentStatus = typeof ASSIGNMENT_STATUSES[number]
+
+export const ASSIGNMENT_END_REASONS = ['Contract End', 'Client Request', 'Consultant Resignation', 'Replaced', 'Project Cancelled', 'Mutual Agreement'] as const
+export type AssignmentEndReason = typeof ASSIGNMENT_END_REASONS[number]
+
+// ============================================================
 // Close reasons + thresholds (unchanged from original)
 // ============================================================
 

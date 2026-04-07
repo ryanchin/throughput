@@ -14,6 +14,7 @@ import { formatCurrency, getVelocityColor, velocityClasses } from '@/lib/crm/for
 import type { Opportunity } from '@/lib/crm/types'
 import { CloseReasonModal } from './CloseReasonModal'
 import { OpportunityForm } from './OpportunityForm'
+import { CreateRolesModal } from './CreateRolesModal'
 
 interface OpportunityWithMeta extends Opportunity {
   last_activity_date?: string | null
@@ -36,6 +37,14 @@ export function OpportunityKanban() {
 
   // Stage change dropdown
   const [changingStage, setChangingStage] = useState<string | null>(null)
+
+  // Create roles modal — shown after Closed Won
+  const [createRolesFor, setCreateRolesFor] = useState<{
+    dealId: string
+    dealTitle: string
+    accountId: string | null
+    accountName: string | null
+  } | null>(null)
 
   const fetchOpportunities = useCallback(async () => {
     setLoading(true)
@@ -81,6 +90,19 @@ export function OpportunityKanban() {
           opp.id === opportunityId ? { ...opp, stage, close_reason: closeReason } : opp
         )
       )
+
+      // If Closed Won, prompt to create roles for the Resources team
+      if (stage === '7a. Closed Won') {
+        const opp = opportunities.find((o) => o.id === opportunityId)
+        if (opp) {
+          setCreateRolesFor({
+            dealId: opportunityId,
+            dealTitle: opp.title,
+            accountId: opp.company?.id ?? null,
+            accountName: opp.company?.name ?? null,
+          })
+        }
+      }
     } catch {
       // Refresh on error to reset state
       fetchOpportunities()
@@ -282,6 +304,23 @@ export function OpportunityKanban() {
           open={true}
           onOpenChange={() => setCloseModal(null)}
           onConfirm={handleCloseConfirm}
+        />
+      )}
+
+      {/* Create Roles Modal — shown after Closed Won */}
+      {createRolesFor && (
+        <CreateRolesModal
+          open={true}
+          onOpenChange={() => setCreateRolesFor(null)}
+          dealTitle={createRolesFor.dealTitle}
+          dealId={createRolesFor.dealId}
+          accountId={createRolesFor.accountId}
+          accountName={createRolesFor.accountName}
+          onCreated={(count) => {
+            setCreateRolesFor(null)
+            // Could show a toast here — for now the roles appear in Resources
+            console.log(`Created ${count} role(s) for deal`)
+          }}
         />
       )}
     </div>

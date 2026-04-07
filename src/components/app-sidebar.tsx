@@ -12,6 +12,11 @@ import {
   UsersIcon,
   FolderOpenIcon,
   Building2Icon,
+  Users2Icon,
+  ClockIcon,
+  InboxIcon,
+  UserPlusIcon,
+  ActivityIcon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -220,6 +225,67 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
                   >
                     <FileTextIcon className="size-4" />
                     <span>Activities</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Resources section — visible to admin + sales */}
+        {hasCrmAccess && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Resources</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={pathname === '/admin/crm/resources' || (pathname.startsWith('/admin/crm/resources/') && !pathname.includes('/rolloffs') && !pathname.includes('/bench') && !pathname.includes('/candidates') && !pathname.includes('/capacity'))}
+                    tooltip="Roster"
+                    render={<Link href="/admin/crm/resources" />}
+                  >
+                    <Users2Icon className="size-4" />
+                    <span>Roster</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/resources/rolloffs')}
+                    tooltip="Rolloffs"
+                    render={<Link href="/admin/crm/resources/rolloffs" />}
+                  >
+                    <ClockIcon className="size-4" />
+                    <span>Rolloffs</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/resources/bench')}
+                    tooltip="Bench"
+                    render={<Link href="/admin/crm/resources/bench" />}
+                  >
+                    <InboxIcon className="size-4" />
+                    <span>Bench</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/resources/candidates')}
+                    tooltip="Candidates"
+                    render={<Link href="/admin/crm/resources/candidates" />}
+                  >
+                    <UserPlusIcon className="size-4" />
+                    <span>Candidates</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/resources/capacity')}
+                    tooltip="Capacity"
+                    render={<Link href="/admin/crm/resources/capacity" />}
+                  >
+                    <ActivityIcon className="size-4" />
+                    <span>Capacity</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('crm_companies')
     .select('*', { count: 'exact' })
-    .order('updated_at', { ascending: false })
+    .order('name', { ascending: true })
     .range(offset, offset + limit - 1)
 
   if (search) {

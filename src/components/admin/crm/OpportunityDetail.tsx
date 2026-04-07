@@ -11,6 +11,7 @@ import {
 import { formatCurrency, formatRelativeDate, formatShortDate } from '@/lib/crm/format'
 import type { Opportunity } from '@/lib/crm/types'
 import { OpportunityForm } from './OpportunityForm'
+import { CreateRolesModal } from './CreateRolesModal'
 
 interface OpportunityDetailProps {
   opportunity: Opportunity
@@ -40,6 +41,7 @@ export function OpportunityDetail({ opportunity, userRole }: OpportunityDetailPr
   const router = useRouter()
   const [showEditForm, setShowEditForm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showCreateRoles, setShowCreateRoles] = useState(false)
 
   async function handleDelete() {
     if (!confirm(`Are you sure you want to delete "${opportunity.title}"? This cannot be undone.`)) return
@@ -230,10 +232,34 @@ export function OpportunityDetail({ opportunity, userRole }: OpportunityDetailPr
         opportunity={opportunity}
         open={showEditForm}
         onOpenChange={setShowEditForm}
-        onSaved={() => {
+        onSaved={async () => {
           setShowEditForm(false)
+          // Check if stage changed to Closed Won
+          const prevStage = opportunity.stage
+          if (prevStage !== '7a. Closed Won') {
+            try {
+              const res = await fetch(`/api/admin/crm/opportunities/${opportunity.id}`)
+              const data = await res.json()
+              if (data.opportunity?.stage === '7a. Closed Won') {
+                setShowCreateRoles(true)
+              }
+            } catch {
+              // Ignore — just refresh
+            }
+          }
           router.refresh()
         }}
+      />
+
+      {/* Create Roles Modal — shown after editing stage to Closed Won */}
+      <CreateRolesModal
+        open={showCreateRoles}
+        onOpenChange={setShowCreateRoles}
+        dealTitle={opportunity.title}
+        dealId={opportunity.id}
+        accountId={opportunity.company?.id ?? null}
+        accountName={opportunity.company?.name ?? null}
+        onCreated={() => setShowCreateRoles(false)}
       />
     </div>
   )

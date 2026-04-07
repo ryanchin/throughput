@@ -1,0 +1,350 @@
+{
+  "consultants": [
+    {
+      "first_name": "Naveen",
+      "last_name": "Kumar",
+      "function": "Engineering",
+      "seniority": "Senior",
+      "status": "Active - Placed",
+      "current_account": "Premera",
+      "start_date": "2026-02-15",
+      "expected_end_date": "2026-08-15",
+      "skills": [
+        "AI/ML",
+        "Cloud Architecture",
+        "Python"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Kathy",
+      "last_name": "Duran",
+      "function": "Program",
+      "seniority": "Senior",
+      "status": "Active - Placed",
+      "current_account": "Gordian (Nitor)",
+      "start_date": "2026-01-09",
+      "expected_end_date": "2026-06-30",
+      "skills": [
+        "Agile",
+        "Program Management"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Russell",
+      "last_name": "Hacker",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Active - Placed",
+      "current_account": "MSFT",
+      "start_date": "2026-02-16",
+      "expected_end_date": "2026-08-16",
+      "skills": [
+        "Program Management",
+        "MSP"
+      ],
+      "location": "Seattle"
+    },
+    {
+      "first_name": "Yair",
+      "last_name": "Rosen",
+      "function": "Program",
+      "seniority": "Senior",
+      "status": "Active - Placed",
+      "current_account": "FIS",
+      "start_date": "2026-01-19",
+      "expected_end_date": "2026-07-19",
+      "skills": [
+        "Program Management",
+        "Financial Services"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Gretchen",
+      "last_name": "Meier",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Active - Placed",
+      "current_account": "FIS",
+      "start_date": "2026-01-23",
+      "expected_end_date": "2026-07-23",
+      "skills": [
+        "Program Management"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "John",
+      "last_name": "Butler",
+      "function": "Program",
+      "seniority": "Director",
+      "status": "Active - Placed",
+      "current_account": "DSG",
+      "start_date": "2026-01-26",
+      "expected_end_date": "2026-07-26",
+      "skills": [
+        "Program Management",
+        "Leadership"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Rani",
+      "last_name": "Prathyusha",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Active - Placed",
+      "current_account": "ScanHealth",
+      "start_date": "2026-02-27",
+      "expected_end_date": "2026-08-27",
+      "skills": [
+        "Program Management",
+        "Healthcare"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Manjari",
+      "last_name": "Singh",
+      "function": "Product",
+      "seniority": "Mid",
+      "status": "Active - Placed",
+      "current_account": "DirecTV",
+      "start_date": "2026-04-20",
+      "expected_end_date": "2026-10-20",
+      "skills": [
+        "Product Management",
+        "Billing"
+      ],
+      "location": "Remote"
+    },
+    {
+      "first_name": "Simran",
+      "last_name": "Kaur",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Active - Bench",
+      "current_account": null,
+      "start_date": null,
+      "expected_end_date": null,
+      "skills": [
+        "Program Management",
+        "Agile"
+      ],
+      "location": "Remote",
+      "notes": "Rolled off T-Mobile, looking for next placement"
+    },
+    {
+      "first_name": "Salil",
+      "last_name": "Patel",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Active - Bench",
+      "current_account": null,
+      "start_date": null,
+      "expected_end_date": null,
+      "skills": [
+        "Program Management"
+      ],
+      "location": "Remote",
+      "notes": "Rolled off T-Mobile"
+    },
+    {
+      "first_name": "Peter",
+      "last_name": "Schenk",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Offboarded",
+      "current_account": null,
+      "start_date": null,
+      "expected_end_date": null,
+      "skills": [
+        "Program Management"
+      ],
+      "location": "Remote",
+      "notes": "Departed week of 2/2"
+    },
+    {
+      "first_name": "Ricardo",
+      "last_name": "Lo",
+      "function": "Program",
+      "seniority": "Mid",
+      "status": "Offboarded",
+      "current_account": null,
+      "start_date": null,
+      "expected_end_date": null,
+      "skills": [
+        "Program Management"
+      ],
+      "location": "Remote",
+      "notes": "Departed week of 2/23"
+    },
+    {
+      "first_name": "Molly",
+      "last_name": "Chen",
+      "function": "Product",
+      "seniority": "Mid",
+      "status": "Active - Placed",
+      "current_account": "Santander",
+      "start_date": "2026-04-01",
+      "expected_end_date": "2026-10-01",
+      "skills": [
+        "Product Management",
+        "AAVA"
+      ],
+      "location": "Remote"
+    }
+  ],
+  "candidates": [
+    {
+      "first_name": "Tunde",
+      "last_name": "Olanrewaju",
+      "function": "Program",
+      "seniority": "Senior",
+      "status": "Hired",
+      "source": "Referral",
+      "target_account": "Premera",
+      "skills": [
+        "Program Management",
+        "Healthcare"
+      ],
+      "date_added": "2026-02-05",
+      "notes": "Approved by Aaron, confirmed end on 3/31 transition"
+    },
+    {
+      "first_name": "Callum",
+      "last_name": "Ross",
+      "function": "Product",
+      "seniority": "Mid",
+      "status": "Screening",
+      "source": "Inbound",
+      "target_account": "London Stock Exchange",
+      "skills": [
+        "Product Management"
+      ],
+      "date_added": "2026-03-18",
+      "notes": "Called in asking about Product Team"
+    },
+    {
+      "first_name": "Ana",
+      "last_name": "Reyes",
+      "function": "Product",
+      "seniority": "Mid",
+      "status": "Rejected",
+      "source": "Recruiter",
+      "target_account": "DirecTV",
+      "skills": [
+        "Product Management"
+      ],
+      "date_added": "2026-02-10",
+      "notes": "Product Manager role for DTV - deal closed lost"
+    }
+  ],
+  "assignments": [
+    {
+      "consultant_name": "Naveen Kumar",
+      "account": "Premera",
+      "deal_name": "Onshore AI Engineering Support",
+      "start_date": "2026-02-15",
+      "expected_end_date": "2026-08-15",
+      "status": "Active",
+      "bill_rate": 175
+    },
+    {
+      "consultant_name": "Kathy Duran",
+      "account": "Gordian (Nitor)",
+      "deal_name": "Agile & Product/Program Support",
+      "start_date": "2026-01-09",
+      "expected_end_date": "2026-06-30",
+      "status": "Active",
+      "bill_rate": 150
+    },
+    {
+      "consultant_name": "Russell Hacker",
+      "account": "MSFT",
+      "deal_name": "PgM Staff Aug",
+      "start_date": "2026-02-16",
+      "expected_end_date": "2026-08-16",
+      "status": "Active",
+      "bill_rate": 165
+    },
+    {
+      "consultant_name": "Yair Rosen",
+      "account": "FIS",
+      "deal_name": "Pgm Mgmt Staff Aug - Yair",
+      "start_date": "2026-01-19",
+      "expected_end_date": "2026-07-19",
+      "status": "Active",
+      "bill_rate": 155
+    },
+    {
+      "consultant_name": "Gretchen Meier",
+      "account": "FIS",
+      "deal_name": "PgM Staff Aug - Gretchen",
+      "start_date": "2026-01-23",
+      "expected_end_date": "2026-07-23",
+      "status": "Active",
+      "bill_rate": 140
+    },
+    {
+      "consultant_name": "John Butler",
+      "account": "DSG",
+      "deal_name": "PgM Director Staff Aug - John Butler",
+      "start_date": "2026-01-26",
+      "expected_end_date": "2026-07-26",
+      "status": "Active",
+      "bill_rate": 200
+    },
+    {
+      "consultant_name": "Rani Prathyusha",
+      "account": "ScanHealth",
+      "deal_name": "PgM Role",
+      "start_date": "2026-02-27",
+      "expected_end_date": "2026-08-27",
+      "status": "Active",
+      "bill_rate": 145
+    },
+    {
+      "consultant_name": "Manjari Singh",
+      "account": "DirecTV",
+      "deal_name": "DTV new product manager role",
+      "start_date": "2026-04-20",
+      "expected_end_date": "2026-10-20",
+      "status": "Active",
+      "bill_rate": 160
+    },
+    {
+      "consultant_name": "Molly Chen",
+      "account": "Santander",
+      "deal_name": "AAVA Consulting",
+      "start_date": "2026-04-01",
+      "expected_end_date": "2026-10-01",
+      "status": "Active",
+      "bill_rate": 155
+    },
+    {
+      "consultant_name": "Simran Kaur",
+      "account": "T-Mobile",
+      "deal_name": "TMO Money Product & Program",
+      "start_date": "2026-01-01",
+      "expected_end_date": "2026-03-30",
+      "actual_end_date": "2026-03-30",
+      "status": "Completed",
+      "end_reason": "Contract End",
+      "bill_rate": 140
+    },
+    {
+      "consultant_name": "Salil Patel",
+      "account": "T-Mobile",
+      "deal_name": "TMO Money Product & Program",
+      "start_date": "2026-01-01",
+      "expected_end_date": "2026-03-30",
+      "actual_end_date": "2026-03-30",
+      "status": "Completed",
+      "end_reason": "Contract End",
+      "bill_rate": 135
+    }
+  ]
+}
