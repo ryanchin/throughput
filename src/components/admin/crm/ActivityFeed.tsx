@@ -8,8 +8,9 @@ import {
   type ActivityType,
 } from '@/lib/crm/constants'
 import { formatRelativeDate } from '@/lib/crm/format'
-import type { Activity, Company } from '@/lib/crm/types'
+import type { Activity } from '@/lib/crm/types'
 import { ActivityForm } from './ActivityForm'
+import { CompanyCombobox } from './CompanyCombobox'
 
 const ACTIVITY_ICONS: Record<ActivityType, string> = {
   call: 'M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z',
@@ -30,22 +31,7 @@ export function ActivityFeed() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
 
-  const [companies, setCompanies] = useState<Pick<Company, 'id' | 'name'>[]>([])
   const [showActivityForm, setShowActivityForm] = useState(false)
-
-  // Fetch companies for filter
-  useEffect(() => {
-    async function fetchCompanies() {
-      try {
-        const res = await fetch('/api/admin/crm/companies?limit=100')
-        if (res.ok) {
-          const data = await res.json()
-          setCompanies((data.companies ?? data).map((c: Company) => ({ id: c.id, name: c.name })))
-        }
-      } catch { /* ignore */ }
-    }
-    fetchCompanies()
-  }, [])
 
   const fetchActivities = useCallback(async () => {
     setLoading(true)
@@ -75,19 +61,29 @@ export function ActivityFeed() {
 
   return (
     <div data-testid="activity-feed">
+      {/* Header with Log Activity button */}
+      <div className="flex items-center justify-end mb-4">
+        <button
+          onClick={() => setShowActivityForm(true)}
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-background hover:bg-accent-hover transition-colors shadow-accent-glow"
+          data-testid="log-activity-button"
+        >
+          Log Activity
+        </button>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center mb-6">
-        <select
-          value={companyFilter}
-          onChange={(e) => setCompanyFilter(e.target.value)}
-          className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-          data-testid="activity-company-filter"
-        >
-          <option value="">All Companies</option>
-          {companies.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+        <div className="w-64">
+          <CompanyCombobox
+            value={companyFilter}
+            onChange={setCompanyFilter}
+            placeholder="Filter by company..."
+            allowNone
+            noneLabel="All Companies"
+            data-testid="activity-company-filter"
+          />
+        </div>
 
         <select
           value={typeFilter}

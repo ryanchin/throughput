@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { ACTIVITY_TYPES, ACTIVITY_TYPE_LABELS } from '@/lib/crm/constants'
-import type { Company, Activity } from '@/lib/crm/types'
+import type { Activity } from '@/lib/crm/types'
+import { CompanyCombobox } from './CompanyCombobox'
 import {
   Dialog,
   DialogContent,
@@ -49,22 +50,8 @@ export function ActivityForm({
     activity?.activity_date?.split('T')[0] ?? new Date().toISOString().split('T')[0]
   )
 
-  const [companies, setCompanies] = useState<Pick<Company, 'id' | 'name'>[]>([])
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    async function fetchCompanies() {
-      try {
-        const res = await fetch('/api/admin/crm/companies?limit=100')
-        if (res.ok) {
-          const data = await res.json()
-          setCompanies((data.companies ?? data).map((c: Company) => ({ id: c.id, name: c.name })))
-        }
-      } catch { /* ignore */ }
-    }
-    if (open) fetchCompanies()
-  }, [open])
 
   function validate(): boolean {
     const newErrors: FormErrors = {}
@@ -167,21 +154,17 @@ export function ActivityForm({
 
           {/* Company */}
           <div>
-            <label htmlFor="activity-company" className="block text-sm font-medium text-foreground">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Company
             </label>
-            <select
-              id="activity-company"
+            <CompanyCombobox
               value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              onChange={setCompanyId}
+              placeholder="Search or create company..."
+              allowNone
+              noneLabel="None"
               data-testid="activity-company-select"
-            >
-              <option value="">None</option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            />
           </div>
 
           {/* Date */}

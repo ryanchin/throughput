@@ -1,5 +1,75 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/requireAdmin'
+import { createServiceClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const createUserSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  full_name: z.string().min(1, 'Full name is required'),
+  role: z.enum(['admin', 'sales', 'employee']),
+})
+
+/**
+ * POST /api/admin/users
+ *
+ * Create a new user via Supabase Auth admin API + profiles table.
+ */
+export async function POST(request: NextRequest) {
+  const { error: authError } = await requireAdmin()
+  if (authError) {
+    return NextResponse.json({ error: authError.message }, { status: authError.status })
+  }
+
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  const parsed = createUserSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Validation failed', details: parsed.error.issues },
+      { status: 400 }
+    )
+  }
+
+  const { email, full_name, role } = parsed.data
+  const serviceClient = createServiceClient()
+
+  // Create auth user with a generated temp password
+  const tempPassword = crypto.randomUUID() + '-Tp1!'
+  const { data: authUser, error: createError } = await serviceClient.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { full_name },
+  })
+
+  if (createError) {
+    // Supabase returns a message like "A user with this email address has already been registered"
+    return NextResponse.json({ error: createError.message }, { status: 422 })
+  }
+
+  // Upsert the profile record
+  const { data: profile, error: profileError } = await serviceClient
+    .from('profiles')
+    .upsert({
+      id: authUser.user.id,
+      email,
+      full_name,
+      role,
+    })
+    .select('id, email, full_name, role, created_at')
+    .single()
+
+  if (profileError) {
+    return NextResponse.json({ error: 'User created but profile save failed' }, { status: 500 })
+  }
+
+  return NextResponse.json({ user: profile }, { status: 201 })
+}
 
 /**
  * GET /api/admin/users

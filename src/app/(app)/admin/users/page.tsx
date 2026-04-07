@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation'
 import { getProfile } from '@/lib/auth/getProfile'
 import { createClient } from '@/lib/supabase/server'
-import UserTrackingTable from '@/components/admin/UserTrackingTable'
+import { AdminUsersClient } from '@/components/admin/AdminUsersClient'
 
 /**
- * Admin user tracking page.
- * Shows all users with enrollment/completion stats.
+ * Admin user management page.
+ * Shows all users with enrollment/completion stats + create/edit/delete.
  */
 export default async function AdminUsersPage() {
   const profile = await getProfile()
@@ -22,7 +22,7 @@ export default async function AdminUsersPage() {
   if (!profiles || profiles.length === 0) {
     return (
       <div className="p-8">
-        <h1 className="text-3xl font-bold text-foreground mb-6">User Tracking</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6">User Management</h1>
         <p className="text-foreground-muted">No users found.</p>
       </div>
     )
@@ -68,10 +68,5 @@ export default async function AdminUsersPage() {
     }
   })
 
-  return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-foreground mb-6">User Tracking</h1>
-      <UserTrackingTable users={users} />
-    </div>
-  )
+  return <AdminUsersClient initialUsers={users} />
 }

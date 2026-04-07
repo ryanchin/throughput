@@ -31,7 +31,7 @@ export function OpportunityKanban() {
   // Close reason modal
   const [closeModal, setCloseModal] = useState<{
     opportunityId: string
-    stage: 'closed_won' | 'closed_lost'
+    stage: '7a. Closed Won' | '7b. Closed Lost'
   } | null>(null)
 
   // Stage change dropdown
@@ -58,7 +58,7 @@ export function OpportunityKanban() {
 
   async function handleStageChange(opportunityId: string, newStage: Stage) {
     // If closing, show reason modal
-    if (newStage === 'closed_won' || newStage === 'closed_lost') {
+    if (newStage === '7a. Closed Won' || newStage === '7b. Closed Lost') {
       setCloseModal({ opportunityId, stage: newStage })
       return
     }
@@ -145,66 +145,70 @@ export function OpportunityKanban() {
 
       {/* Loading */}
       {loading && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          {STAGES.map((stage) => (
-            <div key={stage} className="rounded-xl border border-border bg-surface p-4 shadow-card">
-              <div className="h-4 w-24 animate-pulse rounded bg-muted mb-4" />
-              <div className="space-y-3">
-                <div className="h-20 animate-pulse rounded bg-muted" />
-                <div className="h-20 animate-pulse rounded bg-muted" />
+        <div className="overflow-x-auto pb-4 -mx-4 px-4">
+          <div className="flex gap-4" style={{ minWidth: 'max-content' }}>
+            {OPEN_STAGES.map((stage) => (
+              <div key={stage} className="w-[280px] shrink-0 rounded-xl border border-border bg-surface p-4 shadow-card">
+                <div className="h-4 w-24 animate-pulse rounded bg-muted mb-4" />
+                <div className="space-y-3">
+                  <div className="h-24 animate-pulse rounded bg-muted" />
+                  <div className="h-24 animate-pulse rounded bg-muted" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
       {/* Kanban View */}
       {!loading && viewMode === 'kanban' && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6 overflow-x-auto" data-testid="kanban-board">
-          {STAGES.map((stage) => {
-            const stageOpps = getOpportunitiesByStage(stage)
-            const stageValue = stageOpps.reduce((sum, o) => sum + o.value, 0)
+        <div className="overflow-x-auto pb-4 -mx-4 px-4">
+          <div className="flex gap-4" style={{ minWidth: 'max-content' }} data-testid="kanban-board">
+            {STAGES.map((stage) => {
+              const stageOpps = getOpportunitiesByStage(stage)
+              const stageValue = stageOpps.reduce((sum, o) => sum + o.value, 0)
 
-            return (
-              <div
-                key={stage}
-                className="min-w-[220px] rounded-xl border border-border bg-surface p-3 shadow-card"
-                data-testid={`kanban-column-${stage}`}
-              >
-                {/* Column header */}
-                <div className="mb-3 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-muted">
-                      {STAGE_LABELS[stage]}
-                    </h3>
-                    <p className="mt-0.5 text-xs text-foreground-muted">
-                      {stageOpps.length} deals
-                      {stageValue > 0 ? ` | ${formatCurrency(stageValue)}` : ''}
-                    </p>
+              return (
+                <div
+                  key={stage}
+                  className="w-[280px] shrink-0 rounded-xl border border-border bg-surface p-3 shadow-card"
+                  data-testid={`kanban-column-${stage}`}
+                >
+                  {/* Column header */}
+                  <div className="mb-3 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+                        {STAGE_LABELS[stage]}
+                      </h3>
+                      <p className="mt-0.5 text-xs text-foreground-muted">
+                        {stageOpps.length} deal{stageOpps.length !== 1 ? 's' : ''}
+                        {stageValue > 0 ? ` · ${formatCurrency(stageValue)}` : ''}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-foreground-muted">
+                      {Math.round(STAGE_PROBABILITIES[stage] * 100)}%
+                    </span>
                   </div>
-                  <span className="text-xs text-foreground-muted">
-                    {STAGE_PROBABILITIES[stage]}%
-                  </span>
-                </div>
 
-                {/* Cards */}
-                <div className="space-y-2">
-                  {stageOpps.length === 0 && (
-                    <p className="py-4 text-center text-xs text-foreground-muted">No deals</p>
-                  )}
-                  {stageOpps.map((opp) => (
-                    <OpportunityCard
-                      key={opp.id}
-                      opportunity={opp}
-                      onStageChange={handleStageChange}
-                      changingStage={changingStage}
-                      onToggleStageDropdown={setChangingStage}
-                    />
-                  ))}
+                  {/* Cards */}
+                  <div className="space-y-2">
+                    {stageOpps.length === 0 && (
+                      <p className="py-4 text-center text-xs text-foreground-muted">No deals</p>
+                    )}
+                    {stageOpps.map((opp) => (
+                      <OpportunityCard
+                        key={opp.id}
+                        opportunity={opp}
+                        onStageChange={handleStageChange}
+                        changingStage={changingStage}
+                        onToggleStageDropdown={setChangingStage}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -229,7 +233,14 @@ export function OpportunityKanban() {
               <tbody className="divide-y divide-border">
                 {opportunities.map((opp) => (
                   <tr key={opp.id} className="transition-colors hover:bg-raised">
-                    <td className="px-5 py-4 text-sm font-medium text-foreground">{opp.title}</td>
+                    <td className="px-5 py-4 text-sm font-medium text-foreground">
+                      <Link
+                        href={`/admin/crm/opportunities/${opp.id}`}
+                        className="hover:text-accent transition-colors"
+                      >
+                        {opp.title}
+                      </Link>
+                    </td>
                     <td className="px-5 py-4 text-sm text-foreground-muted">
                       {opp.company ? (
                         <Link href={`/admin/crm/companies/${opp.company.id}`} className="hover:text-accent transition-colors">
@@ -295,27 +306,36 @@ function OpportunityCard({
       className="rounded-lg border border-border bg-raised p-3 transition-colors hover:border-accent/30"
       data-testid={`opp-card-${opportunity.id}`}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-foreground truncate">{opportunity.title}</p>
-          {opportunity.company && (
-            <Link
-              href={`/admin/crm/companies/${opportunity.company.id}`}
-              className="text-xs text-foreground-muted hover:text-accent transition-colors"
-            >
-              {opportunity.company.name}
-            </Link>
-          )}
-        </div>
-        <div className={`mt-1 size-2 shrink-0 rounded-full ${velocityClasses[velocityColor]}`} title={`Velocity: ${velocityColor}`} />
+      {/* Company name — top line */}
+      <div className="flex items-center justify-between gap-2">
+        {opportunity.company ? (
+          <Link
+            href={`/admin/crm/companies/${opportunity.company.id}`}
+            className="text-xs font-medium text-accent hover:text-accent-hover transition-colors truncate"
+          >
+            {opportunity.company.name}
+          </Link>
+        ) : (
+          <span className="text-xs text-foreground-muted">No company</span>
+        )}
+        <div className={`size-2 shrink-0 rounded-full ${velocityClasses[velocityColor]}`} title={`Velocity: ${velocityColor}`} />
       </div>
 
-      <div className="mt-2 flex items-center justify-between">
+      {/* Deal title */}
+      <Link
+        href={`/admin/crm/opportunities/${opportunity.id}`}
+        className="mt-1 block text-sm font-medium text-foreground hover:text-accent transition-colors"
+      >
+        {opportunity.title}
+      </Link>
+
+      {/* Value */}
+      <div className="mt-1.5 flex items-center justify-between">
         <span className="text-sm font-semibold text-foreground">
           {formatCurrency(opportunity.value)}
         </span>
         {opportunity.ai_score != null && (
-          <span className="text-xs text-foreground-muted">{opportunity.ai_score}%</span>
+          <span className="text-xs text-foreground-muted">Score: {opportunity.ai_score}%</span>
         )}
       </div>
 
@@ -331,7 +351,7 @@ function OpportunityCard({
           Move to...
         </button>
         {changingStage === opportunity.id && (
-          <div className="absolute left-0 top-full z-10 mt-1 w-full rounded-lg border border-border bg-raised shadow-lg">
+          <div className="absolute left-0 top-full z-10 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-border bg-raised shadow-lg">
             {STAGES.filter((s) => s !== opportunity.stage).map((s) => (
               <button
                 key={s}
@@ -351,12 +371,15 @@ function OpportunityCard({
 
 function StageBadge({ stage }: { stage: Stage }) {
   const styles: Record<Stage, string> = {
-    lead: 'bg-accent-muted text-accent',
-    qualified: 'bg-[var(--secondary-muted)] text-[var(--secondary)]',
-    proposal: 'bg-[var(--warning-muted)] text-[var(--warning)]',
-    negotiation: 'bg-gold-muted text-gold',
-    closed_won: 'bg-[var(--success-muted)] text-[var(--success)]',
-    closed_lost: 'bg-[var(--destructive-muted)] text-[var(--destructive)]',
+    '1. Inquiry': 'bg-accent-muted text-accent',
+    '2. Investigation & Analysis': 'bg-accent-muted text-accent',
+    '3. Qualification': 'bg-[var(--secondary-muted)] text-[var(--secondary)]',
+    '4. Proposal Creation': 'bg-[var(--warning-muted)] text-[var(--warning)]',
+    '5. Proposal Presentation': 'bg-[var(--warning-muted)] text-[var(--warning)]',
+    '6. Negotiation/ Review': 'bg-gold-muted text-gold',
+    '7a. Closed Won': 'bg-[var(--success-muted)] text-[var(--success)]',
+    '7b. Closed Lost': 'bg-[var(--destructive-muted)] text-[var(--destructive)]',
+    '7c. Shelf': 'bg-[var(--foreground-muted)]/10 text-[var(--foreground-muted)]',
   }
 
   return (

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { STAGES, STAGE_LABELS } from '@/lib/crm/constants'
-import type { Company, Contact, Opportunity } from '@/lib/crm/types'
+import type { Contact, Opportunity } from '@/lib/crm/types'
+import { CompanyCombobox } from './CompanyCombobox'
 import {
   Dialog,
   DialogContent,
@@ -40,30 +41,15 @@ export function OpportunityForm({
   const [contactId, setContactId] = useState(opportunity?.contact_id ?? '')
   const [title, setTitle] = useState(opportunity?.title ?? '')
   const [value, setValue] = useState(opportunity?.value?.toString() ?? '')
-  const [stage, setStage] = useState(opportunity?.stage ?? 'lead')
+  const [stage, setStage] = useState(opportunity?.stage ?? '1. Inquiry')
   const [expectedCloseDate, setExpectedCloseDate] = useState(
     opportunity?.expected_close_date?.split('T')[0] ?? ''
   )
   const [notes, setNotes] = useState(opportunity?.notes ?? '')
 
-  const [companies, setCompanies] = useState<Pick<Company, 'id' | 'name'>[]>([])
   const [contacts, setContacts] = useState<Pick<Contact, 'id' | 'name'>[]>([])
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
-
-  // Fetch companies for select
-  useEffect(() => {
-    async function fetchCompanies() {
-      try {
-        const res = await fetch('/api/admin/crm/companies?limit=100')
-        if (res.ok) {
-          const data = await res.json()
-          setCompanies((data.companies ?? data).map((c: Company) => ({ id: c.id, name: c.name })))
-        }
-      } catch { /* ignore */ }
-    }
-    if (open) fetchCompanies()
-  }, [open])
 
   // Fetch contacts for selected company
   useEffect(() => {
@@ -151,21 +137,15 @@ export function OpportunityForm({
 
           {/* Company */}
           <div>
-            <label htmlFor="opp-company" className="block text-sm font-medium text-foreground">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Company <span className="text-[var(--destructive)]">*</span>
             </label>
-            <select
-              id="opp-company"
+            <CompanyCombobox
               value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              onChange={setCompanyId}
+              placeholder="Search or create company..."
               data-testid="opp-company-select"
-            >
-              <option value="">Select company...</option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            />
             {errors.company_id && <p className="mt-1 text-xs text-[var(--destructive)]">{errors.company_id}</p>}
           </div>
 

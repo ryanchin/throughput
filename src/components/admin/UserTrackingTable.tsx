@@ -16,12 +16,13 @@ interface UserRow {
 
 interface UserTrackingTableProps {
   users: UserRow[]
+  onCreateUser?: () => void
 }
 
 /**
  * Admin user tracking table with sortable columns and CSV export.
  */
-export default function UserTrackingTable({ users }: UserTrackingTableProps) {
+export default function UserTrackingTable({ users, onCreateUser }: UserTrackingTableProps) {
   const [sortField, setSortField] = useState<keyof UserRow>('lastActive')
   const [sortAsc, setSortAsc] = useState(false)
   const [search, setSearch] = useState('')
@@ -106,13 +107,24 @@ export default function UserTrackingTable({ users }: UserTrackingTableProps) {
           className="bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-foreground-subtle text-sm w-64"
           data-testid="user-search"
         />
-        <button
-          onClick={handleExportCSV}
-          className="bg-muted border border-border text-foreground hover:bg-raised px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          data-testid="export-csv-btn"
-        >
-          Export CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="bg-muted border border-border text-foreground hover:bg-raised px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            data-testid="export-csv-btn"
+          >
+            Export CSV
+          </button>
+          {onCreateUser && (
+            <button
+              onClick={onCreateUser}
+              className="bg-accent text-background hover:bg-accent-hover px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-accent-glow"
+              data-testid="create-user-btn"
+            >
+              Create User
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}

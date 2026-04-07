@@ -39,12 +39,15 @@ function CompanyStatusBadge({ status }: { status: CompanyStatus }) {
 
 function StageBadge({ stage }: { stage: Stage }) {
   const styles: Record<Stage, string> = {
-    lead: 'bg-accent-muted text-accent',
-    qualified: 'bg-[var(--secondary-muted)] text-[var(--secondary)]',
-    proposal: 'bg-[var(--warning-muted)] text-[var(--warning)]',
-    negotiation: 'bg-gold-muted text-gold',
-    closed_won: 'bg-[var(--success-muted)] text-[var(--success)]',
-    closed_lost: 'bg-[var(--destructive-muted)] text-[var(--destructive)]',
+    '1. Inquiry': 'bg-accent-muted text-accent',
+    '2. Investigation & Analysis': 'bg-accent-muted text-accent',
+    '3. Qualification': 'bg-[var(--secondary-muted)] text-[var(--secondary)]',
+    '4. Proposal Creation': 'bg-[var(--warning-muted)] text-[var(--warning)]',
+    '5. Proposal Presentation': 'bg-[var(--warning-muted)] text-[var(--warning)]',
+    '6. Negotiation/ Review': 'bg-gold-muted text-gold',
+    '7a. Closed Won': 'bg-[var(--success-muted)] text-[var(--success)]',
+    '7b. Closed Lost': 'bg-[var(--destructive-muted)] text-[var(--destructive)]',
+    '7c. Shelf': 'bg-[var(--foreground-muted)]/10 text-[var(--foreground-muted)]',
   }
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[stage]}`}>
@@ -340,7 +343,12 @@ export function CompanyDetail({ company, userRole }: CompanyDetailProps) {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium text-foreground">{opp.title}</span>
+                          <Link
+                            href={`/admin/crm/opportunities/${opp.id}`}
+                            className="text-sm font-medium text-foreground hover:text-accent transition-colors"
+                          >
+                            {opp.title}
+                          </Link>
                           <StageBadge stage={opp.stage} />
                         </div>
                         <span className="text-sm font-semibold text-foreground">
