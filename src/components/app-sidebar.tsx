@@ -20,6 +20,8 @@ import {
   ActivityIcon,
   CheckSquareIcon,
   BriefcaseIcon,
+  NewspaperIcon,
+  SettingsIcon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -207,6 +209,16 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
+                    isActive={isActive('/admin/crm/briefing')}
+                    tooltip="Briefing"
+                    render={<Link href="/admin/crm/briefing" />}
+                  >
+                    <NewspaperIcon className="size-4" />
+                    <span>Briefing</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
                     isActive={pathname === '/admin/crm'}
                     tooltip="CRM Dashboard"
                     render={<Link href="/admin/crm" />}
@@ -258,6 +270,16 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
                         {overdueTaskCount}
                       </span>
                     )}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/settings')}
+                    tooltip="Settings"
+                    render={<Link href="/admin/crm/settings/digest" />}
+                  >
+                    <SettingsIcon className="size-4" />
+                    <span>Settings</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
