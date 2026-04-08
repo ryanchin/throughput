@@ -870,12 +870,14 @@ export interface Database {
           id: string
           name: string
           account_id: string | null
+          deal_id: string | null
           function: string | null
           priority: number | null
           status: string
           open_date: string | null
           target_fill_date: string | null
           role_stage: string | null
+          description: string | null
           next_step: string | null
           next_step_due: string | null
           blocker: string | null
@@ -888,12 +890,14 @@ export interface Database {
           id?: string
           name: string
           account_id?: string | null
+          deal_id?: string | null
           function?: string | null
           priority?: number | null
           status?: string
           open_date?: string | null
           target_fill_date?: string | null
           role_stage?: string | null
+          description?: string | null
           next_step?: string | null
           next_step_due?: string | null
           blocker?: string | null
@@ -905,12 +909,14 @@ export interface Database {
         Update: {
           name?: string
           account_id?: string | null
+          deal_id?: string | null
           function?: string | null
           priority?: number | null
           status?: string
           open_date?: string | null
           target_fill_date?: string | null
           role_stage?: string | null
+          description?: string | null
           next_step?: string | null
           next_step_due?: string | null
           blocker?: string | null

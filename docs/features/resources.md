@@ -138,6 +138,25 @@ All tables use CHECK constraints (not Postgres enums), RLS (admin+sales read/wri
 - Integration tests via API endpoint verification (all endpoints tested via node scripts with authenticated sessions)
 - Schema validation tested as part of task-management test suite
 
+### Roles Page + Detail
+
+The Resources section includes a **Roles** page showing all open roles that need staffing. Each role links to a detail page where recruiters can:
+
+- See the role info: account, deal that created it, function, status, priority, target fill date, role stage, blocker, description
+- View candidates assigned to this role
+- Assign new candidates to the role from the candidate pool
+- **Staff the role** with a hired candidate: promotes the candidate to a consultant, creates an assignment, and marks the role as Filled
+- See matching bench consultants (internal resources whose function matches)
+
+### Roles Staffing Workflow
+
+1. Deal closes won → CreateRolesModal prompts user to create roles (with deal_id + account_id linked)
+2. Roles appear on the Roles page (default filter: Open)
+3. Recruiter assigns candidates to the role via the detail page
+4. Candidates go through the pipeline (Screening → Interviewing → Offer Extended → Hired)
+5. When a candidate is Hired, recruiter clicks "Staff This Role" on the role detail page
+6. System promotes the candidate to a consultant, creates an active assignment, and marks the role Filled
+
 ## Known Limitations / Future Work
 
 - Rolloff auto-tasks deferred (auto-create "Plan backfill" when consultant within 30d of rolloff)
@@ -146,3 +165,4 @@ All tables use CHECK constraints (not Postgres enums), RLS (admin+sales read/wri
 - No interview scheduling integration
 - No resume parsing/AI screening for candidates
 - Role matching is function-based only (no skill-level matching beyond count)
+- No role description editing from the Roles page (editable via API PATCH only)

@@ -19,6 +19,7 @@ import {
   UserPlusIcon,
   ActivityIcon,
   CheckSquareIcon,
+  BriefcaseIcon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -272,7 +273,7 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    isActive={pathname === '/admin/crm/resources' || (pathname.startsWith('/admin/crm/resources/') && !pathname.includes('/rolloffs') && !pathname.includes('/bench') && !pathname.includes('/candidates') && !pathname.includes('/capacity'))}
+                    isActive={pathname === '/admin/crm/resources' || (pathname.startsWith('/admin/crm/resources/') && !pathname.includes('/rolloffs') && !pathname.includes('/bench') && !pathname.includes('/candidates') && !pathname.includes('/roles') && !pathname.includes('/capacity'))}
                     tooltip="Roster"
                     render={<Link href="/admin/crm/resources" />}
                   >
@@ -308,6 +309,16 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
                   >
                     <UserPlusIcon className="size-4" />
                     <span>Candidates</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/resources/roles')}
+                    tooltip="Roles"
+                    render={<Link href="/admin/crm/resources/roles" />}
+                  >
+                    <BriefcaseIcon className="size-4" />
+                    <span>Roles</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
