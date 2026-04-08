@@ -89,19 +89,51 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Overdue tasks created by this user
-    // Use raw query since crm_action_owners isn't in the typed schema
-    const { data: overdueTasks } = await supabase
+    // Open tasks: created by OR assigned to this user
+    // 1. Get task IDs assigned via crm_action_owners (REST API since table isn't in typed schema)
+    let assignedTaskIds: string[] = []
+    try {
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/crm_action_owners?select=activity_id&user_id=eq.${conv.user_id}`,
+        { headers: { apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!, Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}` } }
+      )
+      if (result.ok) {
+        const rows = await result.json() as { activity_id: string }[]
+        assignedTaskIds = rows.map(r => r.activity_id)
+      }
+    } catch {
+      // Non-blocking
+    }
+
+    // 2. Get open tasks created by this user
+    const { data: createdTasks } = await supabase
       .from('crm_activities')
       .select('id, subject')
       .eq('type', 'task')
       .eq('completed', false)
       .eq('created_by', conv.user_id) as { data: { id: string; subject: string }[] | null }
 
-    if (overdueTasks) {
-      for (const task of overdueTasks) {
-        items.push(`✅ **${task.subject}** needs attention. Done? Reply to update.`)
-      }
+    // 3. Get open tasks assigned to this user (that they didn't create)
+    let assignedTasks: { id: string; subject: string }[] = []
+    if (assignedTaskIds.length > 0) {
+      const { data: aTasks } = await supabase
+        .from('crm_activities')
+        .select('id, subject')
+        .eq('type', 'task')
+        .eq('completed', false)
+        .in('id', assignedTaskIds) as { data: { id: string; subject: string }[] | null }
+      assignedTasks = aTasks ?? []
+    }
+
+    // 4. Merge and deduplicate
+    const createdIds = new Set((createdTasks ?? []).map(t => t.id))
+    const allTasks = [
+      ...(createdTasks ?? []),
+      ...assignedTasks.filter(t => !createdIds.has(t.id)),
+    ]
+
+    for (const task of allTasks) {
+      items.push(`✅ **${task.subject}** needs attention. Done? Reply to update.`)
     }
 
     // Send DM if there are items
