@@ -1098,6 +1098,114 @@ export interface Database {
         }
         Relationships: []
       }
+      crm_teams_conversations: {
+        Row: {
+          user_id: string
+          conversation_id: string
+          service_url: string
+          teams_user_id: string
+          teams_user_name: string | null
+          registered_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          conversation_id: string
+          service_url: string
+          teams_user_id: string
+          teams_user_name?: string | null
+          registered_at?: string
+          updated_at?: string
+        }
+        Update: {
+          conversation_id?: string
+          service_url?: string
+          teams_user_id?: string
+          teams_user_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_digest_preferences: {
+        Row: {
+          user_id: string
+          enabled: boolean
+          send_time: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          enabled?: boolean
+          send_time?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          send_time?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_digest_logs: {
+        Row: {
+          id: string
+          user_id: string
+          sent_at: string
+          items_count: number
+          clicked_items: Json
+          delivery_status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          sent_at?: string
+          items_count?: number
+          clicked_items?: Json
+          delivery_status?: string
+          created_at?: string
+        }
+        Update: {
+          items_count?: number
+          clicked_items?: Json
+          delivery_status?: string
+        }
+        Relationships: []
+      }
+      crm_action_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          action_type: string
+          entity_type: string
+          entity_id: string
+          payload: Json | null
+          used: boolean
+          clicked_at: string | null
+          expires_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          action_type: string
+          entity_type: string
+          entity_id: string
+          payload?: Json | null
+          used?: boolean
+          clicked_at?: string | null
+          expires_at: string
+          created_at?: string
+        }
+        Update: {
+          used?: boolean
+          clicked_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {}
     Functions: {}

@@ -3,6 +3,10 @@
     {
       "path": "/api/admin/crm/digest/send",
       "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/admin/crm/teams/proactive",
+      "schedule": "30 15 * * *"
     }
   ]
 }

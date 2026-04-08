@@ -193,6 +193,21 @@ export async function handleMessage(activity: TeamsActivity): Promise<void> {
     return
   }
 
+  // Store conversation reference for proactive messaging
+  try {
+    const supabase = createServiceClient()
+    await supabase.from('crm_teams_conversations').upsert({
+      user_id: profile.id,
+      conversation_id: conversation.id,
+      service_url: serviceUrl,
+      teams_user_id: activity.from.id,
+      teams_user_name: activity.from.name,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' })
+  } catch {
+    // Non-blocking: don't fail the message if conversation storage fails
+  }
+
   // Parse the natural language update
   let actions: ActionWithMatch[]
   try {
