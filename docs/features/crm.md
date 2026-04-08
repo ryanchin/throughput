@@ -761,6 +761,11 @@ The system that nags so managers don't have to.
   - CSV import flow
   - Non-admin/non-sales redirect
 
+## Related Features (built on CRM infrastructure)
+
+- **[Resources Module](resources.md)** — Consultant inventory, placement tracking, rolloff alerts, candidate hiring pipeline, and capacity planning. Adds `crm_consultants`, `crm_candidates`, `crm_assignments` tables. Auto-creates roles when deals close won.
+- **[Task Management](task-management.md)** — First-class task system surfacing the existing `crm_activities` type='task' records. My Tasks / Overdue / All tabs, auto-task creation on deal stage changes, AI-suggested follow-up tasks after logging activities, overdue badge in sidebar, and quick-create from context.
+
 ## Known Limitations / Future Work
 
 - **No stage history tracking (v1):** Stage changes update `updated_at` but there is no dedicated `opportunity_stage_history` table. Add in v2 if the team needs to analyze time-in-stage or conversion rates between stages.

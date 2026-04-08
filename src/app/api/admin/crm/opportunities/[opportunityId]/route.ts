@@ -3,6 +3,15 @@ import { requireCrmAccess } from '@/lib/auth/requireCrmAccess'
 import { opportunityUpdateSchema } from '@/lib/crm/schemas'
 import { STAGE_PROBABILITIES } from '@/lib/crm/constants'
 import type { Stage } from '@/lib/crm/constants'
+import { createServiceClient } from '@/lib/supabase/server'
+
+/** Stage-to-task mapping for auto-creating follow-up tasks on stage transitions */
+const STAGE_TASK_MAP: Record<string, { subject: string; dueDays: number; priority: number }> = {
+  '4. Proposal Creation': { subject: 'Send proposal to {company}', dueDays: 5, priority: 1 },
+  '5. Proposal Presentation': { subject: 'Schedule proposal presentation with {company}', dueDays: 3, priority: 1 },
+  '6. Negotiation/ Review': { subject: 'Follow up on negotiation with {company}', dueDays: 7, priority: 2 },
+  '7a. Closed Won': { subject: 'Kick off onboarding for {company}', dueDays: 3, priority: 1 },
+}
 
 interface RouteParams {
   params: Promise<{ opportunityId: string }>
@@ -45,7 +54,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const { opportunityId } = await params
-  const { error: authError, supabase } = await requireCrmAccess()
+  const { error: authError, supabase, profile } = await requireCrmAccess()
   if (authError) {
     return NextResponse.json({ error: authError.message }, { status: authError.status })
   }
@@ -118,6 +127,47 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   if (error) {
     return NextResponse.json({ error: 'Failed to update opportunity' }, { status: 500 })
+  }
+
+  // Auto-create follow-up task when stage changes to a mapped stage
+  if (data.stage && data.stage !== current.stage && STAGE_TASK_MAP[data.stage]) {
+    const taskMapping = STAGE_TASK_MAP[data.stage]
+    const shaped = shapeOpportunity(opportunity as Record<string, unknown>)
+    const companyName = (shaped.company as { name: string } | null)?.name ?? 'client'
+    const taskSubject = taskMapping.subject.replace('{company}', companyName)
+
+    const dueDate = new Date()
+    dueDate.setDate(dueDate.getDate() + taskMapping.dueDays)
+
+    // crm_activities has new columns (priority, status, due_date) not in generated types
+    // crm_action_owners also not in generated types — use any cast
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const serviceClient = createServiceClient() as any
+    const { data: newTask } = await serviceClient
+      .from('crm_activities')
+      .insert({
+        type: 'task',
+        subject: taskSubject,
+        due_date: dueDate.toISOString().split('T')[0],
+        priority: taskMapping.priority,
+        status: 'Not Started',
+        completed: false,
+        company_id: (shaped as Record<string, unknown>).company_id ?? null,
+        opportunity_id: opportunityId,
+        created_by: profile!.id,
+        activity_date: new Date().toISOString(),
+      })
+      .select()
+      .single()
+
+    // Assign the task to the current user
+    if (newTask) {
+      await serviceClient.from('crm_action_owners').insert({
+        activity_id: newTask.id,
+        user_id: profile!.id,
+        assigned_at: new Date().toISOString(),
+      })
+    }
   }
 
   return NextResponse.json({ opportunity: shapeOpportunity(opportunity as Record<string, unknown>) })

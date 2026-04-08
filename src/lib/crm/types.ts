@@ -87,3 +87,14 @@ export interface Reminder {
   entity_type: 'company' | 'opportunity'
   days: number
 }
+
+export interface Task extends Activity {
+  due_date: string | null
+  priority: number | null
+  status: string | null
+  category: string | null
+  completed: boolean
+  notes: string | null
+  assignees?: { user_id: string; full_name: string }[]
+  days_overdue?: number | null
+}

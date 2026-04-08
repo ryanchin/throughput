@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ACTIVITY_TYPES, ACTIVITY_TYPE_LABELS } from '@/lib/crm/constants'
 import type { Activity } from '@/lib/crm/types'
 import { CompanyCombobox } from './CompanyCombobox'
+import { AiTaskSuggestions } from './AiTaskSuggestions'
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,7 @@ export function ActivityForm({
 
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
+  const [savedActivityId, setSavedActivityId] = useState<string | null>(null)
 
   function validate(): boolean {
     const newErrors: FormErrors = {}
@@ -89,9 +91,18 @@ export function ActivityForm({
         body: JSON.stringify(payload),
       })
 
+      const resData = await res.json().catch(() => ({}))
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body.error || 'Failed to save activity')
+        throw new Error(resData.error || 'Failed to save activity')
+      }
+
+      const newActivityId = resData?.activity?.id
+
+      // For non-task activities on new creation, show AI suggestions
+      if (!isEdit && type !== 'task' && newActivityId) {
+        setSavedActivityId(newActivityId)
+        onSaved()
+        return
       }
 
       onSaved()
@@ -104,11 +115,42 @@ export function ActivityForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(o) => {
+      if (!o) setSavedActivityId(null)
+      onOpenChange(o)
+    }}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Activity' : 'Log Activity'}</DialogTitle>
+          <DialogTitle>{savedActivityId ? 'Activity Logged' : isEdit ? 'Edit Activity' : 'Log Activity'}</DialogTitle>
         </DialogHeader>
+
+        {savedActivityId ? (
+          <div>
+            <p className="text-sm text-foreground-muted">Activity logged successfully.</p>
+            <AiTaskSuggestions
+              activityId={savedActivityId}
+              onDismiss={() => {
+                setSavedActivityId(null)
+                onOpenChange(false)
+              }}
+              onTaskCreated={() => {
+                /* Suggestions component handles its own state */
+              }}
+            />
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setSavedActivityId(null)
+                  onOpenChange(false)
+                }}
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-background hover:bg-accent-hover transition-colors shadow-accent-glow"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        ) : (
 
         <form onSubmit={handleSubmit} className="space-y-4" data-testid="activity-form">
           {errors.general && (
@@ -216,6 +258,7 @@ export function ActivityForm({
             </button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   )

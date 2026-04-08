@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { formatShortDate, formatCurrency } from '@/lib/crm/format'
 import type { ConsultantStatus, AssignmentStatus } from '@/lib/crm/constants'
+import { TaskForm } from './TaskForm'
 
 interface Assignment {
   id: string
@@ -76,20 +78,35 @@ function computeDuration(startDate: string | null, endDate: string | null): stri
 
 export function ConsultantDetail({ consultant }: { consultant: ConsultantData }) {
   const c = consultant
+  const [showTaskForm, setShowTaskForm] = useState(false)
 
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{c.user.full_name}</h1>
-          <p className="mt-1 text-sm text-foreground-muted">
-            {c.function}
-            {c.seniority ? ` · ${c.seniority}` : ''}
-            {c.location ? ` · ${c.location}` : ''}
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">{c.user.full_name}</h1>
+            <p className="mt-1 text-sm text-foreground-muted">
+              {c.function}
+              {c.seniority ? ` · ${c.seniority}` : ''}
+              {c.location ? ` · ${c.location}` : ''}
+            </p>
+          </div>
+          <ConsultantStatusBadge status={c.status} />
         </div>
-        <ConsultantStatusBadge status={c.status} />
+        <button
+          onClick={() => setShowTaskForm(true)}
+          className="rounded-lg bg-muted border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-raised transition-colors"
+          data-testid="add-followup-button"
+        >
+          <span className="flex items-center gap-1">
+            <svg className="size-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Follow-up
+          </span>
+        </button>
       </div>
 
       {/* Promoted from candidate banner */}
@@ -237,6 +254,14 @@ export function ConsultantDetail({ consultant }: { consultant: ConsultantData })
           <p className="text-sm text-foreground-muted whitespace-pre-wrap">{c.notes}</p>
         </div>
       )}
+
+      {/* Task Follow-up Form */}
+      <TaskForm
+        defaultCompanyId={c.account?.id}
+        open={showTaskForm}
+        onOpenChange={setShowTaskForm}
+        onSaved={() => setShowTaskForm(false)}
+      />
     </div>
   )
 }

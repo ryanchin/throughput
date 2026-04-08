@@ -12,6 +12,7 @@ import { formatCurrency, formatRelativeDate, formatShortDate } from '@/lib/crm/f
 import type { Opportunity } from '@/lib/crm/types'
 import { OpportunityForm } from './OpportunityForm'
 import { CreateRolesModal } from './CreateRolesModal'
+import { TaskForm } from './TaskForm'
 
 interface OpportunityDetailProps {
   opportunity: Opportunity
@@ -42,6 +43,7 @@ export function OpportunityDetail({ opportunity, userRole }: OpportunityDetailPr
   const [showEditForm, setShowEditForm] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showCreateRoles, setShowCreateRoles] = useState(false)
+  const [showTaskForm, setShowTaskForm] = useState(false)
 
   async function handleDelete() {
     if (!confirm(`Are you sure you want to delete "${opportunity.title}"? This cannot be undone.`)) return
@@ -87,6 +89,18 @@ export function OpportunityDetail({ opportunity, userRole }: OpportunityDetailPr
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setShowTaskForm(true)}
+            className="rounded-lg bg-muted border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-raised transition-colors"
+            data-testid="add-followup-button"
+          >
+            <span className="flex items-center gap-1">
+              <svg className="size-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Follow-up
+            </span>
+          </button>
           <button
             onClick={() => setShowEditForm(true)}
             className="rounded-lg bg-muted border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-raised transition-colors"
@@ -260,6 +274,18 @@ export function OpportunityDetail({ opportunity, userRole }: OpportunityDetailPr
         accountId={opportunity.company?.id ?? null}
         accountName={opportunity.company?.name ?? null}
         onCreated={() => setShowCreateRoles(false)}
+      />
+
+      {/* Task Follow-up Form */}
+      <TaskForm
+        defaultCompanyId={opportunity.company_id}
+        defaultOpportunityId={opportunity.id}
+        open={showTaskForm}
+        onOpenChange={setShowTaskForm}
+        onSaved={() => {
+          setShowTaskForm(false)
+          router.refresh()
+        }}
       />
     </div>
   )

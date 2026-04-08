@@ -236,3 +236,40 @@ export const assignmentSearchSchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(100),
   offset: z.coerce.number().int().min(0).default(0),
 })
+
+// ============================================================
+// Task Schemas
+// ============================================================
+
+export const taskCreateSchema = z.object({
+  subject: z.string().min(1, 'Subject is required').max(255),
+  company_id: z.string().uuid().optional().or(z.literal('')),
+  contact_id: z.string().uuid().optional().or(z.literal('')),
+  opportunity_id: z.string().uuid().optional().or(z.literal('')),
+  description: z.string().max(10000).optional().or(z.literal('')),
+  due_date: z.string().optional().or(z.literal('')),
+  priority: z.number().int().min(1).max(2).default(2),
+  status: z.enum(['Not Started', 'In Progress', 'Completed', 'On Hold']).default('Not Started'),
+  category: z.enum(['Follow-up', 'Meeting', 'Task', 'Presentation']).optional(),
+  assignee_ids: z.array(z.string().uuid()).default([]),
+})
+
+export const taskUpdateSchema = z.object({
+  subject: z.string().min(1).max(255).optional(),
+  description: z.string().max(10000).optional().or(z.literal('')),
+  due_date: z.string().optional().or(z.literal('')).nullable(),
+  priority: z.number().int().min(1).max(2).optional(),
+  status: z.enum(['Not Started', 'In Progress', 'Completed', 'On Hold']).optional(),
+  category: z.enum(['Follow-up', 'Meeting', 'Task', 'Presentation']).optional().nullable(),
+  completed: z.boolean().optional(),
+  assignee_ids: z.array(z.string().uuid()).optional(),
+})
+
+export const taskSearchSchema = z.object({
+  tab: z.enum(['my', 'overdue', 'all']).default('my'),
+  status: z.string().optional(),
+  priority: z.coerce.number().int().optional(),
+  company_id: z.string().uuid().optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+})

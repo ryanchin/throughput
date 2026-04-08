@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -17,6 +18,7 @@ import {
   InboxIcon,
   UserPlusIcon,
   ActivityIcon,
+  CheckSquareIcon,
 } from 'lucide-react'
 import type { Database } from '@/lib/supabase/database.types'
 import { NavUserInternal } from '@/components/nav-user-internal'
@@ -119,6 +121,7 @@ const adminItems: NavItem[] = [
 
 export function AppSidebar({ profile, ...props }: AppSidebarProps) {
   const pathname = usePathname()
+  const [overdueTaskCount, setOverdueTaskCount] = useState(0)
 
   const visiblePlatformItems = platformItems.filter(
     (item) => !item.roles || item.roles.includes(profile.role)
@@ -126,6 +129,20 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
 
   const isAdmin = profile.role === 'admin'
   const hasCrmAccess = ['admin', 'sales'].includes(profile.role)
+
+  useEffect(() => {
+    if (!hasCrmAccess) return
+    async function fetchTaskStats() {
+      try {
+        const res = await fetch('/api/admin/crm/tasks/stats')
+        if (res.ok) {
+          const data = await res.json()
+          setOverdueTaskCount(data.overdue_count ?? 0)
+        }
+      } catch { /* ignore */ }
+    }
+    fetchTaskStats()
+  }, [hasCrmAccess])
 
   function isActive(href: string): boolean {
     // For /admin, exact match only (don't highlight for /admin/courses etc.)
@@ -225,6 +242,21 @@ export function AppSidebar({ profile, ...props }: AppSidebarProps) {
                   >
                     <FileTextIcon className="size-4" />
                     <span>Activities</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    isActive={isActive('/admin/crm/tasks')}
+                    tooltip="Tasks"
+                    render={<Link href="/admin/crm/tasks" />}
+                  >
+                    <CheckSquareIcon className="size-4" />
+                    <span>Tasks</span>
+                    {overdueTaskCount > 0 && (
+                      <span className="ml-auto flex size-5 items-center justify-center rounded-full bg-[var(--destructive)] text-[10px] font-bold text-white">
+                        {overdueTaskCount}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

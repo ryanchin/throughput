@@ -17,6 +17,7 @@ import type { Company, Contact, Opportunity, Activity } from '@/lib/crm/types'
 import { ContactForm } from './ContactForm'
 import { OpportunityForm } from './OpportunityForm'
 import { ActivityForm } from './ActivityForm'
+import { TaskForm } from './TaskForm'
 
 interface CompanyDetailProps {
   company: Company
@@ -76,6 +77,7 @@ export function CompanyDetail({ company, userRole }: CompanyDetailProps) {
   const [editingContact, setEditingContact] = useState<Contact | undefined>()
   const [showOppForm, setShowOppForm] = useState(false)
   const [showActivityForm, setShowActivityForm] = useState(false)
+  const [showTaskForm, setShowTaskForm] = useState(false)
 
   const [deleting, setDeleting] = useState(false)
 
@@ -161,6 +163,18 @@ export function CompanyDetail({ company, userRole }: CompanyDetailProps) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setShowTaskForm(true)}
+            className="rounded-lg bg-muted border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-raised transition-colors"
+            data-testid="add-followup-button"
+          >
+            <span className="flex items-center gap-1">
+              <svg className="size-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Follow-up
+            </span>
+          </button>
           <Link
             href={`/admin/crm/companies/${company.id}/edit`}
             className="rounded-lg bg-muted border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-raised transition-colors"
@@ -456,6 +470,16 @@ export function CompanyDetail({ company, userRole }: CompanyDetailProps) {
         onOpenChange={setShowActivityForm}
         onSaved={() => {
           setShowActivityForm(false)
+          fetchRelated()
+        }}
+      />
+
+      <TaskForm
+        defaultCompanyId={company.id}
+        open={showTaskForm}
+        onOpenChange={setShowTaskForm}
+        onSaved={() => {
+          setShowTaskForm(false)
           fetchRelated()
         }}
       />
